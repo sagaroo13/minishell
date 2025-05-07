@@ -1,0 +1,10 @@
+LDFLAGS = -lreadline -lhistory
+NAME = minishell
+	@echo "Compiling libft"
+	@echo "Done"
+	@echo "Compiling $(NAME)"
+	@echo "Done"
+	@echo "Cleaning objects"
+	@echo "Done"
+	@echo "Cleaning executables"
+	@echo "Done"
