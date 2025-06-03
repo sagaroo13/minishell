@@ -59,6 +59,14 @@ typedef enum e_open_flags
 	APPEND,
 }	t_open_flags;
 
+typedef enum e_mode
+{
+	MODE_SHELL,
+	MODE_CHILD,
+	MODE_HEREDOC
+}	t_mode;
+
+
 /******************************************************************************
  *  																		  *
  *                                 Functions								  *
