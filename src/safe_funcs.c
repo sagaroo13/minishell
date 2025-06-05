@@ -65,3 +65,13 @@ void safe_dup2(int oldfd, int newfd)
 	if (dup2(oldfd, newfd) == -1)
 		perror(RED"[ERROR]"RESET" dup2 failed.");
 }
+
+int	safe_dup(int fd)
+{
+	int new_fd;
+
+	new_fd = dup(fd);
+	if (new_fd == -1)
+		perror(RED"[ERROR]"RESET" dup failed.");
+	return (new_fd);
+}

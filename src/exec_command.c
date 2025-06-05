@@ -1,56 +1,57 @@
 #include "../include/minishell.h"
 
-char *find_path(char **envp)
-{
-	char *env_path;
-	int i;
+// char *find_path(char **envp)
+// {
+// 	char *env_path;
+// 	int i;
 
-	env_path = NULL;
-	i = 0;
-	while (envp[i])
-	{
-		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-		{
-			env_path = envp[i] + 5;
-			break ;
-		}
-		i++;
-	}
-	return (env_path);
-}
+// 	env_path = NULL;
+// 	i = 0;
+// 	while (envp[i])
+// 	{
+// 		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
+// 		{
+// 			env_path = envp[i] + 5;
+// 			break ;
+// 		}
+// 		i++;
+// 	}
+// 	return (env_path);
+// }
 
 char *try_executable_path(char **paths, char *line)
 {
+	char *path_part;
 	char *path;
 	int i;
 
-	i = 0;
-	while (paths[i])
+	i = -1;
+	while (paths[++i])
 	{
-		path = ft_strjoin(paths[i], "/");
-		path = ft_strjoin(path, line);
-		if (access(path, X_OK) == 0)
+		path_part = ft_strjoin("/", line);
+		path = ft_strjoin(paths[i], path_part);
+		free(path_part);
+		if (!access(path, F_OK))
 			return (path);
 		free(path);
-		i++;
 	}
-	return (paths[0]);
+	return (line);
 }
 
-char *get_path(char **envp, char *line)
+char *get_path(char *line)
 {
 	char *env_path;
 	char **paths;
 	char *executable_path;
 
-	env_path = find_path(envp);
+	env_path = getenv("PATH");
 	if (!env_path)
 		return (NULL);
 	paths = ft_split(env_path, ':');
 	if (!paths)
 		return (NULL);
 	executable_path = try_executable_path(paths, line);
-	free(paths);
+	ft_free_matrix(paths);
 	return (executable_path);
 }
 
@@ -75,14 +76,20 @@ void free_args(char **args)
 void exec(char *cmd_name, char **cmd_lst, char **envp)
 {
 	char *path;
+	(void)cmd_lst;
+	(void)envp;
 
-	path = get_path(envp, cmd_name);
 	if (is_builtin(cmd_name))
 		exec_builtin(cmd_lst, envp);
 	else
+	{
+		path = get_path(cmd_name);
+		// printf("Path: %s\n", path);
 		execve(path, cmd_lst, envp);
-    perror("Error al ejecutar execvp");
-    exit(EXIT_FAILURE);
+		perror("Error al ejecutar execvp");
+    	exit(EXIT_FAILURE);
+	}
+
 }
 
 // Esta función simplemente abre un archivo y redirige la entrada estándar a su descriptor de fichero
@@ -162,15 +169,18 @@ void redir_out(char *cmd_name, char **cmd_lst, char **envp, char *stdout_file, c
     	waitpid(pid, &status, 0);
 }
 
-// void print_all(char **args)
-// {
-// 	int i = 0;
-// 	while (args[i])
-// 	{
-// 		printf("Arg %d: %s\n", i, args[i]);
-// 		i++;
-// 	}
-// }
+void print_all(char **args)
+{
+	int i = 0;
+	while (args[i])
+	{
+		if (!args[i])
+			printf("NULL\n");
+		else
+			printf("Arg %d: %s\n", i, args[i]);
+		i++;
+	}
+}
 
 void exec_line(char *line, char **envp)
 {
@@ -181,14 +191,16 @@ void exec_line(char *line, char **envp)
 	int i;
 	(void)envp;
 
-	tokenize(line, "|", cmds, MAX_CMDS);
+	num_comandos = tokenize(line, "|", cmds, MAX_CMDS);
 	// print_all(cmds);
 	i = -1;
 	while (cmds[++i])
 	{
-		num_comandos = tokenize(cmds[i], " \t\n", args, MAX_ARGS);
+		tokenize(cmds[i], " \t\n", args, MAX_ARGS);
 		// print_all(args);
+		// printf("Num comandos: %d\n", num_comandos);
 		process_redirs(args, redirs);
+		// print_all(redirs);
 
 		if (i == 0 && redirs[0])
             redir_in(redirs[0]);

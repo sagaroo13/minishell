@@ -52,6 +52,13 @@
  *																			  *
  ******************************************************************************/
 
+typedef struct s_stdfd
+{
+    int saved_stdin;
+    int saved_stdout;
+    int saved_stderr;
+}   t_stdfd;
+
 typedef enum e_open_flags
 {
 	READ,
@@ -68,7 +75,7 @@ typedef enum e_open_flags
 // EXEC COMMAND
 char	*find_path(char **envp);
 char	*try_executable_path(char **paths, char *command);
-char	*get_path(char **envp, char *command);
+char	*get_path(char *line);
 void	free_args(char **args);
 void	exec_line(char *line, char **envp);
 void    redir_in(char *file_in);
@@ -100,5 +107,6 @@ void safe_chdir(const char *path);
 void safe_close(int fd);
 void *safe_realloc(void *ptr, size_t old_size, size_t new_size);
 void safe_dup2(int oldfd, int newfd);
+int	safe_dup(int fd);
 
 #endif
