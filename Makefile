@@ -7,7 +7,6 @@ SRC_DIR = src/
 
 SRC = $(SRC_DIR)main.c				\
 		$(SRC_DIR)utils.c 			\
-		$(SRC_DIR)error.c			\
 		$(SRC_DIR)exec_command.c	\
 		$(SRC_DIR)built_in.c		\
 		$(SRC_DIR)built_in_env.c	\
