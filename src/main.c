@@ -6,9 +6,11 @@ void	minishell(char **envp)
 	// char **args;
 	char cwd[BUFFER_SIZE];
 	using_history();
-
+	
+	signals();
 	while (true)
 	{
+		line = NULL;
 		safe_getcwd(cwd, sizeof(cwd));
 		printf(CYAN""BOLD"%s$>"RESET, cwd);
 		line = readline(" ");
