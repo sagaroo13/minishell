@@ -13,6 +13,8 @@ SRC = $(SRC_DIR)main.c				\
 		$(SRC_DIR)built_in_env.c	\
 		$(SRC_DIR)exec_built_in.c	\
 		$(SRC_DIR)safe_funcs.c		\
+		$(SRC_DIR)signal_handle.c	\
+		$(SRC_DIR)termios_off.c		\
 
 
 OBJ = $(SRC:.c=.o)

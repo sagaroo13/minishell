@@ -7,7 +7,6 @@ void save_fds(t_stdfd *std)
     std->saved_stderr = safe_dup(STDERR_FILENO);
 }
 
-/* Restaura los fds originales desde el backup y cierra los backups. */
 void restore_fds(t_stdfd *std)
 {
     safe_dup2(std->saved_stdin,  STDIN_FILENO);
@@ -29,16 +28,14 @@ void minishell(char **envp)
 
     while (true)
     {
-        /* 1) Mostrar prompt */
         safe_getcwd(cwd, sizeof(cwd));
-        printf(CYAN BOLD "%s$> " RESET, cwd);
 
-        /* 2) Guardar descriptores originales */
+        prompt = ft_strjoin(cwd, "$> ");
+        line = readline(prompt);
+        free(prompt);
         save_fds(&std);
 
-        /* 3) Leer línea */
-        line = readline("");
-        if (!line)   // EOF (Ctrl+D)
+        if (!line)
         {
             write(1, "\n", 1);
             break;
@@ -51,10 +48,9 @@ void minishell(char **envp)
         }
         free(line);
 
-        /* 4) Restaurar descriptores para el prompt siguiente */
         restore_fds(&std);
     }
-
+    restore_terminal();
     clear_history();
 }
 

@@ -66,6 +66,14 @@ typedef enum e_open_flags
 	APPEND,
 }	t_open_flags;
 
+typedef enum e_mode
+{
+	MODE_SHELL,
+	MODE_CHILD,
+	MODE_HEREDOC
+}	t_mode;
+
+
 /******************************************************************************
  *  																		  *
  *                                 Functions								  *
@@ -82,6 +90,16 @@ void    redir_in(char *file_in);
 void	exec_pipe(char *cmd_name, char **cmd_lst, char **envp, char *stderr_file);
 void	redir_out(char *cmd_name, char **cmd_lst, char **envp, char *stdout_file, char *stderr_file);
 void	exec(char *cmd_name, char **cmd_lst, char **envp);
+void	sigint_handler(int sig);
+void    set_signals(int mode);
+void	sigint_handler_in_process(int sig);
+void	sigquit_handler_in_process(int sig);
+void disable_echoctl();
+void restore_terminal();
+
+
+
+
 
 // BUILT INS
 int	exec_echo(char **args, char **envp);
