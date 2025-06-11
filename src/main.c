@@ -21,6 +21,7 @@ void restore_fds(t_stdfd *std)
 void minishell(char **envp)
 {
     char	*line;
+    char    *prompt;
     char	cwd[BUFFER_SIZE];
     t_stdfd	std;
 
