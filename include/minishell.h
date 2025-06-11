@@ -98,9 +98,6 @@ void disable_echoctl();
 void restore_terminal();
 
 
-
-
-
 // BUILT INS
 int	exec_echo(char **args, char **envp);
 int	echo_var(char **argv, char **envp);
