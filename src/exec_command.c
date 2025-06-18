@@ -19,11 +19,11 @@
 // 	return (env_path);
 // }
 
-char *try_executable_path(char **paths, char *line)
+char	*try_executable_path(char **paths, char *line)
 {
-	char *path_part;
-	char *path;
-	int i;
+	char	*path_part;
+	char	*path;
+	int		i;
 
 	i = -1;
 	while (paths[++i])
@@ -38,11 +38,11 @@ char *try_executable_path(char **paths, char *line)
 	return (line);
 }
 
-char *get_path(char *line)
+char	*get_path(char *line)
 {
-	char *env_path;
-	char **paths;
-	char *executable_path;
+	char	*env_path;
+	char	**paths;
+	char	*executable_path;
 
 	env_path = getenv("PATH");
 	if (!env_path)
@@ -55,9 +55,11 @@ char *get_path(char *line)
 	return (executable_path);
 }
 
-void free_args(char **args)
+void	free_args(char **args)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	while (args[i])
 		free(args[i++]);
 	free(args);
@@ -73,12 +75,12 @@ void free_args(char **args)
 // 	}
 // }
 
-void exec(char *cmd_name, char **cmd_lst, char **envp)
+void	exec(char *cmd_name, char **cmd_lst, char **envp)
 {
-	char *path;
+	char	*path;
+
 	(void)cmd_lst;
 	(void)envp;
-
 	if (is_builtin(cmd_name))
 		exec_builtin(cmd_lst, envp);
 	else
@@ -87,30 +89,29 @@ void exec(char *cmd_name, char **cmd_lst, char **envp)
 		// printf("Path: %s\n", path);
 		execve(path, cmd_lst, envp);
 		perror("Error al ejecutar execvp");
-    	exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
-
 }
 
 // Esta función simplemente abre un archivo y redirige la entrada estándar a su descriptor de fichero
-void    redir_in(char *file_in)
+void	redir_in(char *file_in)
 {
-    int fd_in;
+	int	fd_in;
 
-    fd_in = safe_open(file_in, READ);
-    safe_dup2(fd_in, STDIN_FILENO);
-    safe_close(fd_in);
+	fd_in = safe_open(file_in, READ);
+	safe_dup2(fd_in, STDIN_FILENO);
+	safe_close(fd_in);
 }
-
 
 // Esta función trata de abrir de ejecutar un comando en un proceso hijo enlazando la entrada y salida de este por un pipe
 // Tiene en cuenta tanto la posibilidad de redirección de error como ejecución en modo background
-void	exec_pipe(char *cmd_name, char **cmd_lst, char **envp, char *stderr_file)
+void	exec_pipe(char *cmd_name, char **cmd_lst, char **envp,
+		char *stderr_file)
 {
-	int	pipe_fd[2];
-	pid_t pid;
-	int fd_err;
-	int status;
+	int		pipe_fd[2];
+	pid_t	pid;
+	int		fd_err;
+	int		status;
 
 	if (pipe(pipe_fd) == -1)
 		exit(EXIT_FAILURE);
@@ -120,58 +121,61 @@ void	exec_pipe(char *cmd_name, char **cmd_lst, char **envp, char *stderr_file)
 	{
 		safe_close(pipe_fd[0]);
 		safe_dup2(pipe_fd[1], STDOUT_FILENO);
-        safe_close(pipe_fd[1]);
-        if (stderr_file)
-        {
-            fd_err = safe_open(stderr_file, WRITE);
-            safe_dup2(fd_err, STDERR_FILENO);
-            safe_close(fd_err);
-        }
+		safe_close(pipe_fd[1]);
+		if (stderr_file)
+		{
+			fd_err = safe_open(stderr_file, WRITE);
+			safe_dup2(fd_err, STDERR_FILENO);
+			safe_close(fd_err);
+		}
 		exec(cmd_name, cmd_lst, envp);
 	}
 	else
 	{
 		safe_close(pipe_fd[1]);
 		safe_dup2(pipe_fd[0], STDIN_FILENO);
-        safe_close(pipe_fd[0]);
+		safe_close(pipe_fd[0]);
 		waitpid(pid, &status, 0);
 	}
 }
 
 // Exec_out ejecuta el último comando de la línea en un proceso hijo y redirige su salida según se le indique (fd_out o STDOUT)
 // Igual que en la función anterior tiene en cuenta que la ejecución pueda ser en background o que se redirija el error a un archivo
-void redir_out(char *cmd_name, char **cmd_lst, char **envp, char *stdout_file, char *stderr_file)
+void	redir_out(char *cmd_name, char **cmd_lst, char **envp,
+		char *stdout_file, char *stderr_file)
 {
-    pid_t pid;
-	int fd_out;
-	int fd_err;
-	int status;
+	pid_t	pid;
+	int		fd_out;
+	int		fd_err;
+	int		status;
 
-    if ((pid = fork()) == -1)
-        exit(EXIT_FAILURE);
-    if (!pid)
-    {
-        if (stdout_file)
-        {
-            fd_out = safe_open(stdout_file, WRITE);
-            safe_dup2(fd_out, STDOUT_FILENO);
+	if ((pid = fork()) == -1)
+		exit(EXIT_FAILURE);
+	if (!pid)
+	{
+		if (stdout_file)
+		{
+			fd_out = safe_open(stdout_file, WRITE);
+			safe_dup2(fd_out, STDOUT_FILENO);
 			safe_close(fd_out);
-        }
-        if (stderr_file)
-        {
-            fd_err = safe_open(stderr_file, WRITE);
+		}
+		if (stderr_file)
+		{
+			fd_err = safe_open(stderr_file, WRITE);
 			safe_dup2(fd_err, STDERR_FILENO);
 			safe_close(fd_err);
-        }
-        exec(cmd_name, cmd_lst, envp);
-    }
-    else
-    	waitpid(pid, &status, 0);
+		}
+		exec(cmd_name, cmd_lst, envp);
+	}
+	else
+		waitpid(pid, &status, 0);
 }
 
-void print_all(char **args)
+void	print_all(char **args)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	while (args[i])
 	{
 		if (!args[i])
@@ -182,15 +186,15 @@ void print_all(char **args)
 	}
 }
 
-void exec_line(char *line, char **envp)
+void	exec_line(char *line, char **envp)
 {
-	char *cmds[MAX_CMDS];
-	char *args[MAX_ARGS];
-	char *redirs[MAX_REDIRS];
-	int num_comandos;
-	int i;
-	(void)envp;
+	char	*cmds[MAX_CMDS];
+	char	*args[MAX_ARGS];
+	char	*redirs[MAX_REDIRS];
+	int		num_comandos;
+	int		i;
 
+	(void)envp;
 	num_comandos = tokenize(line, "|", cmds, MAX_CMDS);
 	// print_all(cmds);
 	i = -1;
@@ -201,12 +205,36 @@ void exec_line(char *line, char **envp)
 		// printf("Num comandos: %d\n", num_comandos);
 		process_redirs(args, redirs);
 		// print_all(redirs);
-
 		if (i == 0 && redirs[0])
-            redir_in(redirs[0]);
-        if (i != num_comandos - 1)
-            exec_pipe(args[0], args, envp, redirs[2]);
-        else
-            redir_out(args[0], args, envp, redirs[1], redirs[2]);
+			redir_in(redirs[0]);
+		if (i != num_comandos - 1)
+			exec_pipe(args[0], args, envp, redirs[2]);
+		else
+			redir_out(args[0], args, envp, redirs[1], redirs[2]);
 	}
 }
+
+// void	exec_line(char *line)
+// {
+// 	t_command_line	cmd_line;
+// 	int		num_comandos;
+// 	int		i;
+
+// 	parse_line(&cmd_line, line);
+// 	num_comandos = tokenize(line, "|", cmds, MAX_CMDS);
+// 	i = -1;
+// 	while (cmds[++i])
+// 	{
+// 		tokenize(cmds[i], " \t\n", args, MAX_ARGS);
+// 		// print_all(args);
+// 		// printf("Num comandos: %d\n", num_comandos);
+// 		process_redirs(args, redirs);
+// 		// print_all(redirs);
+// 		if (i == 0 && redirs[0])
+// 			redir_in(redirs[0]);
+// 		if (i != num_comandos - 1)
+// 			exec_pipe(args[0], args, envp, redirs[2]);
+// 		else
+// 			redir_out(args[0], args, envp, redirs[1], redirs[2]);
+// 	}
+// }
