@@ -74,17 +74,14 @@ void exec(char *cmd_name, char **cmd_lst, char **envp)
 
 }
 
-void exec_line(char *line, char **envp)
+void	exec_line(char *line)
 {
-	char *cmds[MAX_CMDS];
-	char *args[MAX_ARGS];
-	char *redirs[MAX_REDIRS];
-	int num_comandos;
-	int i;
-	(void)envp;
+	t_command_line	cmd_line;
+	int		num_comandos;
+	int		i;
 
+	parse_line(&cmd_line, line);
 	num_comandos = tokenize(line, "|", cmds, MAX_CMDS);
-	// print_all(cmds);
 	i = -1;
 	while (cmds[++i])
 	{
@@ -94,10 +91,10 @@ void exec_line(char *line, char **envp)
 		process_redirs(args, redirs);
 		// print_all(redirs);
 		if (i == 0 && redirs[0])
-            redir_in(redirs[0]);
-        if (i != num_comandos - 1)
-            exec_pipe(args[0], args, envp, redirs[2]);
-        else
-            redir_out(args[0], args, envp, redirs[1], redirs[2]);
+			redir_in(redirs[0]);
+		if (i != num_comandos - 1)
+			exec_pipe(args[0], args, envp, redirs[2]);
+		else
+			redir_out(args[0], args, envp, redirs[1], redirs[2]);
 	}
 }

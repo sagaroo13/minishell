@@ -52,12 +52,22 @@
  *																			  *
  ******************************************************************************/
 
-typedef struct s_stdfd
+typedef struct s_command
 {
-    int saved_stdin;
-    int saved_stdout;
-    int saved_stderr;
-}   t_stdfd;
+	char	**args; // Array of command arguments
+	char	*stdin_file;
+	char	*stdout_file;
+	char	*stderr_file;
+	char	*append_file;
+	char	*heredoc_delim; // File for heredoc input
+
+} t_command;
+
+typedef struct s_command_line
+{
+	char *line;
+	t_command *cmds;
+} t_command_line;
 
 typedef enum e_open_flags
 {
@@ -83,7 +93,8 @@ typedef enum e_mode
 // EXEC
 char	*find_path(char **envp);
 char	*try_executable_path(char **paths, char *command);
-char	*get_path(char *line);
+char	*get_path(char **envp, char *command);
+void	free_args(char **args);
 void	exec_line(char *line, char **envp);
 void	exec(char *cmd_name, char **cmd_lst, char **envp);
 
@@ -128,7 +139,5 @@ int		safe_dup(int fd);
 void	banner(void);
 void	process_redirs(char **args, char **redir);
 int		tokenize(char *linea, char *delim, char **tokens, int max_tokens);
-void	print_all(char **args);
-void	free_args(char **args);
 
 #endif
