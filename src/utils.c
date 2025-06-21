@@ -100,6 +100,27 @@ void banner(void)
     RESET);
 }
 
+void print_all(char **args)
+{
+	int i = 0;
+	while (args[i])
+	{
+		if (!args[i])
+			printf("NULL\n");
+		else
+			printf("Arg %d: %s\n", i, args[i]);
+		i++;
+	}
+}
+
+void free_args(char **args)
+{
+	int i = 0;
+	while (args[i])
+		free(args[i++]);
+	free(args);
+}
+
 // int main(void)
 // {
 //     char line[] = "echo \"Hello, World!\" '42 Madrid' minishell";

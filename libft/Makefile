@@ -38,12 +38,8 @@ SRC = ft_isalpha.c	\
 	ft_putchar_fd.c	\
 	ft_putnbr_fd.c	\
 	ft_putstr_fd.c	\
-<<<<<<< HEAD
 	ft_putendl_fd.c	\
 	ft_free_matrix.c
-=======
-	ft_putendl_fd.c
->>>>>>> origin/dediaz-f
 
 # REGLA PARA COMPILAR OBJETOS
 OBJ = $(SRC:.c=.o)

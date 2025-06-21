@@ -40,4 +40,4 @@ void	back_slash(int sig)
 {
 	g_ret_number = 131;
 	printf("Quit (core dumped)\n");
-	
+}
