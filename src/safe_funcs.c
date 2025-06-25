@@ -48,7 +48,7 @@ void safe_close(int fd)
 }
 int safe_open(const char *path, t_open_flags flags)
 {
-	int fd;
+	int fd = 0;
 
 	if (flags == READ)
 		fd = open(path, O_RDONLY);
