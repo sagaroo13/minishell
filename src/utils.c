@@ -105,10 +105,7 @@ void print_all(char **args)
 	int i = 0;
 	while (args[i])
 	{
-		if (!args[i])
-			printf("NULL\n");
-		else
-			printf("Arg %d: %s\n", i, args[i]);
+		printf("Arg %d: %s\n", i, args[i]);
 		i++;
 	}
 }

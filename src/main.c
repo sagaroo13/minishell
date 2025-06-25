@@ -20,12 +20,14 @@ void restore_fds(t_stdfd *std)
 
 void minishell(char **envp)
 {
-    char	*line;
-    char    *prompt;
-    char	cwd[BUFFER_SIZE];
-    t_stdfd	std;
+    char *line;
+    char *prompt;
+    char cwd[BUFFER_SIZE];
 
+    disable_echoctl();  // Aplicar configuración antes de iniciar el shell
+    set_signals(MODE_SHELL);
     using_history();
+    (void)envp;  // Evitar warning por envp no usado
 
     while (true)
     {
@@ -34,24 +36,21 @@ void minishell(char **envp)
         prompt = ft_strjoin(cwd, "$> ");
         line = readline(prompt);
         free(prompt);
-        save_fds(&std);
 
         if (!line)
         {
             write(1, "\n", 1);
             break;
         }
-
-        if (*line)   // línea no vacía
+        if (*line)
         {
             add_history(line);
             exec_line(line, envp);
         }
         free(line);
-
-        restore_fds(&std);
     }
-    restore_terminal();
+
+    restore_terminal();  // Restaurar configuración al salir
     clear_history();
 }
 

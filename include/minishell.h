@@ -60,14 +60,23 @@ typedef struct s_command
 	char	*stderr_file;
 	char	*append_file;
 	char	*heredoc_delim; // File for heredoc input
+	bool	builtin; // Flag for background execution
 
 } t_command;
 
 typedef struct s_command_line
 {
-	char *line;
-	t_command *cmds;
+	char		*line;
+	int			n_cmds;
+	t_command	*cmds;
 } t_command_line;
+
+typedef struct s_stdfd
+{
+	int saved_stdin;
+	int saved_stdout;
+	int saved_stderr;
+} t_stdfd;
 
 typedef enum e_open_flags
 {
@@ -93,10 +102,13 @@ typedef enum e_mode
 // EXEC
 char	*find_path(char **envp);
 char	*try_executable_path(char **paths, char *command);
-char	*get_path(char **envp, char *command);
+char	*get_path(char *line);
 void	free_args(char **args);
 void	exec_line(char *line, char **envp);
 void	exec(char *cmd_name, char **cmd_lst, char **envp);
+
+// PARSE
+void	parse_line(t_command_line *cmd_line, char *line);
 
 // SIGNALS
 void	sigint_handler(int sig);
@@ -139,5 +151,6 @@ int		safe_dup(int fd);
 void	banner(void);
 void	process_redirs(char **args, char **redir);
 int		tokenize(char *linea, char *delim, char **tokens, int max_tokens);
+void	print_all(char **args);
 
 #endif
