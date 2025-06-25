@@ -56,6 +56,11 @@ int safe_open(const char *path, t_open_flags flags)
 		fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	else if (flags == APPEND)
 		fd = open(path, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	else
+	{
+		perror(RED"[ERROR]"RESET" Invalid open flags.");
+		return (-1);
+	}
 	if (fd == -1)
 		perror(RED"[ERROR]"RESET" open failed.");
 	return (fd);

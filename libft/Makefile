@@ -21,6 +21,7 @@ SRC = ft_isalpha.c	\
 	ft_tolower.c	\
 	ft_strchr.c		\
 	ft_strrchr.c	\
+	ft_strcmp.c 	\
 	ft_strncmp.c	\
 	ft_memchr.c		\
 	ft_memcmp.c		\
@@ -38,7 +39,12 @@ SRC = ft_isalpha.c	\
 	ft_putchar_fd.c	\
 	ft_putnbr_fd.c	\
 	ft_putstr_fd.c	\
-	ft_putendl_fd.c
+	ft_putendl_fd.c	\
+	ft_free_matrix.c\
+	ft_occurrence.c	\
+	ft_matrix_strrchr.c	\
+	ft_strchr_charset.c	\
+	ft_matrix_len.c \
 
 # REGLA PARA COMPILAR OBJETOS
 OBJ = $(SRC:.c=.o)

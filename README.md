@@ -10,7 +10,6 @@ debbie:
 señales
 
 juan:
-hacer funcional el programa
 heredoc
 
 ambos:
