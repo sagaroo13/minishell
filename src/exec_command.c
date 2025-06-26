@@ -29,7 +29,7 @@ char *try_executable_path(char **paths, char *line)
 	{
 		path = ft_strjoin(paths[i], "/");
 		path = ft_strjoin(path, line);
-		if (access(path, X_OK) == 0)
+		if (access(path, F_OK) == 0)
 			return (path);
 		free(path);
 		i++;
