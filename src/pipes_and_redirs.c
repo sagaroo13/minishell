@@ -26,6 +26,7 @@ void	exec_pipe(char *cmd_name, char **cmd_lst, char **envp, char *stderr_file)
 		exit(EXIT_FAILURE);
 	if (!pid)
 	{
+        set_signals(MODE_CHILD); 
 		safe_close(pipe_fd[0]);
 		safe_dup2(pipe_fd[1], STDOUT_FILENO);
         safe_close(pipe_fd[1]);
@@ -59,6 +60,7 @@ void redir_out(char *cmd_name, char **cmd_lst, char **envp, char *stdout_file, c
         exit(EXIT_FAILURE);
     if (!pid)
     {
+        set_signals(MODE_CHILD);
         if (stdout_file)
         {
             fd_out = safe_open(stdout_file, WRITE);

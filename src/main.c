@@ -28,15 +28,12 @@ void minishell(char **envp)
     set_signals(MODE_SHELL);
     using_history();
     (void)envp;  // Evitar warning por envp no usado
-
     while (true)
     {
         safe_getcwd(cwd, sizeof(cwd));
-
         prompt = ft_strjoin(cwd, "$> ");
         line = readline(prompt);
         free(prompt);
-
         if (!line)
         {
             write(1, "\n", 1);
@@ -49,7 +46,6 @@ void minishell(char **envp)
         }
         free(line);
     }
-
     restore_terminal();  // Restaurar configuración al salir
     clear_history();
 }

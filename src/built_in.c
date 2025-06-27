@@ -7,24 +7,24 @@ int	exec_echo(char **args, char **envp)
 
 	i = 1;
 	newline = 1;
-	if (args[1] && ft_strncmp(args[1], "-n", 3) == 0)
+	if (args[1] && strcmp(args[1], "-n") == 0)
 	{
 		newline = 0;
 		i = 2;
 	}
 	while (args[i])
 	{
-		if (echo_var(args, envp))
+		char *arg = args[i];
+		if (arg[0] == '$' && arg[1])
 		{
-			write(1, "\n", 1);
-			return 1;
+			char *value = get_env_value(arg + 1, envp);
+			if (value)
+				write(1, value, strlen(value));
 		}
 		else
-		{
-			write(1, args[i], ft_strlen(args[i]));
+			write(1, arg, strlen(arg));
 		if (args[i + 1])
 			write(1, " ", 1);
-		}
 		i++;
 	}
 	if (newline)

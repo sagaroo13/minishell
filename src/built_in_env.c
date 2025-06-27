@@ -61,34 +61,17 @@ int env_export(char **argv, char **envp)
 	return (1);
 }
 
-int	echo_var(char **argv, char **envp)
+char *get_env_value(const char *key, char **envp)
 {
-	int i;
-	int j;
-	char *value;
+	int i = 0;
+	size_t key_len = strlen(key);
 
-	i = 0;
-	j = 0;
-	while (argv[i])
+	while (envp[i])
 	{
-		if (argv[i][0] == '$')
-		{
-			j = 0;
-			while (envp[j])
-			{
-				if (ft_strncmp(&argv[i][1], envp[j], ft_strlen(&argv[i][1])) == 0)
-				{
-					value = ft_strchr(envp[j], '=');
-					if (value)
-						write(1, value + 1, ft_strlen(value + 1));
-					return (1);
-					write(1, "\n", 1);
-				}
-				j++;
-			}
-			return (1);
-		}
+		// Verifica coincidencia exacta con nombre + '='
+		if (strncmp(envp[i], key, key_len) == 0 && envp[i][key_len] == '=')
+			return (envp[i] + key_len + 1); // devuelve el valor (después del '=')
 		i++;
 	}
-	return (0);
+	return (NULL);
 }

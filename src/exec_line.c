@@ -72,36 +72,35 @@ void exec(char *cmd_name, char **cmd_lst, char **envp)
 
 }
 
-// void exec_line(char *line, char **envp)
-// {
-// 	char *cmds[MAX_CMDS];
-// 	char *args[MAX_ARGS];
-// 	char *redirs[MAX_REDIRS];
-// 	int num_comandos;
-// 	int i;
+ void exec_line(char *line, char **envp)
+ {
+ 	char *cmds[MAX_CMDS];
+	char *args[MAX_ARGS];
+	char *redirs[MAX_REDIRS];
+	int num_comandos;
+	int i;
+ 	num_comandos = tokenize(line, "|", cmds, MAX_CMDS); 	
+	print_all(cmds);
+ 	i = -1;
+	while (cmds[++i])
+ 	{
+ 		tokenize(cmds[i], " \t\n", args, MAX_ARGS);
+ 		// print_all(args);
+ 		process_redirs(args, redirs);
 
-// 	num_comandos = tokenize(line, "|", cmds, MAX_CMDS);
-// 	// print_all(cmds);
-// 	i = -1;
-// 	while (cmds[++i])
-// 	{
-// 		tokenize(cmds[i], " \t\n", args, MAX_ARGS);
-// 		// print_all(args);
-// 		process_redirs(args, redirs);
+ 		if (i == 0 && redirs[0])
+		redir_in(redirs[0]);
+         if (i != num_comandos - 1)
+             exec_pipe(args[0], args, envp, redirs[2]);
+        else
+            redir_out(args[0], args, envp, redirs[1], redirs[2]);
+	}
+}
 
-// 		if (i == 0 && redirs[0])
-//             redir_in(redirs[0]);
-//         if (i != num_comandos - 1)
-//             exec_pipe(args[0], args, envp, redirs[2]);
-//         else
-//             redir_out(args[0], args, envp, redirs[1], redirs[2]);
-// 	}
-// }
-
-void exec_line(char *line, char **envp)
+/*  void exec_line(char *line, char **envp)
 {
 	t_command_line	cmd_line;
 
 	(void)envp;  // Evitar warning por envp no usado
 	parse_line(&cmd_line, line);
-}
+} */ 

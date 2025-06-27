@@ -132,6 +132,7 @@ int exec_cd(char **args);
 int	exec_exit(void);
 int env_unset(char **argv, char **envp);
 int env_export(char **argv, char **envp);
+char *get_env_value(const char *key, char **envp);
 
 // EXEC BUILT INS
 int	is_builtin(char *command);
