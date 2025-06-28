@@ -1,3 +1,8 @@
+# Colores
+GREEN = \033[0;32m
+RED = \033[0;31m
+RESET = \033[0m
+
 CC = cc
 FLAGS = -Werror -Wall -Wextra
 LDFLAGS = -lreadline -lhistory
@@ -18,35 +23,34 @@ SRC = $(SRC_DIR)main.c				\
 		$(SRC_DIR)signal_handle.c	\
 		$(SRC_DIR)termios_off.c		\
 
-
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
 
 libft/libft.a:
-	@echo "Compiling libft"
-	@$(MAKE) -C libft
-	@echo "Done"
+	@echo -e "$(GREEN)Compiling libft...$(RESET)"
+	@$(MAKE) -C libft > /dev/null
+	@echo -e "$(GREEN)Libft compiled successfully!$(RESET)"
 
 $(NAME): $(OBJ) libft/libft.a
-	@echo "Compiling $(NAME)"
+	@echo -e "$(GREEN)Compiling $(NAME)...$(RESET)"
 	@$(CC) $(FLAGS) $(OBJ) libft/libft.a -o $(NAME) $(LDFLAGS)
-	@echo "Done"
+	@echo -e "$(GREEN)$(NAME) compiled successfully!$(RESET)"
 
 %.o: %.c
-	@$(CC) $(FLAGS) -c $< -o $@
+	@$(CC) $(FLAGS) -c $< -o $@ > /dev/null
 
 clean:
-	@echo "Cleaning objects"
+	@echo -e "$(RED)Cleaning objects...$(RESET)"
 	@$(RM) $(OBJ)
-	@$(MAKE) clean -C libft
-	@echo "Done"
+	@$(MAKE) clean -C libft > /dev/null
+	@echo -e "$(RED)Objects cleaned!$(RESET)"
 
 fclean:
-	@echo "Cleaning executables"
+	@echo -e "$(RED)Cleaning executables and objects...$(RESET)"
 	@$(RM) $(OBJ) $(NAME)
-	@$(MAKE) fclean -C libft
-	@echo "Done"
+	@$(MAKE) fclean -C libft > /dev/null
+	@echo -e "$(RED)Executables and objects cleaned!$(RESET)"
 
 re: fclean all
 

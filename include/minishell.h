@@ -137,6 +137,7 @@ char *get_env_value(const char *key, char **envp);
 // EXEC BUILT INS
 int	is_builtin(char *command);
 int	exec_builtin(char **args, char **envp);
+/* char *get_path(char **envp, char *line); */
 
 // SAFE FUNCTIONS
 void	*safe_malloc(size_t size, bool calloc_flag);

@@ -46,6 +46,7 @@ void safe_close(int fd)
 	if (close(fd) == -1)
 		perror(RED"[ERROR]"RESET" close failed.");
 }
+
 int safe_open(const char *path, t_open_flags flags)
 {
 	int fd = 0;
@@ -65,6 +66,7 @@ int safe_open(const char *path, t_open_flags flags)
 		perror(RED"[ERROR]"RESET" open failed.");
 	return (fd);
 }
+
 void safe_dup2(int oldfd, int newfd)
 {
 	if (dup2(oldfd, newfd) == -1)
