@@ -52,6 +52,17 @@
  *																			  *
  ******************************************************************************/
 
+typedef struct handle_parsing
+{
+	char **argv;
+	char *buffer;
+	char *cmd_str;
+	bool in_sq;
+	bool in_dq;
+	int argc;
+	int buf_len;
+} t_handle_parsing;
+
 typedef struct s_command
 {
 	char	**args; // Array of command arguments
@@ -61,13 +72,13 @@ typedef struct s_command
 	char	*append_file;
 	char	*heredoc_delim; // File for heredoc input
 	bool	builtin; // Flag for background execution
-
 } t_command;
 
 typedef struct s_command_line
 {
 	char		*line;
 	int			n_cmds;
+	bool		execute;
 	t_command	*cmds;
 } t_command_line;
 

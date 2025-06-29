@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../include/minishell.h"
 
 // Simulate the last command exit status
 int g_last_status = 42;
@@ -34,23 +35,13 @@ char *expand_var(const char *token)
 
 int main(void)
 {
-    // Test cases
-    const char *tests[] = {
-        "$HOME",
-        "$PATH",
-        "$UNDEFINED_VAR",
-        "$?",
-        "$",
-        "normal_text",
-        NULL
-    };
+   char *line = "echo 'Hello, World!' '$? 42 Madrid' 'minishell' e";
+   char **matrix = ft_split(line, '\'');
 
-    for (int i = 0; tests[i]; i++)
-    {
-        char *expanded = expand_var(tests[i]);
-        printf("Token: %-16s -> Expanded: \"%s\"\n", tests[i], expanded);
-        free(expanded);
-    }
-
-    return 0;
+   for (int i = 0; matrix[i]; i++)
+   {
+       printf("Expanded token: %s\n", matrix[i]);
+   }
+   ft_free_matrix(matrix);
+   return 0;
 }

@@ -12,6 +12,30 @@
 
 #include "../include/minishell.h"
 
+void search_unmatched_quotes(t_command_line *cmd_line, char *str)
+{
+	int i;
+	int single_quote;
+	int double_quote;
+
+	i = 0;
+	single_quote = 0;
+	double_quote = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'')
+			single_quote++;
+		else if (str[i] == '\"')
+			double_quote++;
+		i++;
+	}
+	if (single_quote % 2 || double_quote % 2)
+	{
+		perror("Syntax error: Unmatched quotes");
+		cmd_line->execute = false;
+	}
+}
+
 int is_file(t_command *cmd, char *str)
 {
 	if (!str || !*str)
@@ -19,6 +43,17 @@ int is_file(t_command *cmd, char *str)
 	if (!ft_strcmp(str, cmd->stdin_file) || !ft_strcmp(str, cmd->stdout_file) ||
 		!ft_strcmp(str, cmd->stderr_file) || !ft_strcmp(str, cmd->append_file) ||
 		!ft_strcmp(str, cmd->heredoc_delim))
+		return (true);
+	return (false);
+}
+
+int is_meta(char *str)
+{
+	if (!str || !*str)
+		return (false);
+	if (ft_strstr(str, ">") || ft_strstr(str, "<") ||
+		ft_strstr(str, ">>") || ft_strstr(str, "<<") ||
+		ft_strstr(str, "2>") || ft_strstr(str, "$")) 
 		return (true);
 	return (false);
 }
@@ -74,10 +109,10 @@ char	*get_redirection(char **cmd_parts, char *redirection, int n)
 		return (NULL);
 	if ((int)ft_strlen(cmd_parts[index]) > n)
 		file_name = ft_strdup(cmd_parts[index] + n);
-	else if (cmd_parts[index + 1])
+	else if (!is_meta(cmd_parts[index + 1]))
 		file_name = ft_strdup(cmd_parts[index + 1]);
 	else
-		perror("Error: No se especificó un archivo para la redirección");
+		perror("Syntax error: No se especificó un archivo para la redirección");
 	return (file_name);
 }
 
@@ -94,8 +129,76 @@ void	get_redirections(t_command *cmd, char *cmd_str)
 	ft_free_matrix(cmd_parts);
 }
 
+void	init_handler(t_handle_parsing *handler, char *cmd_str)
+{
+	handler->buffer = safe_malloc(sizeof(char) * (ft_strlen(cmd_str) + 1), false);
+	handler->cmd_str = ft_strdup(cmd_str);
+	handler->in_sq = false;
+	handler->in_dq = false;
+	handler->buf_len = 0;
+	handler->toks.ptr = NULL;
+	handler->toks.len = 0;
+	handler->tokbuf.data = NULL;
+	handler->tokbuf.len = 0;
+}
+
+char **handle_meta(char *cmd_str)
+{
+	t_handle_parsing handler;
+
+	init_handler(&handler);
+
+	buffer = safe_malloc(sizeof(char) * (ft_strlen(s) + 1), false);
+	str_cpy = ft_strdup(cmd_str);
+	in_sq = false;
+	in_dq = false;
+	buf_len = 0;
+    while (*str_cpy)
+	{
+        if (!in_dq && !in_sq && *str_cpy == ' ')
+		{
+            if (buf_len > 0) {
+                vec_push_ptr(&toks, strdup(tokbuf.data));
+                vec_clear(&tokbuf);
+            }
+        }
+        else if (!in_dq && *s == '\'') {
+            in_sq = !in_sq;
+        }
+        else if (!in_sq && *s == '"' ) {
+            in_dq = !in_dq;
+        }
+        else if (in_sq) {
+            vec_push(&tokbuf, *s);
+        }
+        else if (in_dq && *s == '\\' && strchr("\"\\$", s[1])) {
+            s++;
+            vec_push(&tokbuf, *s);
+        }
+        else if (in_dq && *s == '$') {
+            // extract var, lookup, append to tokbuf
+        }
+        else {
+            vec_push(&tokbuf, *s);
+        }
+    }
+    if (in_sq || in_dq) {
+        fprintf(stderr, "Syntax error: unmatched quote\n");
+        // cleanup
+        return NULL;
+    }
+    if (tokbuf.len)
+        vec_push_ptr(&toks, strdup(tokbuf.data));
+    vec_push_ptr(&toks, NULL);
+    return toks.ptr;
+}
+
+
 void	get_cmd_info(t_command *cmd, char *cmd_str)
 {
+	char **cmd_parts;
+
+	cmd_parts = handle_meta(cmd_str);
 	get_redirections(cmd, cmd_str);
 	cmd->args = get_arguments(cmd, cmd_str);
 	if (is_builtin(cmd->args[0]))
@@ -105,15 +208,18 @@ void	get_cmd_info(t_command *cmd, char *cmd_str)
 }
 
 
-void	get_cmds_info(t_command **cmds, char *line)
+void	get_cmds_info(t_command_line *cmd_line, char *line)
 {
 	char **line_parts;
 	int i;
 
+	search_unmatched_quotes(cmd_line, line);
+	if (!cmd_line->execute)
+		return ;
 	line_parts = ft_split(line, '|');
 	i = -1;
 	while (line_parts[++i])
-		get_cmd_info(&(*cmds)[i], line_parts[i]);
+		get_cmd_info(&cmd_line->cmds[i], line_parts[i]);
 	ft_free_matrix(line_parts);
 }
 
@@ -160,6 +266,7 @@ void	free_cmd_line(t_command_line *cmd_line)
 		free(cmd_line->cmds[i].stderr_file);
 		free(cmd_line->cmds[i].append_file);
 		free(cmd_line->cmds[i].heredoc_delim);
+
 	}
 	free(cmd_line->line);
 	free(cmd_line->cmds);
@@ -173,11 +280,13 @@ void	parse_line(t_command_line *cmd_line, char *line)
     t_command *cmds;
 
 	cmd_line->n_cmds = (ft_occurrence(line, '|') + 1);
-    cmds = safe_malloc(sizeof(t_command) * (cmd_line->n_cmds), false);
+    cmds = safe_malloc(sizeof(t_command) * (cmd_line->n_cmds), true);
 	cmd_line->cmds = cmds;
 	cmd_line->line = ft_strdup(line);
-	get_cmds_info(&cmds, line);
-	print_info(cmd_line);
+	cmd_line->execute = true;
+	get_cmds_info(cmd_line, line);
+	if (cmd_line->execute)
+		print_info(cmd_line);
 	free_cmd_line(cmd_line);
 }
 
