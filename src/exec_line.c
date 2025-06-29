@@ -19,6 +19,17 @@
 // 	return (env_path);
 // }
 
+void redir_out_builtin(char *file, int stdfd)
+{
+	int fd = open(file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (fd < 0)
+	{
+		perror("Redir (builtin)");
+		return;
+	}
+	dup2(fd, stdfd);
+	close(fd);
+}
 char *try_executable_path(char **paths, char *line)
 {
 	char *path_part;
@@ -72,28 +83,43 @@ void exec(char *cmd_name, char **cmd_lst, char **envp)
 
 }
 
- void exec_line(char *line, char **envp)
- {
- 	char *cmds[MAX_CMDS];
+void exec_line(char *line, char **envp)
+{
+	char *cmds[MAX_CMDS];
 	char *args[MAX_ARGS];
 	char *redirs[MAX_REDIRS];
 	int num_comandos;
 	int i;
- 	num_comandos = tokenize(line, "|", cmds, MAX_CMDS); 	
-	print_all(cmds);
- 	i = -1;
-	while (cmds[++i])
- 	{
- 		tokenize(cmds[i], " \t\n", args, MAX_ARGS);
- 		// print_all(args);
- 		process_redirs(args, redirs);
 
- 		if (i == 0 && redirs[0])
-		redir_in(redirs[0]);
-         if (i != num_comandos - 1)
-             exec_pipe(args[0], args, envp, redirs[2]);
-        else
-            redir_out(args[0], args, envp, redirs[1], redirs[2]);
+	num_comandos = tokenize(line, "|", cmds, MAX_CMDS);
+	if (num_comandos == 0)
+		return;
+
+	if (num_comandos == 1) // SOLO UN COMANDO
+	{
+		tokenize(cmds[0], " \t\n", args, MAX_ARGS);
+		process_redirs(args, redirs);
+
+		if (is_builtin(args[0]))
+		{
+			if (redirs[0]) redir_in(redirs[0]);       // < input
+			if (redirs[1]) redir_out_builtin(redirs[1], STDOUT_FILENO);
+			if (redirs[2]) redir_out_builtin(redirs[2], STDERR_FILENO);
+			exec_builtin(args, envp);
+			return;
+		}
+	}
+	// Múltiples comandos, o no es builtin
+	for (i = 0; cmds[i]; i++)
+	{
+		tokenize(cmds[i], " \t\n", args, MAX_ARGS);
+		process_redirs(args, redirs);
+		if (i == 0 && redirs[0])
+			redir_in(redirs[0]);
+		if (i != num_comandos - 1)
+			exec_pipe(args[0], args, envp, redirs[2]);
+		else
+			redir_out(args[0], args, envp, redirs[1], redirs[2]);
 	}
 }
 
