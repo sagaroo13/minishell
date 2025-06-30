@@ -66,6 +66,57 @@ char *get_path(char *line)
 	return (executable_path);
 }
 
+void exec_line(char *line, char **envp)
+{
+    char *cmds[MAX_CMDS];
+    char *args[MAX_ARGS];
+    char *redirs[MAX_REDIRS];
+    int num_cmds;
+    int i;
+
+    num_cmds = tokenize(line, "|", cmds, MAX_CMDS);
+    print_all(cmds);
+
+    // CASO: Solo un comando
+    if (num_cmds == 1)
+    {
+        tokenize(cmds[0], " \t\n", args, MAX_ARGS);
+        print_all(args);
+        process_redirs(args, redirs);
+
+        if (is_builtin(args[0]))
+        {
+            if (redirs[0]) redir_in(redirs[0]);           // < input
+            if (redirs[1]) redir_out_builtin(redirs[1], STDOUT_FILENO); // > output
+            if (redirs[2]) redir_out_builtin(redirs[2], STDERR_FILENO); // 2> error
+            exec_builtin(args, envp);
+        }
+        else
+        {
+            redir_out(args[0], args, envp, redirs[1], redirs[2]);
+        }
+        return;
+    }
+
+    // CASO: Comandos con pipes
+    for (i = 0; i < num_cmds; i++)
+    {
+        tokenize(cmds[i], " \t\n", args, MAX_ARGS);
+        print_all(args);
+        process_redirs(args, redirs);
+
+        if (i == 0 && redirs[0])           // Redirección de entrada solo en el primero
+            redir_in(redirs[0]);
+
+        if (i != num_cmds - 1)             // Pipe entre comandos intermedios
+            exec_pipe(args[0], args, envp, redirs[2]);
+        else                               // Último comando
+            redir_out(args[0], args, envp, redirs[1], redirs[2]);
+    }
+}
+
+
+
 void exec(char *cmd_name, char **cmd_lst, char **envp)
 {
 	char *path;
@@ -75,14 +126,14 @@ void exec(char *cmd_name, char **cmd_lst, char **envp)
 	else
 	{
 		path = get_path(cmd_name);
-		// printf("Path: %s\n", path);
+		printf("Path: %s\n", path);
 		execve(path, cmd_lst, envp);
 		perror("Error al ejecutar execvp");
     	exit(EXIT_FAILURE);
 	}
 
 }
-void mult_cmds(char **cmds, char **envp)
+/* void mult_cmds(char **cmds, char **envp)
 {
     char *args[MAX_ARGS];
     char *redirs[MAX_REDIRS];
@@ -118,9 +169,9 @@ void mult_cmds(char **cmds, char **envp)
             // Último comando: redirige la salida al archivo si hay
             redir_out(args[0], args, envp, redirs[1], redirs[2]); // redirs[1] → stdout, redirs[2] → stderr
     }
-}
+} */
 
-void exec_line(char *line, char **envp)
+/* void exec_line(char *line, char **envp)
 {
 	char *cmds[MAX_CMDS];
 	char *args[MAX_ARGS];
@@ -148,7 +199,7 @@ void exec_line(char *line, char **envp)
 		}
 	}
 	mult_cmds(cmds, envp); // Múltiples comandos, o no es builtin
-}
+} */
 
 /*  void exec_line(char *line, char **envp)
 {
