@@ -5,61 +5,71 @@
 #include <readline/history.h>
 
 // -------------------- HANDLERS -------------------------
-void    sigint_handler_in_process(int sig)
-{
-    (void) sig;
-    /* write(STDOUT_FILENO, "\n", 1); */
-    signal(SIGINT, SIG_DFL); // Restaurar comportamiento por defecto
-    exit(130); // Terminar el proceso hijo con código de error
-}
-
-// Manejador para procesos hijos (Ctrl+\ debe imprimir mensaje y terminar)
-void    sigquit_handler_in_process(int sig)
-{
-    (void) sig;
-   /*  write(STDOUT_FILENO, "Quit\n", 5); */
-    signal(SIGQUIT, SIG_DFL); // Restaurar comportamiento por defecto
-    exit(130); // Terminar el proceso hijo con código de error
-    
-}
-
-// Manejador para Ctrl+C en heredoc (solo interrumpe la entrada)
-void    sigint_handler_heredoc(int sig)
-{
-    (void)sig;
-   /*  write(STDOUT_FILENO, "\n", 1); */
-    rl_on_new_line(); // Mover a nueva línea
-    exit(130); // Terminar el proceso heredoc con código de error
-    // No se cierra el heredoc, solo se interrumpe la entrada
-}
-
-// Manejador para el shell interactivo (Ctrl+C limpia línea sin cerrar)
-void    sigint_handler(int sig)
+void sigint_handler(int sig)
 {
     (void)sig;
     write(STDOUT_FILENO, "\n", 1);
     rl_on_new_line();
     rl_replace_line("", 0);
     rl_redisplay();
-    // No se cierra el shell, solo se limpia la línea actual
 }
 
-// Configurar señales según el estado de Minishell
-void    set_signals(int mode)
+// Manejador SIGQUIT en modo shell (Ctrl+\)
+void sigquit_handler(int sig)
 {
-    if (mode == MODE_SHELL)  // Modo interactivo
+    (void)sig;
+    // No hace nada, simplemente ignora Ctrl+
+    rl_on_new_line();
+    rl_redisplay();
+}
+
+// Manejador SIGINT en procesos hijos
+void sigint_handler_in_child(int sig)
+{
+    (void)sig;
+    write(STDOUT_FILENO, "\n", 1);
+    exit(130);
+}
+
+// Manejador SIGQUIT en procesos hijos
+void sigquit_handler_in_child(int sig)
+{
+    (void)sig;
+    exit(131);
+}
+
+// Manejador SIGINT en heredoc (Ctrl+C interrumpe heredoc)
+void sigint_handler_heredoc(int sig)
+{
+    (void)sig;
+    write(STDOUT_FILENO, "\n", 1);
+    exit(130);  // Interrumpir heredoc
+}
+
+// Manejo especial de EOF (Ctrl+D)
+void handle_ctrl_d(void)
+{
+    write(STDOUT_FILENO, "exit\n", 5);
+    exit(0);
+}
+
+// Asignar manejadores de señales según el modo
+void set_signals(int mode)
+{
+    if (mode == MODE_SHELL)
     {
-        signal(SIGINT, sigint_handler);
-        signal(SIGQUIT, SIG_IGN);
+        signal(SIGINT, sigint_handler);     // Ctrl+C limpia línea y muestra nuevo prompt
+        signal(SIGQUIT, SIG_IGN);           // Ctrl+\ ignorado
     }
-    else if (mode == MODE_CHILD)  // Procesos hijos
+    else if (mode == MODE_CHILD)
     {
-        signal(SIGINT, sigint_handler_in_process);
-        signal(SIGQUIT, sigquit_handler_in_process);
+        signal(SIGINT, SIG_DFL);            // Restaurar comportamiento por defecto
+        signal(SIGQUIT, SIG_DFL);           // Igual para Ctrl+
     }
-    else if (mode == MODE_HEREDOC)  // Heredoc
+    else if (mode == MODE_HEREDOC)
     {
         signal(SIGINT, sigint_handler_heredoc);
         signal(SIGQUIT, SIG_IGN);
     }
 }
+

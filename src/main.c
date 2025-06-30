@@ -25,19 +25,19 @@ void minishell(char **envp)
     char cwd[BUFFER_SIZE];
 
     disable_echoctl();  // Aplicar configuración antes de iniciar el shell
-    set_signals(MODE_SHELL);
+ /*    set_signals(MODE_SHELL); */
     using_history();
 
     (void)envp;  // Evitar warning por envp no usado
     while (true)
     {
+        set_signals(MODE_SHELL);  // Configurar señales en cada iteración
         safe_getcwd(cwd, sizeof(cwd));
         prompt = ft_strjoin(cwd, "$> ");
         line = readline(prompt);
-        free(prompt);
+        //free(prompt);
         if (!line)
         {
-            write(1, "\n", 1);
             break;
         }
         if (*line)

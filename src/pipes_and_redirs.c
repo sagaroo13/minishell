@@ -33,6 +33,7 @@ void	exec_pipe(char *cmd_name, char **cmd_lst, char **envp, char *stderr_file)
         safe_close(pipe_fd[1]);
         if (stderr_file)
         {
+            printf("Redirigiendo error a %s\n", stderr_file);
             fd_err = safe_open(stderr_file, WRITE);
             safe_dup2(fd_err, STDERR_FILENO);
             safe_close(fd_err);
@@ -41,6 +42,7 @@ void	exec_pipe(char *cmd_name, char **cmd_lst, char **envp, char *stderr_file)
 	}
 	else
 	{
+        printf("Este es el proceso padre: %d\n", getpid());
 		safe_close(pipe_fd[1]);
 		safe_dup2(pipe_fd[0], STDIN_FILENO);
         safe_close(pipe_fd[0]);
@@ -61,16 +63,19 @@ void redir_out(char *cmd_name, char **cmd_lst, char **envp, char *stdout_file, c
         exit(EXIT_FAILURE);
     if (!pid)
     {
+        set_signals(MODE_CHILD);
+        printf("Este es el proceso hijo: %d\n", getpid());
         if (stdout_file)
         {
-            set_signals(MODE_CHILD);
-            printf("Este es el proceso hijo: %d\n", getpid());
+
+            printf("Redirigiendo salida a %s\n", stdout_file);
             fd_out = safe_open(stdout_file, WRITE);
             safe_dup2(fd_out, STDOUT_FILENO);
 			safe_close(fd_out);
         }
         if (stderr_file)
         {
+            printf("Redirigiendo error a %s\n", stderr_file);
             fd_err = safe_open(stderr_file, WRITE);
 			safe_dup2(fd_err, STDERR_FILENO);
 			safe_close(fd_err);
@@ -78,5 +83,5 @@ void redir_out(char *cmd_name, char **cmd_lst, char **envp, char *stdout_file, c
         exec(cmd_name, cmd_lst, envp);
     }
     else
-    	waitpid(pid, &status, 0);
+        waitpid(pid, &status, 0);
 }

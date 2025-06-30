@@ -82,6 +82,43 @@ void exec(char *cmd_name, char **cmd_lst, char **envp)
 	}
 
 }
+void mult_cmds(char **cmds, char **envp)
+{
+    char *args[MAX_ARGS];
+    char *redirs[MAX_REDIRS];
+    int num_comandos;
+    int i;
+
+    // Separar la línea en comandos por '|'
+    num_comandos = tokenize(cmds[0], "|", cmds, MAX_CMDS);
+    if (num_comandos == 0)
+        return;
+
+    // Inicializar array de redirecciones
+    for (i = 0; i < MAX_REDIRS; i++)
+        redirs[i] = NULL;
+
+    // Procesar cada comando individual
+    for (i = 0; cmds[i]; i++)
+    {
+        // Dividir cada comando en argumentos
+        tokenize(cmds[i], " \t\n", args, MAX_ARGS);
+
+        // Analizar si hay redirecciones en este comando (>, <, 2>)
+        process_redirs(args, redirs);
+
+        // Si es el primer comando y hay redirección de entrada (<)
+        if (i == 0 && redirs[0])
+            redir_in(redirs[0]);
+
+        // Si no es el último comando: conectar con pipe
+        if (i != num_comandos - 1)
+            exec_pipe(args[0], args, envp, redirs[2]); // redirs[2] → stderr
+        else
+            // Último comando: redirige la salida al archivo si hay
+            redir_out(args[0], args, envp, redirs[1], redirs[2]); // redirs[1] → stdout, redirs[2] → stderr
+    }
+}
 
 void exec_line(char *line, char **envp)
 {
@@ -89,7 +126,6 @@ void exec_line(char *line, char **envp)
 	char *args[MAX_ARGS];
 	char *redirs[MAX_REDIRS];
 	int num_comandos;
-	int i;
 
 	num_comandos = tokenize(line, "|", cmds, MAX_CMDS);
 	if (num_comandos == 0)
@@ -109,18 +145,7 @@ void exec_line(char *line, char **envp)
 			return;
 		}
 	}
-	// Múltiples comandos, o no es builtin
-	for (i = 0; cmds[i]; i++)
-	{
-		tokenize(cmds[i], " \t\n", args, MAX_ARGS);
-		process_redirs(args, redirs);
-		if (i == 0 && redirs[0])
-			redir_in(redirs[0]);
-		if (i != num_comandos - 1)
-			exec_pipe(args[0], args, envp, redirs[2]);
-		else
-			redir_out(args[0], args, envp, redirs[1], redirs[2]);
-	}
+	mult_cmds(cmds, envp); // Múltiples comandos, o no es builtin
 }
 
 /*  void exec_line(char *line, char **envp)
