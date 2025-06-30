@@ -89,7 +89,7 @@ void mult_cmds(char **cmds, char **envp)
     int num_comandos;
     int i;
 
-    // Separar la línea en comandos por '|'
+    // Separar la línea en comandos por '|'	
     num_comandos = tokenize(cmds[0], "|", cmds, MAX_CMDS);
     if (num_comandos == 0)
         return;
@@ -113,7 +113,7 @@ void mult_cmds(char **cmds, char **envp)
 
         // Si no es el último comando: conectar con pipe
         if (i != num_comandos - 1)
-            exec_pipe(args[0], args, envp, redirs[2]); // redirs[2] → stderr
+            exec_pipe(args[1], args, envp, redirs[2]); // redirs[2] → stderr
         else
             // Último comando: redirige la salida al archivo si hay
             redir_out(args[0], args, envp, redirs[1], redirs[2]); // redirs[1] → stdout, redirs[2] → stderr
@@ -126,11 +126,13 @@ void exec_line(char *line, char **envp)
 	char *args[MAX_ARGS];
 	char *redirs[MAX_REDIRS];
 	int num_comandos;
+	
 
 	num_comandos = tokenize(line, "|", cmds, MAX_CMDS);
 	if (num_comandos == 0)
 		return;
-
+	
+	printf("Número de comandos: %d\n", num_comandos);
 	if (num_comandos == 1) // SOLO UN COMANDO
 	{
 		tokenize(cmds[0], " \t\n", args, MAX_ARGS);
