@@ -25,7 +25,6 @@ void minishell(char **envp)
     char cwd[BUFFER_SIZE];
 
     disable_echoctl();  // Aplicar configuración antes de iniciar el shell
- /*    set_signals(MODE_SHELL); */
     using_history();
 
     (void)envp;  // Evitar warning por envp no usado
