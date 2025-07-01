@@ -20,6 +20,7 @@ int	env_unset(char **argv, char **envp)
 	int j;
 	char *var;
 
+	printf("Is in unset");
 	i = 0;
 	if (!argv[1])
 		return (0);
@@ -45,21 +46,33 @@ int	env_unset(char **argv, char **envp)
 
 int env_export(char **argv, char **envp)
 {
-	int i;
+	int i = 0;
 	char *new_var;
-	
-	i = 0;
-	if (!argv[1] || !envp)	
+
+	if (!argv || !argv[0] || !envp)
 		return (0);
+
+	// Caso: solo "export" sin argumentos
+	if (!argv[1])
+	{
+		exec_env(envp);  // asumimos que esta imprime env
+		return (1);
+	}
+	// Caso: hay argumento como "MYVAR=123"
 	new_var = ft_strdup(argv[1]);
 	if (!new_var)
 		return (0);
-	while (envp[i])
+	// Mostrar para depuración
+	printf("Nueva variable: %s\n", new_var);
+	// Buscar el final del entorno
+	while (envp[i] != NULL)
 		i++;
+	// Agregar la nueva variable
 	envp[i] = new_var;
 	envp[i + 1] = NULL;
 	return (1);
 }
+
 
 char *get_env_value(const char *key, char **envp)
 {
