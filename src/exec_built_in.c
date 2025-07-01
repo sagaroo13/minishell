@@ -30,7 +30,10 @@ int	exec_builtin(char **args, char **envp)
 	else if (ft_strncmp(args[0], "env", 4) == 0)
 		return (exec_env(envp));
 	else if (ft_strncmp(args[0], "export", 6) == 0)
+	{
+		printf("Is in this export\n");
 		return (env_export(args, envp));
+	}
 	else if (ft_strncmp(args[0], "unset", 6) == 0)
 		return (env_unset(args, envp));
 	return (0);
