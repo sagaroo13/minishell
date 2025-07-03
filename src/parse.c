@@ -50,179 +50,241 @@ int	is_file(t_command *cmd, char *str)
 int	is_meta(char *str)
 {
 	if (!str || !*str)
-		return (false);
+		return (true);
 	if (ft_strstr(str, ">") || ft_strstr(str, "<") || ft_strstr(str, ">>")
 		|| ft_strstr(str, "<<") || ft_strstr(str, "2>") || ft_strstr(str, "$"))
 		return (true);
 	return (false);
 }
 
-int	count_argv(t_command *cmd, char **args)
+int	count_argv(t_command *cmd, t_lexer_handler handler)
 {
 	int	count;
 	int	i;
 
 	count = 0;
 	i = -1;
-	while (args[++i])
+	while (++i < handler.n_tokens - 1)
 	{
-		if (ft_strchr_charset(args[i], "<>") || is_file(cmd, args[i]))
+		if (!handler.tokens[i].quoted && (ft_strchr_charset(handler.tokens[i].token_str, "<>") || is_file(cmd, handler.tokens[i].token_str)))
 			continue ;
 		count++;
 	}
 	return (count);
 }
 
-char	**get_arguments(t_command *cmd, char *cmd_str)
+void	get_arguments(t_command *cmd, t_lexer_handler handler)
 {
-	char	**args;
-	char	**argv;
-	int		argc;
+	int		n_args;
 	int		i;
 	int		j;
 
-	args = ft_split(cmd_str, ' ');
-	argc = count_argv(cmd, args);
-	argv = safe_malloc(sizeof(char *) * (argc + 1), false);
+	n_args = count_argv(cmd, handler);
+	cmd->args = safe_malloc(sizeof(char *) * (n_args + 1), true);
 	i = -1;
 	j = -1;
-	while (args[++i])
+	while (++i < handler.n_tokens - 1)
 	{
-		if (ft_strchr_charset(args[i], "<>") || is_file(cmd, args[i]))
+		if (!handler.tokens[i].quoted && (ft_strchr_charset(handler.tokens[i].token_str, "<>") || is_file(cmd, handler.tokens[i].token_str)))
 			continue ;
-		argv[++j] = ft_strdup(args[i]);
+		cmd->args[++j] = ft_strdup(handler.tokens[i].token_str);
 	}
-	argv[++j] = NULL;
-	ft_free_matrix(args);
-	return (argv);
+	cmd->args[++j] = NULL;
 }
 
-char	*get_redirection(char **cmd_parts, char *redirection, int n)
+int	find_redir(t_lexer_handler handler, const char *str, int n)
+{
+	int i;
+	int last;
+
+	if (!handler.tokens || !str)
+		return (-1);
+	i = -1;
+	last = -1;
+	while (++i < handler.n_tokens - 1)
+	{
+		if (!ft_strncmp(handler.tokens[i].token_str, str, n) && !handler.tokens[i].quoted)
+			last = i;
+	}
+	return (last);
+}
+
+char	*get_redirection(t_lexer_handler handler, char *redirection, int n)
 {
 	char	*file_name;
 	int		index;
 
 	file_name = NULL;
-	index = ft_matrix_strrchr(cmd_parts, redirection, n);
-	if (index == -1 || ft_strchr_charset((cmd_parts[index] + n), "<>"))
+	index = find_redir(handler, redirection, n);
+	if (index == -1 || ft_strchr_charset((handler.tokens[index].token_str + n), "<>"))
 		return (NULL);
-	if ((int)ft_strlen(cmd_parts[index]) > n)
-		file_name = ft_strdup(cmd_parts[index] + n);
-	else if (!is_meta(cmd_parts[index + 1]))
-		file_name = ft_strdup(cmd_parts[index + 1]);
+	if ((int)ft_strlen(handler.tokens[index].token_str) > n)
+		file_name = ft_strdup(handler.tokens[index].token_str + n);
+	else if (!is_meta(handler.tokens[index + 1].token_str))
+		file_name = ft_strdup(handler.tokens[index + 1].token_str);
 	else
 		perror("Syntax error: No se especificó un archivo para la redirección");
 	return (file_name);
 }
 
-void	get_redirections(t_command *cmd, char **cmd_parts)
+void	get_redirections(t_command *cmd, t_lexer_handler handler)
 {
-	cmd->stdin_file = get_redirection(cmd_parts, "<", 1);
-	cmd->stdout_file = get_redirection(cmd_parts, ">", 1);
-	cmd->stderr_file = get_redirection(cmd_parts, "2>", 2);
-	cmd->append_file = get_redirection(cmd_parts, ">>", 2);
-	cmd->heredoc_delim = get_redirection(cmd_parts, "<<", 2);
+	cmd->stdin_file = get_redirection(handler, "<", 1);
+	cmd->stdout_file = get_redirection(handler, ">", 1);
+	cmd->stderr_file = get_redirection(handler, "2>", 2);
+	cmd->append_file = get_redirection(handler, ">>", 2);
+	cmd->heredoc_delim = get_redirection(handler, "<<", 2);
 }
 
-void	init_handler(t_handle_parsing *handler, char *cmd_str)
+int	count_tokens(const char *s)
 {
-	handler->argv = safe_malloc(sizeof(char *) * (MAX_ARGS + 1), true);
-	handler->buffer = safe_malloc(sizeof(char) * (ft_strlen(cmd_str) + 1),
-			false);
-	handler->cmd_str = ft_strdup(cmd_str);
+	int	i;
+	int	count;
+	bool	in_sq;
+	bool	in_dq;
+	bool	in_token;
+
+	i = -1;
+	count = 0;
+	in_sq = false;
+	in_dq = false;
+	in_token = false;
+	while (s[++i])
+	{
+		if (s[i] == '\'' && !in_dq)
+			in_sq = !in_sq;
+		else if (s[i] == '\"' && !in_sq)
+			in_dq = !in_dq;
+		if (ft_isspace(s[i]) && !in_sq && !in_dq && in_token)
+			in_token = false, count++;
+		else if (!ft_isspace(s[i]) && !in_token)
+			in_token = true;
+	}
+	if (in_token)
+		count++;
+	return (count);
+}
+
+void	init_handler(t_lexer_handler *handler, char *cmd_str)
+{
+	int i;
+
+	handler->buffer_size = ft_strlen(cmd_str) + 1;
+	handler->buffer = safe_malloc(sizeof(char) * (handler->buffer_size), true);
+	handler->cmd_str = cmd_str;
 	handler->in_sq = false;
 	handler->in_dq = false;
 	handler->argc = 0;
 	handler->buf_len = 0;
+	handler->n_tokens = (count_tokens(cmd_str) + 1);
+	handler->tokens = safe_malloc(sizeof(t_token) * (handler->n_tokens), true);
+	i = 0;
+	while (i < handler->n_tokens)
+		handler->tokens[i++].quoted = false;
 }
 
-void    free_handler(t_handle_parsing *handler)
+void    free_handler(t_lexer_handler *handler)
 {
-    if (handler->argv)
-        ft_free_matrix(handler->argv);
+	int i;
+
+	i = -1;
+    if (handler->tokens)
+	{
+		while (++i < handler->n_tokens)
+		{
+			if (handler->tokens[i].token_str)
+				free(handler->tokens[i].token_str);
+		}
+		free(handler->tokens);
+	}
     if (handler->buffer)
         free(handler->buffer);
-    if (handler->cmd_str)
-        free(handler->cmd_str);
 }
 
-static void	push_buffer(t_handle_parsing *handler)
+static void	push_buffer(t_lexer_handler *handler)
 {
 	if (handler->buf_len == 0)
 		return ;
 	handler->buffer[handler->buf_len] = '\0';
-	handler->argv[handler->argc++] = ft_strdup(handler->buffer);
+	handler->tokens[handler->argc++].token_str = ft_strdup(handler->buffer);
+	free(handler->buffer);
+	handler->buffer = safe_malloc(sizeof(char) * (ft_strlen(handler->cmd_str) + 1), true);
 	handler->buf_len = 0;
 }
 
-static void	handle_sq(t_handle_parsing *handler, char c)
+static void	handle_sq(t_lexer_handler *handler, char c)
 {
 	if (!handler->in_dq && c == '\'')
 		handler->in_sq = !handler->in_sq;
-	handler->buffer[handler->buf_len++] = c;
+	else
+		handler->buffer[handler->buf_len++] = c;
 }
 
-static void	handle_dq(t_handle_parsing *handler, char **s)
+void	handle_var(t_lexer_handler *handler, char **s)
 {
-	char	var[BUFFER_SIZE];
 	int		i;
+	char	var[handler->buffer_size];
 	char	*val;
 
+	i = 0;
+	(*s)++;
+	while (**s && (ft_isalnum(**s) || **s == '_') && i < handler->buffer_size)
+		var[i++] = *(*s)++;
+	var[i] = '\0';
+	if ((val = getenv(var)))
+	{
+		while (*val)
+		{
+			if (handler->buf_len < handler->buffer_size)
+				handler->buffer[handler->buf_len++] = *val++;
+		}
+	}
+	if (!handler->in_sq && **s == '\"')
+		handler->in_dq = !handler->in_dq;
+}
+
+static void	handle_dq(t_lexer_handler *handler, char **s)
+{
 	if (!handler->in_sq && **s == '\"')
 		handler->in_dq = !handler->in_dq;
 	else if (handler->in_dq && **s == '$' && ft_isalpha((*s)[1]))
-	{
-		i = 0;
-		(*s)++;
-		while (**s && (ft_isalnum(**s) || **s == '_') && i < BUFFER_SIZE - 1)
-			var[i++] = *(*s)++;
-		var[i] = '\0';
-		if ((val = getenv(var)))
-		{
-			while (*val)
-			{
-				if (handler->buf_len < BUFFER_SIZE - 1)
-					handler->buffer[handler->buf_len++] = *val++;
-			}
-		}
-	}
-	handler->buffer[handler->buf_len++] = **s;
+		handle_var(handler, s);
+	else
+		handler->buffer[handler->buf_len++] = **s;
 }
 
-char	**handle_meta(char *cmd_str)
+void	lexer(t_lexer_handler *handler, char *cmd_str)
 {
-	t_handle_parsing	handler;
-
-	init_handler(&handler, cmd_str);
-	while (*handler.cmd_str)
+	init_handler(handler, cmd_str);
+	while (*handler->cmd_str)
 	{
-		if (!handler.in_sq && !handler.in_dq && *handler.cmd_str == ' ')
-			push_buffer(&handler);
-		else if (*handler.cmd_str == '\'')
-			handle_sq(&handler, *handler.cmd_str);
+		if (handler->in_sq || handler->in_dq)
+			handler->tokens[handler->argc].quoted = true;
+		if (!handler->in_sq && !handler->in_dq && *handler->cmd_str == ' ')
+			push_buffer(handler);
+		else if (*handler->cmd_str == '\'' && handler->in_sq)
+			handle_sq(handler, *handler->cmd_str);
 		else
-			handle_dq(&handler, &handler.cmd_str);
-		handler.cmd_str++;
+			handle_dq(handler, &handler->cmd_str);
+		handler->cmd_str++;
 	}
-	push_buffer(&handler);
-	handler.argv[handler.argc] = NULL;
-	return (handler.argv);
+	push_buffer(handler);
+	handler->tokens[handler->argc].token_str = NULL;
 }
 
 void	get_cmd_info(t_command *cmd, char *cmd_str)
 {
-	char	**cmd_parts;
+	t_lexer_handler	handler;
 
-	cmd_parts = handle_meta(cmd_str);
-	// print_all(cmd_parts);
-	get_redirections(cmd, cmd_parts);
-	// cmd->args = get_arguments(cmd, cmd_str);
-    cmd->args = safe_malloc(sizeof(char *) * (MAX_ARGS + 1), true);
-    cmd->args = cmd_parts;
+	lexer(&handler, cmd_str);
+	// print_all(handler);
+	get_redirections(cmd, handler);
+	get_arguments(cmd, handler);
 	if (is_builtin(cmd->args[0]))
 		cmd->builtin = true;
 	else
 		cmd->builtin = false;
+	free_handler(&handler);
 }
 
 void	get_cmds_info(t_command_line *cmd_line, char *line)

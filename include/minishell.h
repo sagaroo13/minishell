@@ -52,16 +52,24 @@
  *																			  *
  ******************************************************************************/
 
-typedef struct handle_parsing
+typedef struct s_token
 {
-	char **argv;
+	char	*token_str;
+	bool	quoted;
+} t_token;
+
+typedef struct s_lexer_handler
+{
 	char *buffer;
 	char *cmd_str;
 	bool in_sq;
 	bool in_dq;
-	int argc;
 	int buf_len;
-} t_handle_parsing;
+	int	buffer_size;
+	int	argc; // Number of arguments
+	int	n_tokens;
+	t_token *tokens;
+} t_lexer_handler;
 
 typedef struct s_command
 {
