@@ -63,6 +63,7 @@ void set_signals(int mode)
     }
     else if (mode == MODE_CHILD)
     {
+        usleep(100);  // Pequeña pausa para evitar problemas de sincronización
         signal(SIGINT, SIG_DFL);            // Restaurar comportamiento por defecto
         signal(SIGQUIT, SIG_DFL);           // Igual para Ctrl+
     }

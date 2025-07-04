@@ -16,19 +16,17 @@ int	exec_env(char **envp)
 
 int	env_unset(char **argv, char **envp)
 {
-	int i;
-	int j;
-	char *var;
+	int		i, j;
+	char	*var;
+	int		found = 0;
 
-	printf("Is in unset");
-	i = 0;
 	if (!argv[1])
-		return (0);
+		return (0); // No se pasó ninguna variable
 	var = argv[1];
+	i = 0;
 	while (envp[i])
 	{
-		if (ft_strncmp(envp[i], var, ft_strlen(var)) == 0
-			&& envp[i][ft_strlen(var)] == '=')
+		if (ft_strcmp(envp[i], var) == 0)
 		{
 			j = i;
 			while (envp[j])
@@ -36,13 +34,18 @@ int	env_unset(char **argv, char **envp)
 				envp[j] = envp[j + 1];
 				j++;
 			}
-			return (1);
+			found = 1;
+			continue; // No incrementar i, porque ahora envp[i] es la siguiente
 		}
 		i++;
 	}
-	printf("unset: variable %s not found\n", var);
+	if (!found)
+		printf("unset: variable %s not found\n", var);
 	return (1);
 }
+
+
+
 
 int env_export(char **argv, char **envp)
 {
@@ -51,23 +54,21 @@ int env_export(char **argv, char **envp)
 
 	if (!argv || !argv[0] || !envp)
 		return (0);
-
 	// Caso: solo "export" sin argumentos
-	if (!argv[1])
+	/* if (!argv[1])
 	{
-		exec_env(envp);  // asumimos que esta imprime env
+		exec_env(envp);
 		return (1);
-	}
+	} */
 	// Caso: hay argumento como "MYVAR=123"
 	new_var = ft_strdup(argv[1]);
 	if (!new_var)
 		return (0);
 	// Mostrar para depuración
-	printf("Nueva variable: %s\n", new_var);
 	// Buscar el final del entorno
 	while (envp[i] != NULL)
 		i++;
-	// Agregar la nueva variable
+	//  Agregar la nueva variable
 	envp[i] = new_var;
 	envp[i + 1] = NULL;
 	return (1);

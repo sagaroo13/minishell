@@ -75,7 +75,6 @@ void exec_line(char *line, char **envp)
     int i;
 
     num_cmds = tokenize(line, "|", cmds, MAX_CMDS);
-    print_all(cmds);
 
     // CASO: Solo un comando
     if (num_cmds == 1)
