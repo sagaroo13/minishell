@@ -1,47 +1,185 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "../include/minishell.h"
 
-// Simulate the last command exit status
-int g_last_status = 42;
-
-/**
- * Expand a single token beginning with '$':
- * - If token == "$?", returns the string form of g_last_status
- * - Else if token == "$VAR", returns getenv("VAR") or "" if not set
- * - Otherwise, returns a strdup of the original token
- */
-char *expand_var(const char *token)
+void    free_handler(t_lexer_handler *handler)
 {
-    char buf[32];
+	int i;
 
-    if (!token || token[0] != '$')
-        return strdup(token);
+	i = -1;
+    if (handler->tokens)
+	{
+		while (++i < handler->n_tokens)
+		{
+			if (handler->tokens[i].token_str)
+				free(handler->tokens[i].token_str);
+		}
+		free(handler->tokens);
+	}
+    if (handler->buffer)
+        free(handler->buffer);
+}
 
-    if (strcmp(token, "$?") == 0)
+int	count_tokens(const char *s)
+{
+	int	i;
+	int	count;
+	bool	in_sq;
+	bool	in_dq;
+	bool	in_token;
+
+	i = -1;
+	count = 0;
+	in_sq = false;
+	in_dq = false;
+	in_token = false;
+	while (s[++i])
+	{
+		if (s[i] == '\'' && !in_dq)
+			in_sq = !in_sq;
+		else if (s[i] == '\"' && !in_sq)
+			in_dq = !in_dq;
+		if (ft_isspace(s[i]) && !in_sq && !in_dq && in_token)
+			in_token = false, count++;
+		else if (!ft_isspace(s[i]) && !in_token)
+			in_token = true;
+	}
+	if (in_token)
+		count++;
+	return (count);
+}
+
+void	init_handler(t_lexer_handler *handler, char *cmd_str)
+{
+	handler->buffer_size = BUFFER_SIZE + 1;
+	handler->buffer = safe_malloc(sizeof(char) * (handler->buffer_size), true);
+	handler->cmd_str = cmd_str;
+	handler->in_sq = false;
+	handler->in_dq = false;
+	handler->argc = 0;
+	handler->buf_len = 0;
+	handler->n_tokens = (count_tokens(cmd_str) + 1);
+	handler->tokens = safe_malloc(sizeof(t_token) * (handler->n_tokens), true);
+}
+
+static void	push_buffer(t_lexer_handler *handler, bool quoted)
+{
+    handler->cmd_str++;
+	if (handler->buf_len == 0)
+		return ;
+	handler->buffer[handler->buf_len] = '\0';
+    if (quoted)
+        handler->tokens[handler->argc].quoted = true;
+    else
+        handler->tokens[handler->argc].quoted = false;
+	handler->tokens[handler->argc++].token_str = ft_strdup(handler->buffer);
+	free(handler->buffer);
+	handler->buffer = safe_malloc(sizeof(char) * (handler->buffer_size), true);
+	handler->buf_len = 0;
+}
+
+void	handle_var(t_lexer_handler *handler, char **s)
+{
+	int		i;
+	char	var[64];
+	char	*val;
+
+	i = 0;
+	(*s)++;
+	while (**s && (ft_isalnum(**s) || **s == '_') && i < handler->buffer_size)
+		var[i++] = *(*s)++;
+	var[i] = '\0';
+	if ((val = getenv(var)))
+	{
+		while (*val)
+		{
+			if (handler->buf_len < handler->buffer_size)
+				handler->buffer[handler->buf_len++] = *val++;
+		}
+	}
+}
+
+static void	handle_sq(t_lexer_handler *handler, char **s)
+{
+    (*s)++;
+    while (**s && **s != '\'')
     {
-        snprintf(buf, sizeof(buf), "%d", g_last_status);
-        return strdup(buf);
+        if (handler->buf_len < handler->buffer_size)
+            handler->buffer[handler->buf_len++] = **s;
+        (*s)++;
     }
+    if (**s != '\'')
+    {
+        perror("Syntax error: missing closing single quote");
+        exit(EXIT_FAILURE);
+    }
+    push_buffer(handler, true);
+}
 
-    const char *name = token + 1;  // skip '$'
-    if (*name == '\0')
-        return strdup(token);
+static void	handle_dq(t_lexer_handler *handler, char **s)
+{
+	(*s)++;
+    while (**s && **s != '\"')
+    {
+        if (**s == '$' && ft_isalpha((*s)[1]))
+            handle_var(handler, s);
+        else
+        {
+            if (handler->buf_len < handler->buffer_size)
+                handler->buffer[handler->buf_len++] = **s;
+            (*s)++;
+        }
+    }
+    if (**s != '\"')
+    {
+        perror("Syntax error: missing closing double quote");
+        exit(EXIT_FAILURE);
+    }
+    push_buffer(handler, true);
+}
 
-    char *val = getenv(name);
-    return strdup(val ? val : "");
+static void    handle_nq(t_lexer_handler *handler, char **s)
+{
+    if (**s == '$' && ft_isalpha((*s)[1]))
+        handle_var(handler, s);
+    else
+        handler->buffer[handler->buf_len++] = *(*s)++;
+}
+
+void	lexer(t_lexer_handler *handler, char *cmd_str)
+{
+	init_handler(handler, cmd_str);
+	while (*handler->cmd_str)
+	{
+		if (ft_isspace(*handler->cmd_str))
+			push_buffer(handler, false);
+		else if (*handler->cmd_str == '\'')
+			handle_sq(handler, &handler->cmd_str);
+		else if (*handler->cmd_str == '\"')
+			handle_dq(handler, &handler->cmd_str);
+        else
+            handle_nq(handler, &handler->cmd_str);
+	}
+	push_buffer(handler, false);
+	handler->tokens[handler->argc].token_str = NULL;
+}
+
+void print_tokens(t_lexer_handler *handler)
+{
+	for (int i = 0; i < handler->argc; i++)
+	{
+		printf("Token %d: \"%s\" (quoted: %s)\n", i,
+			handler->tokens[i].token_str,
+			handler->tokens[i].quoted ? "yes" : "no");
+	}
 }
 
 int main(void)
 {
-   char *line = "echo 'Hello, World!' '$? 42 Madrid' 'minishell' e";
-   char **matrix = ft_split(line, '\'');
+	t_lexer_handler handler;
+	char *line = "echo 'Hello World' \"$ Path: '$HOME'\" $";
 
-   for (int i = 0; matrix[i]; i++)
-   {
-       printf("Expanded token: %s\n", matrix[i]);
-   }
-   ft_free_matrix(matrix);
-   return 0;
+	printf("Input line: %s\n\n", line);
+	lexer(&handler, line);
+	print_tokens(&handler);
+	free_handler(&handler);
+	return 0;
 }

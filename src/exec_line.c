@@ -66,6 +66,7 @@ char *get_path(char *line)
 	return (executable_path);
 }
 
+<<<<<<< HEAD
 void exec_line(char *line, char **envp)
 {
     char *cmds[MAX_CMDS];
@@ -117,16 +118,24 @@ void exec_line(char *line, char **envp)
 
 
 void exec(char *cmd_name, char **cmd_lst, char **envp)
+=======
+void exec(char *cmd_name, char **cmd_args, char **envp)
+>>>>>>> origin/jsagaro-
 {
 	char *path;
 
 	if (is_builtin(cmd_name))
-		exec_builtin(cmd_lst, envp);
+		exec_builtin(cmd_args, envp);
 	else
 	{
 		path = get_path(cmd_name);
+<<<<<<< HEAD
 		printf("Path: %s\n", path);
 		execve(path, cmd_lst, envp);
+=======
+		// printf("Path: %s\n", path);
+		execve(path, cmd_args, envp);
+>>>>>>> origin/jsagaro-
 		perror("Error al ejecutar execvp");
     	exit(EXIT_FAILURE);
 	}
@@ -139,6 +148,7 @@ void exec(char *cmd_name, char **cmd_lst, char **envp)
     int num_comandos;
     int i;
 
+<<<<<<< HEAD
     // Separar la línea en comandos por '|'	
     num_comandos = tokenize(cmds[0], "|", cmds, MAX_CMDS);
     if (num_comandos == 0)
@@ -201,9 +211,25 @@ void exec(char *cmd_name, char **cmd_lst, char **envp)
 } */
 
 /*  void exec_line(char *line, char **envp)
+=======
+void exec_line(char *line, char **envp)
+>>>>>>> origin/jsagaro-
 {
 	t_command_line	cmd_line;
+	int	i;
 
-	(void)envp;  // Evitar warning por envp no usado
 	parse_line(&cmd_line, line);
+<<<<<<< HEAD
 } */ 
+=======
+	i = -1;
+	while (++i < cmd_line.n_cmds)
+	{
+        if (i != cmd_line.n_cmds - 1)
+            exec_pipe(&cmd_line.cmds[i], envp);
+        else
+            exec_last(&cmd_line.cmds[i], envp);
+	}
+	free_cmd_line(&cmd_line);
+}
+>>>>>>> origin/jsagaro-
