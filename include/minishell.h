@@ -41,7 +41,7 @@
 # define BOLD "\033[1m"
 # define UNDERLINE "\033[4m"
 
-# define BUFFER_SIZE 1024
+# define BUFFER_SIZE 1250
 # define MAX_CMDS 25
 # define MAX_ARGS 25
 # define MAX_REDIRS 3
@@ -138,9 +138,9 @@ void	disable_echoctl();
 void	restore_terminal();
 
 // PIPE & REDIRS
-void	redir_in(char *file_in);
-void	exec_pipe(char *cmd_name, char **cmd_lst, char **envp, char *stderr_file);
-void	redir_out(char *cmd_name, char **cmd_lst, char **envp, char *stdout_file, char *stderr_file);
+void	exec_pipe(t_command *cmd, char **envp);
+void	exec_last(t_command *cmd, char **envp);
+void	redirs(t_command *cmd);
 
 // BUILT INS
 int	exec_echo(char **args, char **envp);
@@ -171,5 +171,6 @@ void	banner(void);
 void	process_redirs(char **args, char **redir);
 int		tokenize(char *linea, char *delim, char **tokens, int max_tokens);
 void	print_all(char **args);
+void	free_cmd_line(t_command_line *cmd_line);
 
 #endif

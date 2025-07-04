@@ -10,7 +10,8 @@ SRC = $(SRC_DIR)main.c				\
 		$(SRC_DIR)error.c			\
 		$(SRC_DIR)exec_line.c		\
 		$(SRC_DIR)parse.c			\
-		$(SRC_DIR)pipes_and_redirs.c\
+		$(SRC_DIR)pipes.c			\
+		$(SRC_DIR)redirs.c			\
 		$(SRC_DIR)built_in.c		\
 		$(SRC_DIR)built_in_env.c	\
 		$(SRC_DIR)exec_built_in.c	\

@@ -55,53 +55,36 @@ char *get_path(char *line)
 	return (executable_path);
 }
 
-void exec(char *cmd_name, char **cmd_lst, char **envp)
+void exec(char *cmd_name, char **cmd_args, char **envp)
 {
 	char *path;
 
 	if (is_builtin(cmd_name))
-		exec_builtin(cmd_lst, envp);
+		exec_builtin(cmd_args, envp);
 	else
 	{
 		path = get_path(cmd_name);
 		// printf("Path: %s\n", path);
-		execve(path, cmd_lst, envp);
+		execve(path, cmd_args, envp);
 		perror("Error al ejecutar execvp");
     	exit(EXIT_FAILURE);
 	}
 
 }
 
-// void exec_line(char *line, char **envp)
-// {
-// 	char *cmds[MAX_CMDS];
-// 	char *args[MAX_ARGS];
-// 	char *redirs[MAX_REDIRS];
-// 	int num_comandos;
-// 	int i;
-
-// 	num_comandos = tokenize(line, "|", cmds, MAX_CMDS);
-// 	// print_all(cmds);
-// 	i = -1;
-// 	while (cmds[++i])
-// 	{
-// 		tokenize(cmds[i], " \t\n", args, MAX_ARGS);
-// 		// print_all(args);
-// 		process_redirs(args, redirs);
-
-// 		if (i == 0 && redirs[0])
-//             redir_in(redirs[0]);
-//         if (i != num_comandos - 1)
-//             exec_pipe(args[0], args, envp, redirs[2]);
-//         else
-//             redir_out(args[0], args, envp, redirs[1], redirs[2]);
-// 	}
-// }
-
 void exec_line(char *line, char **envp)
 {
 	t_command_line	cmd_line;
+	int	i;
 
-	(void)envp;  // Evitar warning por envp no usado
 	parse_line(&cmd_line, line);
+	i = -1;
+	while (++i < cmd_line.n_cmds)
+	{
+        if (i != cmd_line.n_cmds - 1)
+            exec_pipe(&cmd_line.cmds[i], envp);
+        else
+            exec_last(&cmd_line.cmds[i], envp);
+	}
+	free_cmd_line(&cmd_line);
 }
