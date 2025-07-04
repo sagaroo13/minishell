@@ -66,61 +66,7 @@ char *get_path(char *line)
 	return (executable_path);
 }
 
-<<<<<<< HEAD
-void exec_line(char *line, char **envp)
-{
-    char *cmds[MAX_CMDS];
-    char *args[MAX_ARGS];
-    char *redirs[MAX_REDIRS];
-    int num_cmds;
-    int i;
-
-    num_cmds = tokenize(line, "|", cmds, MAX_CMDS);
-
-    // CASO: Solo un comando
-    if (num_cmds == 1)
-    {
-        tokenize(cmds[0], " \t\n", args, MAX_ARGS);
-        print_all(args);
-        process_redirs(args, redirs);
-
-        if (is_builtin(args[0]))
-        {
-            if (redirs[0]) redir_in(redirs[0]);           // < input
-            if (redirs[1]) redir_out_builtin(redirs[1], STDOUT_FILENO); // > output
-            if (redirs[2]) redir_out_builtin(redirs[2], STDERR_FILENO); // 2> error
-            exec_builtin(args, envp);
-        }
-        else
-        {
-            redir_out(args[0], args, envp, redirs[1], redirs[2]);
-        }
-        return;
-    }
-
-    // CASO: Comandos con pipes
-    for (i = 0; i < num_cmds; i++)
-    {
-        tokenize(cmds[i], " \t\n", args, MAX_ARGS);
-        print_all(args);
-        process_redirs(args, redirs);
-
-        if (i == 0 && redirs[0])           // Redirección de entrada solo en el primero
-            redir_in(redirs[0]);
-
-        if (i != num_cmds - 1)             // Pipe entre comandos intermedios
-            exec_pipe(args[0], args, envp, redirs[2]);
-        else                               // Último comando
-            redir_out(args[0], args, envp, redirs[1], redirs[2]);
-    }
-}
-
-
-
-void exec(char *cmd_name, char **cmd_lst, char **envp)
-=======
 void exec(char *cmd_name, char **cmd_args, char **envp)
->>>>>>> origin/jsagaro-
 {
 	char *path;
 
@@ -129,99 +75,27 @@ void exec(char *cmd_name, char **cmd_args, char **envp)
 	else
 	{
 		path = get_path(cmd_name);
-<<<<<<< HEAD
-		printf("Path: %s\n", path);
-		execve(path, cmd_lst, envp);
-=======
 		// printf("Path: %s\n", path);
 		execve(path, cmd_args, envp);
->>>>>>> origin/jsagaro-
 		perror("Error al ejecutar execvp");
     	exit(EXIT_FAILURE);
 	}
 
 }
-/* void mult_cmds(char **cmds, char **envp)
+/*  void mult_cmds(char **cmds, char **envp)
 {
     char *args[MAX_ARGS];
     char *redirs[MAX_REDIRS];
     int num_comandos;
     int i;
-
-<<<<<<< HEAD
-    // Separar la línea en comandos por '|'	
-    num_comandos = tokenize(cmds[0], "|", cmds, MAX_CMDS);
-    if (num_comandos == 0)
-        return;
-
-    // Inicializar array de redirecciones
-    for (i = 0; i < MAX_REDIRS; i++)
-        redirs[i] = NULL;
-
-    // Procesar cada comando individual
-    for (i = 0; cmds[i]; i++)
-    {
-        // Dividir cada comando en argumentos
-        tokenize(cmds[i], " \t\n", args, MAX_ARGS);
-
-        // Analizar si hay redirecciones en este comando (>, <, 2>)
-        process_redirs(args, redirs);
-
-        // Si es el primer comando y hay redirección de entrada (<)
-        if (i == 0 && redirs[0])
-            redir_in(redirs[0]);
-
-        // Si no es el último comando: conectar con pipe
-        if (i != num_comandos - 1)
-            exec_pipe(args[1], args, envp, redirs[2]); // redirs[2] → stderr
-        else
-            // Último comando: redirige la salida al archivo si hay
-            redir_out(args[0], args, envp, redirs[1], redirs[2]); // redirs[1] → stdout, redirs[2] → stderr
-    }
-} */
-
-/* void exec_line(char *line, char **envp)
-{
-	char *cmds[MAX_CMDS];
-	char *args[MAX_ARGS];
-	char *redirs[MAX_REDIRS];
-	int num_comandos;
-	
-
-	num_comandos = tokenize(line, "|", cmds, MAX_CMDS);
-	if (num_comandos == 0)
-		return;
-	
-	printf("Número de comandos: %d\n", num_comandos);
-	if (num_comandos == 1) // SOLO UN COMANDO
-	{
-		tokenize(cmds[0], " \t\n", args, MAX_ARGS);
-		process_redirs(args, redirs);
-
-		if (is_builtin(args[0]))
-		{
-			if (redirs[0]) redir_in(redirs[0]);       // < input
-			if (redirs[1]) redir_out_builtin(redirs[1], STDOUT_FILENO);
-			if (redirs[2]) redir_out_builtin(redirs[2], STDERR_FILENO);
-			exec_builtin(args, envp);
-			return;
-		}
-	}
-	mult_cmds(cmds, envp); // Múltiples comandos, o no es builtin
-} */
-
-/*  void exec_line(char *line, char **envp)
-=======
+}  */
+/* 
 void exec_line(char *line, char **envp)
->>>>>>> origin/jsagaro-
 {
 	t_command_line	cmd_line;
 	int	i;
 
 	parse_line(&cmd_line, line);
-<<<<<<< HEAD
-} */ 
-=======
 	i = -1;
 	while (++i < cmd_line.n_cmds)
 	{
@@ -232,4 +106,4 @@ void exec_line(char *line, char **envp)
 	}
 	free_cmd_line(&cmd_line);
 }
->>>>>>> origin/jsagaro-
+ */
