@@ -20,7 +20,7 @@ int	exec_builtin(char **args, char **envp)
 	if (!args || !args[0])
 		return (0);
 	if (ft_strncmp(args[0], "echo", 5) == 0)
-		return (exec_echo(args, envp));
+		return (exec_echo(args));
 	else if (ft_strncmp(args[0], "pwd", 4) == 0)
 		return (exec_pwd());
 	else if (ft_strncmp(args[0], "exit", 5) == 0)

@@ -41,7 +41,7 @@
 # define BOLD "\033[1m"
 # define UNDERLINE "\033[4m"
 
-# define BUFFER_SIZE 1250
+# define BUFF_SIZE 1250
 # define MAX_CMDS 25
 # define MAX_ARGS 25
 # define MAX_REDIRS 3
@@ -51,6 +51,8 @@
  *                                 Structures								  *
  *																			  *
  ******************************************************************************/
+
+typedef struct s_command_line t_command_line;
 
 typedef struct s_token
 {
@@ -62,8 +64,6 @@ typedef struct s_lexer_handler
 {
 	char *buffer;
 	char *cmd_str;
-	bool in_sq;
-	bool in_dq;
 	int buf_len;
 	int	buffer_size;
 	int	argc; // Number of arguments
@@ -80,6 +80,7 @@ typedef struct s_command
 	char	*append_file;
 	char	*heredoc_delim; // File for heredoc input
 	bool	builtin; // Flag for background execution
+	t_command_line	*cmd_line;
 } t_command;
 
 typedef struct s_command_line
@@ -142,8 +143,12 @@ void	exec_pipe(t_command *cmd, char **envp);
 void	exec_last(t_command *cmd, char **envp);
 void	redirs(t_command *cmd);
 
+// HEREDOC
+void	heredoc(t_command *cmd);
+void	read_from_stdin(int pipe_fd[2], char  *delim);
+
 // BUILT INS
-int	exec_echo(char **args, char **envp);
+int	exec_echo(char **args);
 int	echo_var(char **argv, char **envp);
 int	exec_pwd(void);
 int	exec_env(char **envp);

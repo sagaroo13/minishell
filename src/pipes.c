@@ -36,6 +36,11 @@ void exec_last(t_command *cmd, char **envp)
     pid_t pid;
 	int status;
 
+    if (cmd->builtin)
+    {
+        exec_builtin(cmd->args, envp);
+        return ;
+    }
     if ((pid = fork()) == -1)
         exit(EXIT_FAILURE);
     if (!pid)

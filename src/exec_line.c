@@ -77,10 +77,13 @@ void exec_line(char *line, char **envp)
 	t_command_line	cmd_line;
 	int	i;
 
+	(void)envp;
 	parse_line(&cmd_line, line);
 	i = -1;
 	while (++i < cmd_line.n_cmds)
 	{
+		if (cmd_line.cmds[i].heredoc_delim)
+			heredoc(&cmd_line.cmds[i]);
         if (i != cmd_line.n_cmds - 1)
             exec_pipe(&cmd_line.cmds[i], envp);
         else

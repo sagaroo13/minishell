@@ -50,6 +50,8 @@ int	count_argv(t_command *cmd, t_lexer_handler handler)
 	{
 		if ((ft_strchr_charset(handler.tokens[i].token_str, "<>") && !handler.tokens[i].quoted) || is_file(cmd, handler.tokens[i].token_str))
 			continue ;
+		if (i > 0 && ft_strchr_charset(handler.tokens[i - 1].token_str, "<>") && !handler.tokens[i - 1].quoted)
+			continue ;
 		count++;
 	}
 	return (count);
@@ -68,6 +70,8 @@ void	get_arguments(t_command *cmd, t_lexer_handler handler)
 	while (++i < handler.n_tokens - 1)
 	{
 		if ((ft_strchr_charset(handler.tokens[i].token_str, "<>") && !handler.tokens[i].quoted) || is_file(cmd, handler.tokens[i].token_str))
+			continue ;
+		if (i > 0 && ft_strchr_charset(handler.tokens[i - 1].token_str, "<>") && !handler.tokens[i - 1].quoted)
 			continue ;
 		cmd->args[++j] = ft_strdup(handler.tokens[i].token_str);
 	}
@@ -105,7 +109,7 @@ char	*get_redirection(t_lexer_handler handler, char *redirection, int n)
 	else if (handler.tokens[index + 1].quoted || !is_meta(handler.tokens[index + 1].token_str))
 		file_name = ft_strdup(handler.tokens[index + 1].token_str);
 	else
-		perror("Syntax error: No se especificó un archivo para la redirección");
+		perror("syntax error: No se especificó un archivo para la redirección");
 	return (file_name);
 }
 
@@ -167,11 +171,9 @@ int	count_tokens(const char *s)
 
 void	init_handler(t_lexer_handler *handler, char *cmd_str)
 {
-	handler->buffer_size = BUFFER_SIZE + 1;
+	handler->buffer_size = BUFF_SIZE + 1;
 	handler->buffer = safe_malloc(sizeof(char) * (handler->buffer_size), true);
 	handler->cmd_str = cmd_str;
-	handler->in_sq = false;
-	handler->in_dq = false;
 	handler->argc = 0;
 	handler->buf_len = 0;
 	handler->n_tokens = (count_tokens(cmd_str) + 1);
@@ -220,14 +222,10 @@ static void	handle_sq(t_lexer_handler *handler, char **s)
     while (**s && **s != '\'')
     {
         if (handler->buf_len < handler->buffer_size)
-            handler->buffer[handler->buf_len++] = **s;
-        (*s)++;
+            handler->buffer[handler->buf_len++] = *(*s)++;
     }
     if (**s != '\'')
-    {
-        perror("Syntax error: missing closing single quote");
-        exit(EXIT_FAILURE);
-    }
+        perror("syntax error: missing closing single quote");
     push_buffer(handler, true);
 }
 
@@ -241,15 +239,11 @@ static void	handle_dq(t_lexer_handler *handler, char **s)
         else
         {
             if (handler->buf_len < handler->buffer_size)
-                handler->buffer[handler->buf_len++] = **s;
-            (*s)++;
+                handler->buffer[handler->buf_len++] = *(*s)++;
         }
     }
     if (**s != '\"')
-    {
-        perror("Syntax error: missing closing double quote");
-        exit(EXIT_FAILURE);
-    }
+        perror("syntax error: missing closing double quote");
     push_buffer(handler, true);
 }
 
@@ -279,7 +273,7 @@ void	lexer(t_lexer_handler *handler, char *cmd_str)
 	handler->tokens[handler->argc].token_str = NULL;
 }
 
-void	get_cmd_info(t_command *cmd, char *cmd_str)
+void	get_cmd_info(t_command_line *cmd_line, t_command *cmd, char *cmd_str)
 {
 	t_lexer_handler	handler;
 
@@ -290,6 +284,7 @@ void	get_cmd_info(t_command *cmd, char *cmd_str)
 		cmd->builtin = true;
 	else
 		cmd->builtin = false;
+	cmd->cmd_line = cmd_line;
 	free_handler(&handler);
 }
 
@@ -301,7 +296,9 @@ void	get_cmds_info(t_command_line *cmd_line, char *line)
 	line_parts = ft_split(line, '|');
 	i = -1;
 	while (line_parts[++i])
-		get_cmd_info(&cmd_line->cmds[i], line_parts[i]);
+		get_cmd_info(cmd_line, &cmd_line->cmds[i], line_parts[i]);
+	if (i != cmd_line->n_cmds)
+		perror("syntax error: Pipeline not closed");
 	ft_free_matrix(line_parts);
 }
 

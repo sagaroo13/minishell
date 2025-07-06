@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-int	exec_echo(char **args, char **envp)
+int	exec_echo(char **args)
 {
 	int	i;
 	int	newline;
@@ -14,17 +14,9 @@ int	exec_echo(char **args, char **envp)
 	}
 	while (args[i])
 	{
-		if (echo_var(args, envp))
-		{
-			write(1, "\n", 1);
-			return 1;
-		}
-		else
-		{
-			write(1, args[i], ft_strlen(args[i]));
+		write(1, args[i], ft_strlen(args[i]));
 		if (args[i + 1])
 			write(1, " ", 1);
-		}
 		i++;
 	}
 	if (newline)

@@ -175,7 +175,7 @@ void print_tokens(t_lexer_handler *handler)
 int main(void)
 {
 	t_lexer_handler handler;
-	char *line = "echo 'Hello World' \"$ Path: '$HOME'\" $";
+	char *line = "echo $USER";
 
 	printf("Input line: %s\n\n", line);
 	lexer(&handler, line);

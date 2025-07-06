@@ -61,34 +61,34 @@ int env_export(char **argv, char **envp)
 	return (1);
 }
 
-int	echo_var(char **argv, char **envp)
-{
-	int i;
-	int j;
-	char *value;
+// int	echo_var(char **argv, char **envp)
+// {
+// 	int i;
+// 	int j;
+// 	char *value;
 
-	i = 0;
-	j = 0;
-	while (argv[i])
-	{
-		if (argv[i][0] == '$')
-		{
-			j = 0;
-			while (envp[j])
-			{
-				if (ft_strncmp(&argv[i][1], envp[j], ft_strlen(&argv[i][1])) == 0)
-				{
-					value = ft_strchr(envp[j], '=');
-					if (value)
-						write(1, value + 1, ft_strlen(value + 1));
-					return (1);
-					write(1, "\n", 1);
-				}
-				j++;
-			}
-			return (1);
-		}
-		i++;
-	}
-	return (0);
-}
+// 	i = 0;
+// 	j = 0;
+// 	while (argv[i])
+// 	{
+// 		if (argv[i][0] == '$')
+// 		{
+// 			j = 0;
+// 			while (envp[j])
+// 			{
+// 				if (ft_strncmp(&argv[i][1], envp[j], ft_strlen(&argv[i][1])) == 0)
+// 				{
+// 					value = ft_strchr(envp[j], '=');
+// 					if (value)
+// 						write(1, value + 1, ft_strlen(value + 1));
+// 					return (1);
+// 					write(1, "\n", 1);
+// 				}
+// 				j++;
+// 			}
+// 			return (1);
+// 		}
+// 		i++;
+// 	}
+// 	return (0);
+// }
