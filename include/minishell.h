@@ -138,7 +138,7 @@ void	disable_echoctl();
 void	restore_terminal();
 
 // PIPE & REDIRS
-void	exec_pipe(t_command *cmd, char **envp);
+void	exec_pipe(char *cmd_name, char **cmd_lst, char **envp, char *stderr_file);
 void	exec_last(t_command *cmd, char **envp);
 void	redirs(t_command *cmd);
 
