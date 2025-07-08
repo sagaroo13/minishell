@@ -1,4 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirs.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/08 17:01:20 by jsagaro-          #+#    #+#             */
+/*   Updated: 2025/07/08 17:01:20 by jsagaro-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
+
 void	redir_in(t_command *cmd)
 {
 	int	fd;
@@ -7,7 +20,7 @@ void	redir_in(t_command *cmd)
 	{
 		fd = safe_open(cmd->stdin.redirs[cmd->stdin.n_redirs - 1], READ);
 		safe_dup2(fd, STDIN_FILENO);
-    	safe_close(fd);
+		safe_close(fd);
 	}
 }
 
@@ -55,13 +68,13 @@ void	redir_out(t_command *cmd)
 	{
 		fd = safe_open(cmd->stdout.redirs[cmd->stdout.n_redirs - 1], WRITE);
 		safe_dup2(fd, STDOUT_FILENO);
-    	safe_close(fd);
+		safe_close(fd);
 	}
 	else
 	{
 		fd = safe_open(cmd->append.redirs[cmd->append.n_redirs - 1], APPEND);
 		safe_dup2(fd, STDOUT_FILENO);
-    	safe_close(fd);
+		safe_close(fd);
 	}
 }
 
@@ -71,11 +84,11 @@ void	redir_err(t_command *cmd)
 
 	open_all_files(cmd->stderr, WRITE);
 	if (cmd->stderr.redirs)
-    {
-        fd = safe_open(cmd->stderr.redirs[cmd->stderr.n_redirs - 1], WRITE);
+	{
+		fd = safe_open(cmd->stderr.redirs[cmd->stderr.n_redirs - 1], WRITE);
 		safe_dup2(fd, STDERR_FILENO);
 		safe_close(fd);
-    }
+	}
 }
 
 void	redirs(t_command *cmd)

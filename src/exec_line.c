@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_line.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/08 17:31:51 by jsagaro-          #+#    #+#             */
+/*   Updated: 2025/07/08 20:49:41 by jsagaro-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 // char *find_path(char **envp)
@@ -19,11 +31,11 @@
 // 	return (env_path);
 // }
 
-char *try_executable_path(char **paths, char *line)
+char	*try_executable_path(char **paths, char *line)
 {
-	char *path_part;
-	char *path;
-	int i;
+	char	*path_part;
+	char	*path;
+	int		i;
 
 	i = -1;
 	while (paths[++i])
@@ -38,11 +50,11 @@ char *try_executable_path(char **paths, char *line)
 	return (line);
 }
 
-char *get_path(char *line)
+char	*get_path(char *line)
 {
-	char *env_path;
-	char **paths;
-	char *executable_path;
+	char	*env_path;
+	char	**paths;
+	char	*executable_path;
 
 	env_path = getenv("PATH");
 	if (!env_path)
@@ -55,39 +67,42 @@ char *get_path(char *line)
 	return (executable_path);
 }
 
-void exec(char *cmd_name, char **cmd_args, char **envp)
+void	exec(char *cmd_name, char **cmd_args, char **envp)
 {
-	char *path;
+	char	*path;
 
 	if (is_builtin(cmd_name))
 		exec_builtin(cmd_args, envp);
 	else
 	{
 		path = get_path(cmd_name);
-		// printf("Path: %s\n", path);
 		execve(path, cmd_args, envp);
 		perror("Error al ejecutar execvp");
-    	exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
-
 }
 
-void exec_line(char *line, char **envp)
+void	exec_line(char *line, char **envp)
 {
 	t_command_line	cmd_line;
-	int	i;
+	int				i;
 
-	(void)envp;
 	parse_line(&cmd_line, line);
+	if (!cmd_line.execute)
+	{
+		perror(cmd_line.err_msg);
+		free_cmd_line(&cmd_line);
+		return ;
+	}
 	i = -1;
 	while (++i < cmd_line.n_cmds)
 	{
 		if (cmd_line.cmds[i].heredoc.redirs)
 			heredoc(&cmd_line.cmds[i]);
-        if (i != cmd_line.n_cmds - 1)
-            exec_pipe(&cmd_line.cmds[i], envp);
-        else
-            exec_last(&cmd_line.cmds[i], envp);
+		if (i != cmd_line.n_cmds - 1)
+			exec_pipe(&cmd_line.cmds[i], envp);
+		else
+			exec_last(&cmd_line.cmds[i], envp);
 	}
 	free_cmd_line(&cmd_line);
 }

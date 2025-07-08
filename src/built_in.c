@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   built_in.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/08 17:43:40 by jsagaro-          #+#    #+#             */
+/*   Updated: 2025/07/08 19:30:43 by jsagaro-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 int	exec_echo(char **args)
@@ -14,13 +26,13 @@ int	exec_echo(char **args)
 	}
 	while (args[i])
 	{
-		write(1, args[i], ft_strlen(args[i]));
+		write(STDOUT_FILENO, args[i], ft_strlen(args[i]));
 		if (args[i + 1])
-			write(1, " ", 1);
+			write(STDOUT_FILENO, " ", 1);
 		i++;
 	}
 	if (newline)
-		write(1, "\n", 1);
+		write(STDOUT_FILENO, "\n", 1);
 	return (1);
 }
 

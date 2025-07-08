@@ -6,17 +6,11 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 12:23:53 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/07/01 14:54:32 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/07/08 20:51:59 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-// void	error_exit(const char *msg)
-// {
-// 	perror(msg);
-// 	exit(EXIT_FAILURE);
-// }
 
 bool	search_file(char **files, char *str, int len)
 {
@@ -37,8 +31,10 @@ bool	is_file(t_command *cmd, char *str)
 {
 	if (!str || !*str)
 		return (false);
-	if (search_file(cmd->stdin.redirs, str, cmd->stdin.n_redirs) || search_file(cmd->stdout.redirs, str, cmd->stdout.n_redirs)
-		|| search_file(cmd->stderr.redirs, str, cmd->stderr.n_redirs) || search_file(cmd->append.redirs, str, cmd->append.n_redirs)
+	if (search_file(cmd->stdin.redirs, str, cmd->stdin.n_redirs)
+		|| search_file(cmd->stdout.redirs, str, cmd->stdout.n_redirs)
+		|| search_file(cmd->stderr.redirs, str, cmd->stderr.n_redirs)
+		|| search_file(cmd->append.redirs, str, cmd->append.n_redirs)
 		|| search_file(cmd->heredoc.redirs, str, cmd->heredoc.n_redirs))
 		return (true);
 	return (false);
@@ -49,7 +45,7 @@ bool	is_meta(char *str)
 	if (!str || !*str)
 		return (true);
 	if (ft_strstr(str, ">") || ft_strstr(str, "<") || ft_strstr(str, ">>")
-		|| ft_strstr(str, "<<") || ft_strstr(str, "2>") || ft_strstr(str, "$"))
+		|| ft_strstr(str, "<<") || ft_strstr(str, "2>"))
 		return (true);
 	return (false);
 }
@@ -63,7 +59,9 @@ int	count_argv(t_command *cmd, t_lexer_handler handler)
 	i = -1;
 	while (++i < handler.n_tokens - 1)
 	{
-		if ((ft_strchr_charset(handler.tokens[i].token_str, "<>") && !handler.tokens[i].quoted) || is_file(cmd, handler.tokens[i].token_str))
+		if ((ft_strchr_charset(handler.tokens[i].token_str, "<>")
+				&& !handler.tokens[i].quoted) || is_file(cmd,
+				handler.tokens[i].token_str))
 			continue ;
 		count++;
 	}
@@ -72,9 +70,9 @@ int	count_argv(t_command *cmd, t_lexer_handler handler)
 
 void	get_arguments(t_command *cmd, t_lexer_handler handler)
 {
-	int		n_args;
-	int		i;
-	int		j;
+	int	n_args;
+	int	i;
+	int	j;
 
 	n_args = count_argv(cmd, handler);
 	cmd->args = safe_malloc(sizeof(char *) * (n_args + 1), true);
@@ -82,7 +80,9 @@ void	get_arguments(t_command *cmd, t_lexer_handler handler)
 	j = -1;
 	while (++i < handler.n_tokens - 1)
 	{
-		if ((ft_strchr_charset(handler.tokens[i].token_str, "<>") && !handler.tokens[i].quoted) || is_file(cmd, handler.tokens[i].token_str))
+		if ((ft_strchr_charset(handler.tokens[i].token_str, "<>")
+				&& !handler.tokens[i].quoted) || is_file(cmd,
+				handler.tokens[i].token_str))
 			continue ;
 		cmd->args[++j] = ft_strdup(handler.tokens[i].token_str);
 	}
@@ -96,10 +96,14 @@ char	*find_redir(t_lexer_handler handler, int index, int n)
 	file = NULL;
 	if ((int)ft_strlen(handler.tokens[index].token_str) > n)
 		file = ft_strdup(handler.tokens[index].token_str + n);
-	else if (handler.tokens[index + 1].quoted || !is_meta(handler.tokens[index + 1].token_str))
+	else if (handler.tokens[index + 1].quoted
+		|| !is_meta(handler.tokens[index + 1].token_str))
 		file = ft_strdup(handler.tokens[index + 1].token_str);
 	else
-		perror("syntax error: No se especificó un archivo para la redirección");
+	{
+		handler.cmd->cmd_line->err_msg = "syntax error: No se especificó un archivo para la redirección";
+		handler.cmd->cmd_line->execute = false;
+	}
 	return (file);
 }
 
@@ -116,8 +120,9 @@ char	**get_redirection(t_lexer_handler handler, char *redirection, int len, int 
 	j = 0;
 	while (i < handler.n_tokens - 1)
 	{
-		if (!ft_strncmp(handler.tokens[i].token_str, redirection, n) && !handler.tokens[i].quoted &&
-			!ft_strchr_charset((handler.tokens[i].token_str + n), "<>"))
+		if (!ft_strncmp(handler.tokens[i].token_str, redirection, n)
+			&& !handler.tokens[i].quoted
+			&& !ft_strchr_charset((handler.tokens[i].token_str + n), "<>"))
 			files[j++] = find_redir(handler, i, n);
 		i++;
 	}
@@ -139,12 +144,12 @@ void	get_redirections(t_command *cmd, t_lexer_handler handler, char *cmd_str)
 	cmd->heredoc.redirs = get_redirection(handler, "<<", cmd->heredoc.n_redirs, 2);
 }
 
-void    free_handler(t_lexer_handler *handler)
+void	free_handler(t_lexer_handler *handler)
 {
-	int i;
+	int	i;
 
 	i = -1;
-    if (handler->tokens)
+	if (handler->tokens)
 	{
 		while (++i < handler->n_tokens)
 		{
@@ -153,14 +158,14 @@ void    free_handler(t_lexer_handler *handler)
 		}
 		free(handler->tokens);
 	}
-    if (handler->buffer)
-        free(handler->buffer);
+	if (handler->buffer)
+		free(handler->buffer);
 }
 
 int	count_tokens(const char *s)
 {
-	int	i;
-	int	count;
+	int		i;
+	int		count;
 	bool	in_sq;
 	bool	in_dq;
 	bool	in_token;
@@ -186,7 +191,7 @@ int	count_tokens(const char *s)
 	return (count);
 }
 
-void	init_handler(t_lexer_handler *handler, char *cmd_str)
+void	init_handler(t_lexer_handler *handler, t_command *cmd, char *cmd_str)
 {
 	handler->buffer_size = BUFF_SIZE + 1;
 	handler->buffer = safe_malloc(sizeof(char) * (handler->buffer_size), true);
@@ -194,17 +199,18 @@ void	init_handler(t_lexer_handler *handler, char *cmd_str)
 	handler->argc = 0;
 	handler->buf_len = 0;
 	handler->n_tokens = (count_tokens(cmd_str) + 1);
+	handler->cmd = cmd;
 	handler->tokens = safe_malloc(sizeof(t_token) * (handler->n_tokens), true);
 }
 
 static void	push_buffer(t_lexer_handler *handler, bool quoted)
 {
-    handler->cmd_str++;
+	handler->cmd_str++;
 	if (handler->buf_len == 0)
 		return ;
 	handler->tokens[handler->argc].quoted = false;
 	if (quoted)
-        handler->tokens[handler->argc].quoted = true;
+		handler->tokens[handler->argc].quoted = true;
 	handler->buffer[handler->buf_len] = '\0';
 	handler->tokens[handler->argc++].token_str = ft_strdup(handler->buffer);
 	free(handler->buffer);
@@ -223,7 +229,8 @@ void	handle_var(t_lexer_handler *handler, char **s)
 	while (**s && (ft_isalnum(**s) || **s == '_') && i < handler->buffer_size)
 		var[i++] = *(*s)++;
 	var[i] = '\0';
-	if ((val = getenv(var)))
+	val = getenv(var);
+	if (val)
 	{
 		while (*val)
 		{
@@ -235,46 +242,52 @@ void	handle_var(t_lexer_handler *handler, char **s)
 
 static void	handle_sq(t_lexer_handler *handler, char **s)
 {
-    (*s)++;
-    while (**s && **s != '\'')
-    {
-        if (handler->buf_len < handler->buffer_size)
-            handler->buffer[handler->buf_len++] = *(*s)++;
-    }
-    if (**s != '\'')
-        perror("syntax error: missing closing single quote");
-    push_buffer(handler, true);
+	(*s)++;
+	while (**s && **s != '\'')
+	{
+		if (handler->buf_len < handler->buffer_size)
+			handler->buffer[handler->buf_len++] = *(*s)++;
+	}
+	if (**s != '\'')
+	{
+		handler->cmd->cmd_line->err_msg = "syntax error: missing closing single quote";
+		handler->cmd->cmd_line->execute = false;
+	}
+	push_buffer(handler, true);
 }
 
 static void	handle_dq(t_lexer_handler *handler, char **s)
 {
 	(*s)++;
-    while (**s && **s != '\"')
-    {
-        if (**s == '$' && ft_isalpha((*s)[1]))
-            handle_var(handler, s);
-        else
-        {
-            if (handler->buf_len < handler->buffer_size)
-                handler->buffer[handler->buf_len++] = *(*s)++;
-        }
-    }
-    if (**s != '\"')
-        perror("syntax error: missing closing double quote");
-    push_buffer(handler, true);
+	while (**s && **s != '\"')
+	{
+		if (**s == '$' && ft_isalpha((*s)[1]))
+			handle_var(handler, s);
+		else
+		{
+			if (handler->buf_len < handler->buffer_size)
+				handler->buffer[handler->buf_len++] = *(*s)++;
+		}
+	}
+	if (**s != '\"')
+	{
+		handler->cmd->cmd_line->err_msg = "syntax error: missing closing double quote";
+		handler->cmd->cmd_line->execute = false;
+	}
+	push_buffer(handler, true);
 }
 
-static void    handle_nq(t_lexer_handler *handler, char **s)
+static void	handle_nq(t_lexer_handler *handler, char **s)
 {
-    if (**s == '$' && ft_isalpha((*s)[1]))
-        handle_var(handler, s);
-    else
-        handler->buffer[handler->buf_len++] = *(*s)++;
+	if (**s == '$' && ft_isalpha((*s)[1]))
+		handle_var(handler, s);
+	else
+		handler->buffer[handler->buf_len++] = *(*s)++;
 }
 
-void	lexer(t_lexer_handler *handler, char *cmd_str)
+void	lexer(t_lexer_handler *handler, t_command *cmd, char *cmd_str)
 {
-	init_handler(handler, cmd_str);
+	init_handler(handler, cmd, cmd_str);
 	while (*handler->cmd_str)
 	{
 		if (ft_isspace(*handler->cmd_str))
@@ -283,8 +296,8 @@ void	lexer(t_lexer_handler *handler, char *cmd_str)
 			handle_sq(handler, &handler->cmd_str);
 		else if (*handler->cmd_str == '\"')
 			handle_dq(handler, &handler->cmd_str);
-        else
-            handle_nq(handler, &handler->cmd_str);
+		else
+			handle_nq(handler, &handler->cmd_str);
 	}
 	push_buffer(handler, false);
 	handler->tokens[handler->argc].token_str = NULL;
@@ -296,7 +309,7 @@ void	get_cmd_info(t_command_line *cmd_line, t_command *cmd, char *cmd_str)
 
 	cmd->cmd_str = ft_strdup(cmd_str);
 	cmd->cmd_line = cmd_line;
-	lexer(&handler, cmd_str);
+	lexer(&handler, cmd, cmd_str);
 	get_redirections(cmd, handler, cmd_str);
 	get_arguments(cmd, handler);
 	if (is_builtin(cmd->args[0]))
@@ -316,7 +329,10 @@ void	get_cmds_info(t_command_line *cmd_line, char *line)
 	while (line_parts[++i])
 		get_cmd_info(cmd_line, &cmd_line->cmds[i], line_parts[i]);
 	if (i != cmd_line->n_cmds && i > 0)
-		perror("syntax error: Pipeline not closed");
+	{
+		cmd_line->err_msg = "syntax error: Pipeline not closed";
+		cmd_line->execute = false;
+	}
 	ft_free_matrix(line_parts);
 }
 
@@ -331,27 +347,27 @@ void	print_info(t_command_line *cmd_line)
 		print_all(cmd_line->cmds[i].args);
 		if (cmd_line->cmds[i].stdin.redirs)
 		{
-			printf(GREEN"Stdin: \n"RESET);
+			printf(GREEN "Stdin: \n" RESET);
 			print_all(cmd_line->cmds[i].stdin.redirs);
 		}
 		if (cmd_line->cmds[i].stdout.redirs)
 		{
-			printf(GREEN"Stdout:\n"RESET);
+			printf(GREEN "Stdout:\n" RESET);
 			print_all(cmd_line->cmds[i].stdout.redirs);
 		}
 		if (cmd_line->cmds[i].stderr.redirs)
 		{
-			printf(GREEN"Stderr:\n"RESET);
+			printf(GREEN "Stderr:\n" RESET);
 			print_all(cmd_line->cmds[i].stderr.redirs);
 		}
 		if (cmd_line->cmds[i].append.redirs)
 		{
-			printf(GREEN"Append:\n"RESET);
+			printf(GREEN "Append:\n" RESET);
 			print_all(cmd_line->cmds[i].append.redirs);
 		}
 		if (cmd_line->cmds[i].heredoc.redirs)
 		{
-			printf(GREEN"Heredoc:\n"RESET);
+			printf(GREEN "Heredoc:\n" RESET);
 			print_all(cmd_line->cmds[i].heredoc.redirs);
 		}
 		if (cmd_line->cmds[i].builtin)
@@ -388,7 +404,7 @@ void	free_cmd_line(t_command_line *cmd_line)
 
 void	parse_line(t_command_line *cmd_line, char *line)
 {
-	t_command *cmds;
+	t_command	*cmds;
 
 	cmd_line->n_cmds = (ft_occurrence(line, '|') + 1);
 	cmds = safe_malloc(sizeof(t_command) * (cmd_line->n_cmds), true);

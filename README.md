@@ -6,11 +6,10 @@ HEAD
 Minishell
 
 debbie:
-señales
+señales | manejo de errores de señales
 
 juan:
-heredoc
-pulir exec, pipes y redirs
+handler errors and leaks
 
 ambos:
 corregir historial

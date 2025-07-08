@@ -52,8 +52,6 @@ void	init_handler(t_lexer_handler *handler, char *cmd_str)
 	handler->buffer_size = BUFFER_SIZE + 1;
 	handler->buffer = safe_malloc(sizeof(char) * (handler->buffer_size), true);
 	handler->cmd_str = cmd_str;
-	handler->in_sq = false;
-	handler->in_dq = false;
 	handler->argc = 0;
 	handler->buf_len = 0;
 	handler->n_tokens = (count_tokens(cmd_str) + 1);
