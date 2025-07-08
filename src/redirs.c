@@ -1,31 +1,86 @@
 #include "../include/minishell.h"
-
-void	redirs(t_command *cmd)
+void	redir_in(t_command *cmd)
 {
 	int	fd;
 
-	if (cmd->stdin_file)
+	if (cmd->stdin.redirs)
 	{
-		fd = safe_open(cmd->stdin_file, READ);
+		fd = safe_open(cmd->stdin.redirs[cmd->stdin.n_redirs - 1], READ);
 		safe_dup2(fd, STDIN_FILENO);
     	safe_close(fd);
 	}
-	if (cmd->stdout_file)
+}
+
+void	open_all_files(t_redirections red, t_open_flags flags)
+{
+	int	i;
+	int	fd;
+
+	i = -1;
+	while (++i < red.n_redirs)
 	{
-		fd = safe_open(cmd->stdout_file, WRITE);
+		fd = safe_open(red.redirs[i], flags);
+		safe_close(fd);
+	}
+}
+
+void	search_last_redir(t_redirections red, char *cmd_str, int *iter)
+{
+	int		i;
+	char	*p;
+
+	i = -1;
+	*iter = 0;
+	while (++i < red.n_redirs)
+	{
+		p = ft_strstr(cmd_str, red.redirs[i]);
+		if (p)
+			*iter = p - cmd_str;
+	}
+}
+
+void	redir_out(t_command *cmd)
+{
+	int	fd;
+	int	i;
+	int	j;
+
+	open_all_files(cmd->stdout, WRITE);
+	open_all_files(cmd->append, APPEND);
+	search_last_redir(cmd->stdout, cmd->cmd_str, &i);
+	search_last_redir(cmd->append, cmd->cmd_str, &j);
+	if (!i && !j)
+		return ;
+	else if (i > j)
+	{
+		fd = safe_open(cmd->stdout.redirs[cmd->stdout.n_redirs - 1], WRITE);
 		safe_dup2(fd, STDOUT_FILENO);
     	safe_close(fd);
 	}
-	if (cmd->stderr_file)
+	else
+	{
+		fd = safe_open(cmd->append.redirs[cmd->append.n_redirs - 1], APPEND);
+		safe_dup2(fd, STDOUT_FILENO);
+    	safe_close(fd);
+	}
+}
+
+void	redir_err(t_command *cmd)
+{
+	int	fd;
+
+	open_all_files(cmd->stderr, WRITE);
+	if (cmd->stderr.redirs)
     {
-        fd = safe_open(cmd->stderr_file, WRITE);
+        fd = safe_open(cmd->stderr.redirs[cmd->stderr.n_redirs - 1], WRITE);
 		safe_dup2(fd, STDERR_FILENO);
 		safe_close(fd);
     }
-	if (cmd->append_file)
-    {
-        fd = safe_open(cmd->append_file, APPEND);
-		safe_dup2(fd, STDOUT_FILENO);
-		safe_close(fd);
-    }
+}
+
+void	redirs(t_command *cmd)
+{
+	redir_in(cmd);
+	redir_out(cmd);
+	redir_err(cmd);
 }

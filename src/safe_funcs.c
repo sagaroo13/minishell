@@ -5,7 +5,7 @@ void *safe_malloc(size_t size, bool calloc_flag)
     void *ptr;
 
     if (size == 0)
-        perror(RED"[ERROR]"RESET" Memory allocation failed.");
+        return (NULL);
     if (calloc_flag)
         ptr = ft_calloc(1, size);
     else

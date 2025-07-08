@@ -28,12 +28,14 @@ void	heredoc(t_command *cmd)
 	int	pipe_fd[2];
 	pid_t	pid;
 
+	if (cmd->heredoc.n_redirs > 1)
+		perror("syntax error: too much heredocs");
 	if (pipe(pipe_fd) == -1)
 		exit(EXIT_FAILURE);
 	if ((pid = fork()) == -1)
 		exit(EXIT_FAILURE);
 	if (!pid)
-		read_from_stdin(pipe_fd, cmd->heredoc_delim);
+		read_from_stdin(pipe_fd, cmd->heredoc.redirs[0]);
 	else
 	{
 		close(pipe_fd[1]);

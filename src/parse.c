@@ -12,24 +12,39 @@
 
 #include "../include/minishell.h"
 
-void	error_exit(const char *msg)
+// void	error_exit(const char *msg)
+// {
+// 	perror(msg);
+// 	exit(EXIT_FAILURE);
+// }
+
+bool	search_file(char **files, char *str, int len)
 {
-	perror(msg);
-	exit(EXIT_FAILURE);
+	int	i;
+
+	if (!files || !*files)
+		return (false);
+	i = -1;
+	while (++i < len)
+	{
+		if (!ft_strcmp(files[i], str))
+			return (true);
+	}
+	return (false);
 }
 
-int	is_file(t_command *cmd, char *str)
+bool	is_file(t_command *cmd, char *str)
 {
 	if (!str || !*str)
 		return (false);
-	if (!ft_strcmp(str, cmd->stdin_file) || !ft_strcmp(str, cmd->stdout_file)
-		|| !ft_strcmp(str, cmd->stderr_file) || !ft_strcmp(str,
-			cmd->append_file) || !ft_strcmp(str, cmd->heredoc_delim))
+	if (search_file(cmd->stdin.redirs, str, cmd->stdin.n_redirs) || search_file(cmd->stdout.redirs, str, cmd->stdout.n_redirs)
+		|| search_file(cmd->stderr.redirs, str, cmd->stderr.n_redirs) || search_file(cmd->append.redirs, str, cmd->append.n_redirs)
+		|| search_file(cmd->heredoc.redirs, str, cmd->heredoc.n_redirs))
 		return (true);
 	return (false);
 }
 
-int	is_meta(char *str)
+bool	is_meta(char *str)
 {
 	if (!str || !*str)
 		return (true);
@@ -50,8 +65,6 @@ int	count_argv(t_command *cmd, t_lexer_handler handler)
 	{
 		if ((ft_strchr_charset(handler.tokens[i].token_str, "<>") && !handler.tokens[i].quoted) || is_file(cmd, handler.tokens[i].token_str))
 			continue ;
-		if (i > 0 && ft_strchr_charset(handler.tokens[i - 1].token_str, "<>") && !handler.tokens[i - 1].quoted)
-			continue ;
 		count++;
 	}
 	return (count);
@@ -71,55 +84,59 @@ void	get_arguments(t_command *cmd, t_lexer_handler handler)
 	{
 		if ((ft_strchr_charset(handler.tokens[i].token_str, "<>") && !handler.tokens[i].quoted) || is_file(cmd, handler.tokens[i].token_str))
 			continue ;
-		if (i > 0 && ft_strchr_charset(handler.tokens[i - 1].token_str, "<>") && !handler.tokens[i - 1].quoted)
-			continue ;
 		cmd->args[++j] = ft_strdup(handler.tokens[i].token_str);
 	}
 	cmd->args[++j] = NULL;
 }
 
-int	find_redir(t_lexer_handler handler, const char *str, int n)
+char	*find_redir(t_lexer_handler handler, int index, int n)
 {
-	int i;
-	int last;
+	char	*file;
 
-	if (!handler.tokens || !str)
-		return (-1);
-	i = -1;
-	last = -1;
-	while (++i < handler.n_tokens - 1)
-	{
-		if (!ft_strncmp(handler.tokens[i].token_str, str, n) && !handler.tokens[i].quoted)
-			last = i;
-	}
-	return (last);
-}
-
-char	*get_redirection(t_lexer_handler handler, char *redirection, int n)
-{
-	char	*file_name;
-	int		index;
-
-	file_name = NULL;
-	index = find_redir(handler, redirection, n);
-	if (index == -1 || ft_strchr_charset((handler.tokens[index].token_str + n), "<>"))
-		return (NULL);
+	file = NULL;
 	if ((int)ft_strlen(handler.tokens[index].token_str) > n)
-		file_name = ft_strdup(handler.tokens[index].token_str + n);
+		file = ft_strdup(handler.tokens[index].token_str + n);
 	else if (handler.tokens[index + 1].quoted || !is_meta(handler.tokens[index + 1].token_str))
-		file_name = ft_strdup(handler.tokens[index + 1].token_str);
+		file = ft_strdup(handler.tokens[index + 1].token_str);
 	else
 		perror("syntax error: No se especificó un archivo para la redirección");
-	return (file_name);
+	return (file);
 }
 
-void	get_redirections(t_command *cmd, t_lexer_handler handler)
+char	**get_redirection(t_lexer_handler handler, char *redirection, int len, int n)
 {
-	cmd->stdin_file = get_redirection(handler, "<", 1);
-	cmd->stdout_file = get_redirection(handler, ">", 1);
-	cmd->stderr_file = get_redirection(handler, "2>", 2);
-	cmd->append_file = get_redirection(handler, ">>", 2);
-	cmd->heredoc_delim = get_redirection(handler, "<<", 2);
+	char	**files;
+	int		i;
+	int		j;
+
+	if (!handler.tokens || !len)
+		return (NULL);
+	files = safe_malloc(sizeof(char *) * (len + 1), true);
+	i = 0;
+	j = 0;
+	while (i < handler.n_tokens - 1)
+	{
+		if (!ft_strncmp(handler.tokens[i].token_str, redirection, n) && !handler.tokens[i].quoted &&
+			!ft_strchr_charset((handler.tokens[i].token_str + n), "<>"))
+			files[j++] = find_redir(handler, i, n);
+		i++;
+	}
+	files[j] = NULL;
+	return (files);
+}
+
+void	get_redirections(t_command *cmd, t_lexer_handler handler, char *cmd_str)
+{
+	cmd->stdin.n_redirs = ft_count_substr(cmd_str, "<");
+	cmd->stdout.n_redirs = ft_count_substr(cmd_str, ">");
+	cmd->stderr.n_redirs = ft_count_substr(cmd_str, "2>");
+	cmd->append.n_redirs = ft_count_substr(cmd_str, ">>");
+	cmd->heredoc.n_redirs = ft_count_substr(cmd_str, "<<");
+	cmd->stdin.redirs = get_redirection(handler, "<", cmd->stdin.n_redirs, 1);
+	cmd->stdout.redirs = get_redirection(handler, ">", cmd->stdout.n_redirs, 1);
+	cmd->stderr.redirs = get_redirection(handler, "2>", cmd->stderr.n_redirs, 2);
+	cmd->append.redirs = get_redirection(handler, ">>", cmd->append.n_redirs, 2);
+	cmd->heredoc.redirs = get_redirection(handler, "<<", cmd->heredoc.n_redirs, 2);
 }
 
 void    free_handler(t_lexer_handler *handler)
@@ -277,14 +294,15 @@ void	get_cmd_info(t_command_line *cmd_line, t_command *cmd, char *cmd_str)
 {
 	t_lexer_handler	handler;
 
+	cmd->cmd_str = ft_strdup(cmd_str);
+	cmd->cmd_line = cmd_line;
 	lexer(&handler, cmd_str);
-	get_redirections(cmd, handler);
+	get_redirections(cmd, handler, cmd_str);
 	get_arguments(cmd, handler);
 	if (is_builtin(cmd->args[0]))
 		cmd->builtin = true;
 	else
 		cmd->builtin = false;
-	cmd->cmd_line = cmd_line;
 	free_handler(&handler);
 }
 
@@ -297,7 +315,7 @@ void	get_cmds_info(t_command_line *cmd_line, char *line)
 	i = -1;
 	while (line_parts[++i])
 		get_cmd_info(cmd_line, &cmd_line->cmds[i], line_parts[i]);
-	if (i != cmd_line->n_cmds)
+	if (i != cmd_line->n_cmds && i > 0)
 		perror("syntax error: Pipeline not closed");
 	ft_free_matrix(line_parts);
 }
@@ -309,18 +327,33 @@ void	print_info(t_command_line *cmd_line)
 	i = -1;
 	while (++i < cmd_line->n_cmds)
 	{
-		printf(BLUE "Command %d:\n" RESET, i + 1);
+		printf(BLUE "Command %d: %s\n" RESET, i + 1, cmd_line->cmds[i].cmd_str);
 		print_all(cmd_line->cmds[i].args);
-		if (cmd_line->cmds[i].stdin_file)
-			printf("Stdin: %s\n", cmd_line->cmds[i].stdin_file);
-		if (cmd_line->cmds[i].stdout_file)
-			printf("Stdout: %s\n", cmd_line->cmds[i].stdout_file);
-		if (cmd_line->cmds[i].stderr_file)
-			printf("Stderr: %s\n", cmd_line->cmds[i].stderr_file);
-		if (cmd_line->cmds[i].append_file)
-			printf("Append: %s\n", cmd_line->cmds[i].append_file);
-		if (cmd_line->cmds[i].heredoc_delim)
-			printf("Heredoc: %s\n", cmd_line->cmds[i].heredoc_delim);
+		if (cmd_line->cmds[i].stdin.redirs)
+		{
+			printf(GREEN"Stdin: \n"RESET);
+			print_all(cmd_line->cmds[i].stdin.redirs);
+		}
+		if (cmd_line->cmds[i].stdout.redirs)
+		{
+			printf(GREEN"Stdout:\n"RESET);
+			print_all(cmd_line->cmds[i].stdout.redirs);
+		}
+		if (cmd_line->cmds[i].stderr.redirs)
+		{
+			printf(GREEN"Stderr:\n"RESET);
+			print_all(cmd_line->cmds[i].stderr.redirs);
+		}
+		if (cmd_line->cmds[i].append.redirs)
+		{
+			printf(GREEN"Append:\n"RESET);
+			print_all(cmd_line->cmds[i].append.redirs);
+		}
+		if (cmd_line->cmds[i].heredoc.redirs)
+		{
+			printf(GREEN"Heredoc:\n"RESET);
+			print_all(cmd_line->cmds[i].heredoc.redirs);
+		}
 		if (cmd_line->cmds[i].builtin)
 			printf("Builtin: %s\n", cmd_line->cmds[i].args[0]);
 		else
@@ -339,11 +372,12 @@ void	free_cmd_line(t_command_line *cmd_line)
 	while (++i < cmd_line->n_cmds)
 	{
 		ft_free_matrix(cmd_line->cmds[i].args);
-		free(cmd_line->cmds[i].stdin_file);
-		free(cmd_line->cmds[i].stdout_file);
-		free(cmd_line->cmds[i].stderr_file);
-		free(cmd_line->cmds[i].append_file);
-		free(cmd_line->cmds[i].heredoc_delim);
+		ft_free_matrix(cmd_line->cmds[i].stdin.redirs);
+		ft_free_matrix(cmd_line->cmds[i].stdout.redirs);
+		ft_free_matrix(cmd_line->cmds[i].stderr.redirs);
+		ft_free_matrix(cmd_line->cmds[i].append.redirs);
+		ft_free_matrix(cmd_line->cmds[i].heredoc.redirs);
+		free(cmd_line->cmds[i].cmd_str);
 	}
 	free(cmd_line->line);
 	free(cmd_line->cmds);

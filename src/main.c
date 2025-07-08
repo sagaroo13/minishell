@@ -40,7 +40,7 @@ void minishell(char **envp)
         free(prompt);
 
         if (!line)
-            break;
+            break ;
         else
         {
             add_history(line);

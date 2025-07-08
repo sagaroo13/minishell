@@ -42,9 +42,6 @@
 # define UNDERLINE "\033[4m"
 
 # define BUFF_SIZE 1250
-# define MAX_CMDS 25
-# define MAX_ARGS 25
-# define MAX_REDIRS 3
 
 /******************************************************************************
  *  																		  *
@@ -71,15 +68,23 @@ typedef struct s_lexer_handler
 	t_token *tokens;
 } t_lexer_handler;
 
+typedef struct s_redirections
+{
+	int				n_redirs;
+	char			**redirs;
+} t_redirections;
+
 typedef struct s_command
 {
 	char	**args; // Array of command arguments
-	char	*stdin_file;
-	char	*stdout_file;
-	char	*stderr_file;
-	char	*append_file;
-	char	*heredoc_delim; // File for heredoc input
+	char	*cmd_str;
 	bool	builtin; // Flag for background execution
+	t_redirections	stdin;
+	t_redirections	stdout;
+	t_redirections	stderr;
+	t_redirections	append;
+	t_redirections	heredoc;
+
 	t_command_line	*cmd_line;
 } t_command;
 

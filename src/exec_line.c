@@ -82,7 +82,7 @@ void exec_line(char *line, char **envp)
 	i = -1;
 	while (++i < cmd_line.n_cmds)
 	{
-		if (cmd_line.cmds[i].heredoc_delim)
+		if (cmd_line.cmds[i].heredoc.redirs)
 			heredoc(&cmd_line.cmds[i]);
         if (i != cmd_line.n_cmds - 1)
             exec_pipe(&cmd_line.cmds[i], envp);
