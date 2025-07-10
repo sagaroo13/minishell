@@ -41,7 +41,7 @@
 # define BOLD "\033[1m"
 # define UNDERLINE "\033[4m"
 
-# define BUFFER_SIZE 1250
+/* # define BUFFER_SIZE 1250 */
 # define MAX_CMDS 25
 # define MAX_ARGS 25
 # define MAX_REDIRS 3
@@ -132,15 +132,19 @@ void	parse_line(t_command_line *cmd_line, char *line);
 // SIGNALS
 void	sigint_handler(int sig);
 void    set_signals(int mode);
-void	sigint_handler_in_process(int sig);
-void	sigquit_handler_in_process(int sig);
+/* void	sigint_handler_in_process(int sig);
+void	sigquit_handler_in_process(int sig); */
 void	disable_echoctl();
 void	restore_terminal();
 
 // PIPE & REDIRS
-void	exec_pipe(char *cmd_name, char **cmd_lst, char **envp, char *stderr_file);
+void	exec_pipe(t_command *cmd, char **envp);
 void	exec_last(t_command *cmd, char **envp);
 void	redirs(t_command *cmd);
+
+// HEREDOC
+void	heredoc(t_command *cmd);
+void	read_from_stdin(int pipe_fd[2], char  *delim);
 
 // BUILT INS
 int	exec_echo(char **args, char **envp);

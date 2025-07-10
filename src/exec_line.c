@@ -19,17 +19,6 @@
 // 	return (env_path);
 // }
 
-void redir_out_builtin(char *file, int stdfd)
-{
-	int fd = open(file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	if (fd < 0)
-	{
-		perror("Redir (builtin)");
-		return;
-	}
-	dup2(fd, stdfd);
-	close(fd);
-}
 char *try_executable_path(char **paths, char *line)
 {
 	char *path_part;
@@ -82,23 +71,19 @@ void exec(char *cmd_name, char **cmd_args, char **envp)
 	}
 
 }
-/*  void mult_cmds(char **cmds, char **envp)
-{
-    char *args[MAX_ARGS];
-    char *redirs[MAX_REDIRS];
-    int num_comandos;
-    int i;
-}  */
-/* 
+
 void exec_line(char *line, char **envp)
 {
 	t_command_line	cmd_line;
 	int	i;
 
+	(void)envp;
 	parse_line(&cmd_line, line);
 	i = -1;
 	while (++i < cmd_line.n_cmds)
 	{
+		if (cmd_line.cmds[i].heredoc_delim)
+			heredoc(&cmd_line.cmds[i]);
         if (i != cmd_line.n_cmds - 1)
             exec_pipe(&cmd_line.cmds[i], envp);
         else
@@ -106,4 +91,3 @@ void exec_line(char *line, char **envp)
 	}
 	free_cmd_line(&cmd_line);
 }
- */
