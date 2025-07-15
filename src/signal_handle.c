@@ -1,6 +1,7 @@
 #include "../include/minishell.h"
 #include <signal.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -56,21 +57,19 @@ void handle_ctrl_d(void)
 // Asignar manejadores de señales según el modo
 void set_signals(int mode)
 {
-    if (mode == MODE_SHELL)
+    if (mode == MODE_PIPE)
     {
-        signal(SIGINT, sigint_handler);     // Ctrl+C limpia línea y muestra nuevo prompt
-        signal(SIGQUIT, SIG_IGN);           // Ctrl+\ ignorado
+        signal(SIGINT, sigint_handler_in_child);
+        signal(SIGQUIT, SIG_IGN);
     }
     else if (mode == MODE_CHILD)
     {
-        usleep(100);  // Pequeña pausa para evitar problemas de sincronización
-        signal(SIGINT, SIG_DFL);            // Restaurar comportamiento por defecto
-        signal(SIGQUIT, SIG_DFL);           // Igual para Ctrl+
+        signal(SIGINT, sigint_handler_in_child);
+        signal(SIGQUIT, SIG_DFL);
     }
-    else if (mode == MODE_HEREDOC)
+    else if (mode == MODE_SHELL)
     {
-        signal(SIGINT, sigint_handler_heredoc);
-        signal(SIGQUIT, SIG_IGN);
+        signal(SIGINT, sigint_handler);
+        signal(SIGQUIT, SIG_IGN); // bash también lo ignora
     }
 }
-

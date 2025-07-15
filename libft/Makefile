@@ -47,6 +47,7 @@ SRC = ft_isalpha.c	\
 	ft_matrix_strrchr.c	\
 	ft_strchr_charset.c	\
 	ft_matrix_len.c \
+	ft_count_substr.c \
 	get_next_line.c \
 	get_next_line_utils.c \
 

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dediaz-f <dediaz-f@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/08 17:44:43 by jsagaro-          #+#    #+#             */
+/*   Updated: 2025/07/08 17:44:43 by jsagaro-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -7,21 +19,20 @@
  *																			  *
  ******************************************************************************/
 
-#include "../libft/libft.h"
-//readline
-#include <readline/readline.h>
-#include <readline/history.h>
-//other libraries
-#include <stdio.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <string.h>
-#include <stdbool.h>
+# include "../libft/libft.h"
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <stdio.h>
+# include <fcntl.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <ctype.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <signal.h>
+# include <string.h>
+# include <stdbool.h>
 
 /******************************************************************************
  *  																		  *
@@ -41,10 +52,16 @@
 # define BOLD "\033[1m"
 # define UNDERLINE "\033[4m"
 
-/* # define BUFFER_SIZE 1250 */
-# define MAX_CMDS 25
-# define MAX_ARGS 25
-# define MAX_REDIRS 3
+# define BANNER ("\n"GREEN BOLD"\
+███╗   ███╗██╗███╗   ██╗██╗███████╗██╗  ██╗███████╗██╗     ██╗     \n\
+████╗ ████║██║████╗  ██║██║██╔════╝██║  ██║██╔════╝██║     ██║     \n\
+██╔████╔██║██║██╔██╗ ██║██║███████╗███████║█████╗  ██║     ██║     \n\
+██║╚██╔╝██║██║██║╚██╗██║██║╚════██║██╔══██║██╔══╝  ██║     ██║     \n\
+██║ ╚═╝ ██║██║██║ ╚████║██║███████║██║  ██║███████╗███████╗███████╗\n\
+╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝\n\
+\n"RESET)
+
+# define BUFF_SIZE 1250
 
 /******************************************************************************
  *  																		  *
@@ -52,39 +69,50 @@
  *																			  *
  ******************************************************************************/
 
-typedef struct s_token
+typedef struct	s_command_line t_command_line;
+typedef struct	s_command t_command;
+
+typedef struct	s_token
 {
 	char	*token_str;
 	bool	quoted;
 } t_token;
 
-typedef struct s_lexer_handler
+typedef struct	s_lexer_handler
 {
 	char *buffer;
 	char *cmd_str;
-	bool in_sq;
-	bool in_dq;
 	int buf_len;
 	int	buffer_size;
 	int	argc; // Number of arguments
 	int	n_tokens;
+	t_command	*cmd;
 	t_token *tokens;
 } t_lexer_handler;
 
-typedef struct s_command
+typedef struct	s_redirections
+{
+	int				n_redirs;
+	char			**redirs;
+} t_redirections;
+
+typedef struct	s_command
 {
 	char	**args; // Array of command arguments
-	char	*stdin_file;
-	char	*stdout_file;
-	char	*stderr_file;
-	char	*append_file;
-	char	*heredoc_delim; // File for heredoc input
+	char	*cmd_str;
 	bool	builtin; // Flag for background execution
+	t_redirections	stdin;
+	t_redirections	stdout;
+	t_redirections	stderr;
+	t_redirections	append;
+	t_redirections	heredoc;
+	t_command_line	*cmd_line;
 } t_command;
 
-typedef struct s_command_line
+typedef struct	s_command_line
 {
 	char		*line;
+	char		*err_msg;	
 	int			n_cmds;
 	bool		execute;
 	t_command	*cmds;
@@ -108,7 +136,7 @@ typedef enum e_mode
 {
 	MODE_SHELL,
 	MODE_CHILD,
-	MODE_HEREDOC
+	MODE_PIPE
 }	t_mode;
 
 
@@ -131,9 +159,9 @@ void	parse_line(t_command_line *cmd_line, char *line);
 
 // SIGNALS
 void	sigint_handler(int sig);
-void    set_signals(int mode);
-/* void	sigint_handler_in_process(int sig);
-void	sigquit_handler_in_process(int sig); */
+void	set_signals(int mode);
+void	sigint_handler_in_process(int sig);
+void	sigquit_handler_in_process(int sig);
 void	disable_echoctl();
 void	restore_terminal();
 
@@ -147,20 +175,17 @@ void	heredoc(t_command *cmd);
 void	read_from_stdin(int pipe_fd[2], char  *delim);
 
 // BUILT INS
-int	exec_echo(char **args, char **envp);
-int	echo_var(char **argv, char **envp);
-int	exec_pwd(void);
-int	exec_env(char **envp);
-int exec_cd(char **args);
-int	exec_exit(void);
-int env_unset(char **argv, char **envp);
-int env_export(char **argv, char **envp);
-char *get_env_value(const char *key, char **envp);
+int		exec_echo(char **args); 
+int		exec_pwd(void);
+int		exec_env(char **envp);
+int 	exec_cd(char **args);
+int		exec_exit(char **args);
+int 	env_unset(char **argv, char **envp);
+int 	env_export(char **argv, char **envp);
 
 // EXEC BUILT INS
-int	is_builtin(char *command);
-int	exec_builtin(char **args, char **envp);
-/* char *get_path(char **envp, char *line); */
+int		is_builtin(char *command);
+int		exec_builtin(char **args, char **envp);
 
 // SAFE FUNCTIONS
 void	*safe_malloc(size_t size, bool calloc_flag);
@@ -168,14 +193,10 @@ void	safe_getcwd(char *buf, size_t size);
 int		safe_open(const char *path, t_open_flags flags);
 void	safe_chdir(const char *path);
 void	safe_close(int fd);
-void	*safe_realloc(void *ptr, size_t old_size, size_t new_size);
 void	safe_dup2(int oldfd, int newfd);
 int		safe_dup(int fd);
 
 // UTILS
-void	banner(void);
-void	process_redirs(char **args, char **redir);
-int		tokenize(char *linea, char *delim, char **tokens, int max_tokens);
 void	print_all(char **args);
 void	free_cmd_line(t_command_line *cmd_line);
 
