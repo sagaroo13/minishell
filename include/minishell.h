@@ -24,6 +24,7 @@
 # include <readline/history.h>
 # include <stdio.h>
 # include <fcntl.h>
+# include <termios.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -62,6 +63,7 @@
 \n"RESET)
 
 # define BUFF_SIZE 1250
+# define ECHOCTL 0001000
 
 /******************************************************************************
  *  																		  *
@@ -136,8 +138,19 @@ typedef enum e_mode
 {
 	MODE_SHELL,
 	MODE_CHILD,
-	MODE_PIPE
+	MODE_PIPE,
+	MODE_HEREDOC
 }	t_mode;
+
+typedef struct last_exit_status
+{
+    int status;
+    int last_exit_code;
+    bool exit_called;
+} t_last_exit_status;
+
+// 👇 Solo declaración (sin inicializar)
+ extern t_last_exit_status g_last_exit_status; 
 
 
 /******************************************************************************
@@ -147,12 +160,14 @@ typedef enum e_mode
  ******************************************************************************/
 
 // EXEC
-char	*find_path(char **envp);
+//char	*find_path(char **envp);
 char	*try_executable_path(char **paths, char *command);
 char	*get_path(char *line);
 void	free_args(char **args);
 void	exec_line(char *line, char **envp);
 void	exec(char *cmd_name, char **cmd_lst, char **envp);
+void	expand_exit_status(char **args, t_last_exit_status *status);
+void 	update_last_exit_status(t_last_exit_status *status_struct, int new_status);
 
 // PARSE
 void	parse_line(t_command_line *cmd_line, char *line);
@@ -160,10 +175,11 @@ void	parse_line(t_command_line *cmd_line, char *line);
 // SIGNALS
 void	sigint_handler(int sig);
 void	set_signals(int mode);
-void	sigint_handler_in_process(int sig);
-void	sigquit_handler_in_process(int sig);
+/* void	sigint_handler_in_process(int sig);
+void	sigquit_handler_in_process(int sig); */
 void	disable_echoctl();
 void	restore_terminal();
+void set_exit_status_direct(int code);
 
 // PIPE & REDIRS
 void	exec_pipe(t_command *cmd, char **envp);

@@ -27,6 +27,7 @@ SRC = $(SRC_DIR)main.c				\
 	  $(BUILT_DIR)ft_export.c	\
 	  $(BUILT_DIR)ft_unset.c		\
       $(SRC_DIR)exec_built_in.c	\
+	  $(SRC_DIR)expand.c		\
       $(SRC_DIR)safe_funcs.c		\
       $(SRC_DIR)signal_handle.c	\
       $(SRC_DIR)termios_off.c

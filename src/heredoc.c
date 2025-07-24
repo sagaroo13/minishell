@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 17:30:14 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/07/14 11:45:14 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/07/23 15:24:21 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ void	read_from_stdin(int pipe_fd[2], char *delim)
 	char	*new_line;
 
 	close(pipe_fd[0]);
+	write(1, "heredoc> ", 9);
 	line = get_next_line(0);
 	while (line)
 	{
@@ -31,6 +32,7 @@ void	read_from_stdin(int pipe_fd[2], char *delim)
 		}
 		ft_putendl_fd(line, pipe_fd[1]);
 		free(line);
+		write(1, "heredoc> ", 9);
 		line = get_next_line(0);
 	}
 }
@@ -42,17 +44,20 @@ void	heredoc(t_command *cmd)
 
 	if (cmd->heredoc.n_redirs > 1)
 		perror("syntax error: too much heredocs");
-	/* set_signals(MODE_HEREDOC); */
 	if (pipe(pipe_fd) == -1)
 		exit(EXIT_FAILURE);
 	pid = fork();
+	set_signals(MODE_HEREDOC); 
 	if (pid == -1)
 		exit(EXIT_FAILURE);
 	if (!pid)
-		read_from_stdin(pipe_fd, cmd->heredoc.redirs[0]);
-	else
 	{
-		/* set_signals(MODE_SHELL); */
+		set_signals(MODE_CHILD);
+		read_from_stdin(pipe_fd, cmd->heredoc.redirs[0]);
+	}
+	else
+	{	
+		signal(SIGINT, SIG_IGN);
 		close(pipe_fd[1]);
 		dup2(pipe_fd[0], STDIN_FILENO);
 		wait(NULL);
