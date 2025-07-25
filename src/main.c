@@ -3,7 +3,7 @@
 
 
 // main.c
-t_last_exit_status g_last_exit_status = {0, 0, false};
+t_last_exit_status g_last_exit_status = {0, 0, false}; 
 
 
 void	save_fds(t_stdfd *std)
