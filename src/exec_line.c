@@ -69,23 +69,34 @@ char	*get_path(char *line)
 
 void	exec(char *cmd_name, char **cmd_args, char **envp)
 {
-	char	*path;
+    expand_exit_status(cmd_args, &g_last_exit_status);
 
-	if (is_builtin(cmd_name))
-		exec_builtin(cmd_args, envp);
-	else
-	{
-		path = get_path(cmd_name);
-		execve(path, cmd_args, envp);
-		perror("Error al ejecutar execvp");
-		exit(EXIT_FAILURE);
-	}
+    if (is_builtin(cmd_name))
+    {
+        int builtin_status = exec_builtin(cmd_args, envp);
+        // NO usar exit() aquí - los builtins deben ejecutarse en el proceso padre
+        update_last_exit_status(&g_last_exit_status, builtin_status);
+        return;  // ✅ USAR return para builtins
+    }
+    // Para comandos externos
+    char *path = get_path(cmd_name);
+    if (!path)
+    {
+        perror("command not found");
+        exit(127);  // ✅ CORRECTO: exit() para comandos externos (proceso hijo)
+    }
+    if (execve(path, cmd_args, envp) == -1)
+    {
+        perror("execve");
+       exit(127);  // ✅ CORRECTO: exit() para comandos externos (proceso hijo)
+    }
+    free(path);  // Nunca se ejecutará después de execve exitoso
 }
 
 void	exec_line(char *line, char **envp)
 {
-	t_command_line	cmd_line;
-	int				i;
+    t_command_line	cmd_line;
+    int				i;
 
 	parse_line(&cmd_line, line);
 	if (!cmd_line.execute)

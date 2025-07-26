@@ -3,70 +3,75 @@
 /*                                                        :::      ::::::::   */
 /*   signal_handle.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/08 17:44:10 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/07/08 17:44:11 by jsagaro-         ###   ########.fr       */
+/*   Created: 2025/07/22 18:53:28 by shirakim          #+#    #+#             */
+/*   Updated: 2025/07/23 15:18:01 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-#include <signal.h>
-#include <unistd.h>
-#include <readline/readline.h>
-#include <readline/history.h>
 
-// -------------------- HANDLERS -------------------------
-void    sigint_handler_in_process(int sig)
+
+// Manejador SIGINT en modo shell (Ctrl+C) - SIN rl_redisplay()
+void	sigint_handler(int sig)
 {
-    (void) sig;
-    write(STDOUT_FILENO, "\n", 1);
-    signal(SIGINT, SIG_DFL); // Restaurar comportamiento por defecto
-    raise(SIGINT); // Terminar el proceso correctamente
+	(void)sig;
+	write(STDOUT_FILENO, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
 }
 
-// Manejador para procesos hijos (Ctrl+\ debe imprimir mensaje y terminar)
-void    sigquit_handler_in_process(int sig)
+// Manejador SIGQUIT en modo shell (Ctrl+\)
+void	sigquit_handler(int sig)
 {
-    (void) sig;
-    write(STDOUT_FILENO, "Quit\n", 5);
-    signal(SIGQUIT, SIG_DFL); // Restaurar comportamiento por defecto
-    raise(SIGQUIT); // Terminar el proceso
+	(void)sig;
 }
 
-// Manejador para Ctrl+C en heredoc (solo interrumpe la entrada)
-void    sigint_handler_heredoc(int sig)
+// Manejador SIGINT en procesos hijos
+void sigint_handler_in_child(int sig)
 {
-    (void)sig;
-    write(STDOUT_FILENO, "\n", 1);
+	(void)sig;
+	exit (128 + sig);
 }
 
-// Manejador para el shell interactivo (Ctrl+C limpia línea sin cerrar)
-void    sigint_handler(int sig)
+// Manejador SIGQUIT en procesos hijos
+void sigquit_handler_in_child(int sig)
 {
-    (void)sig;
-    write(STDOUT_FILENO, "\n", 1);
-    rl_on_new_line();
-    rl_replace_line("", 0);
-    rl_redisplay();
+	(void)sig;
+	write (STDOUT_FILENO, "Quit\n", 5);
+	exit (128 + sig);
 }
 
-// Configurar señales según el estado de Minishell
-void    set_signals(int mode)
+// Manejador SIGINT en heredoc
+void	sigint_handler_heredoc(int sig)
 {
-    if (mode == MODE_SHELL)  // Modo interactivo
-    {
-        signal(SIGINT, sigint_handler);
-        signal(SIGQUIT, SIG_IGN);
-    }
-    else if (mode == MODE_CHILD)  // Procesos hijos
-    {
-        signal(SIGINT, sigint_handler_in_process);
-        signal(SIGQUIT, sigquit_handler_in_process);
-    }
-    else if (mode == MODE_HEREDOC)  // Heredoc
-    {
-        signal(SIGINT, sigint_handler_heredoc);
-        signal(SIGQUIT, SIG_IGN);
-    }
+	(void)sig;
+	exit(128 + sig);
+}
+
+// Asignar manejadores según el modo
+void	set_signals(int mode)
+{
+	if (mode == MODE_PIPE)
+	{
+		signal(SIGINT, sigint_handler_in_child);
+		signal(SIGQUIT, SIG_IGN);
+	}
+	else if (mode == MODE_CHILD)
+	{
+		signal(SIGINT, sigint_handler_in_child);
+		signal(SIGQUIT, sigquit_handler_in_child);
+	}
+       	else if (mode == MODE_HEREDOC)
+	{
+		signal(SIGINT, sigint_handler_heredoc);
+		signal(SIGQUIT, SIG_IGN);
+	}
+	else if (mode == MODE_SHELL)
+	{
+		signal(SIGINT, sigint_handler);
+		signal(SIGQUIT, SIG_IGN);
+	}
 }

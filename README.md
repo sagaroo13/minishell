@@ -1,17 +1,11 @@
 Minishell
 
-HEAD
-//Estamos trabajando signals!! con sigaction y signal, sigaction es mas completa para otro tipo de cosa, por ejemplo signal, no es tan dinamico a la hora de usar otros sistemas operativos pero es mas sencillo para operar. 
+HEAD //Estamos trabajando signals!! con sigaction y signal, sigaction es mas completa para otro tipo de cosa, por ejemplo signal, no es tan dinamico a la hora de usar otros sistemas operativos pero es mas sencillo para operar.
 
 Minishell
 
-debbie:
-señales | manejo de errores de señales
+debbie: señales | manejo de errores de señales
 
-juan:
-handler errors and leaks
+juan: handler errors and leaks
 
-ambos:
-corregir historial
-builtins
-cosas especiales
+ambos: corregir historial builtins cosas especiales

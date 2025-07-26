@@ -109,4 +109,8 @@ char	*get_next_line(int fd)
 		storage = NULL;
 	}
 	return (line);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/dediaz-f

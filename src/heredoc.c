@@ -18,6 +18,7 @@ void	read_from_stdin(int pipe_fd[2], char *delim)
 	char	*new_line;
 
 	close(pipe_fd[0]);
+	write(1, "heredoc> ", 9);
 	line = get_next_line(0);
 	while (line)
 	{
@@ -31,6 +32,7 @@ void	read_from_stdin(int pipe_fd[2], char *delim)
 		}
 		ft_putendl_fd(line, pipe_fd[1]);
 		free(line);
+		write(1, "heredoc> ", 9);
 		line = get_next_line(0);
 	}
 }
@@ -45,12 +47,17 @@ void	heredoc(t_command *cmd)
 	if (pipe(pipe_fd) == -1)
 		exit(EXIT_FAILURE);
 	pid = fork();
+	set_signals(MODE_HEREDOC); 
 	if (pid == -1)
 		exit(EXIT_FAILURE);
 	if (!pid)
-		read_from_stdin(pipe_fd, cmd->heredoc.redirs[0]);
-	else
 	{
+		set_signals(MODE_CHILD);
+		read_from_stdin(pipe_fd, cmd->heredoc.redirs[0]);
+	}
+	else
+	{	
+		signal(SIGINT, SIG_IGN);
 		close(pipe_fd[1]);
 		dup2(pipe_fd[0], STDIN_FILENO);
 		wait(NULL);

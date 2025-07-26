@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jramos-a <jramos-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 18:21:26 by marvin            #+#    #+#             */
-/*   Updated: 2024/10/22 11:36:54 by jramos-a         ###   ########.fr       */
+/*   Updated: 2025/07/10 11:30:20 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 # include "get_next_line.h"
 # include <unistd.h>
 # include <stdlib.h>
+# include "get_next_line.h"
 
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
@@ -60,5 +61,6 @@ int		ft_occurrence(const char *str, char c);
 int		ft_matrix_strrchr(char **matrix, const char *str, int n);
 char	*ft_strchr_charset(const char *str, const char *charset);
 int		ft_matrix_len(char **matrix);
+int		ft_count_substr(const char *haystack, const char *needle);
 
 #endif

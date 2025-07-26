@@ -12,6 +12,8 @@
 
 #include "../include/minishell.h"
 
+t_last_exit_status g_last_exit_status = {0, 0, false};
+
 void	save_fds(t_stdfd *std)
 {
 	std->saved_stdin = safe_dup(STDIN_FILENO);
@@ -37,7 +39,6 @@ void	minishell(char **envp)
 	char	cwd[BUFFER_SIZE];
 
 	disable_echoctl();
-	set_signals(MODE_SHELL);
 	using_history();
 	while (true)
 	{
@@ -50,6 +51,7 @@ void	minishell(char **envp)
 			break ;
 		else
 		{
+			set_signals(MODE_SHELL);
 			add_history(line);
 			exec_line(line, envp);
 		}
