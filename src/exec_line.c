@@ -90,7 +90,7 @@ void	exec_line(char *line, char **envp)
 	parse_line(&cmd_line, line);
 	if (!cmd_line.execute)
 	{
-		perror(cmd_line.err_msg);
+		printf(RED BOLD"%s\n"RESET, cmd_line.err_msg);
 		free_cmd_line(&cmd_line);
 		return ;
 	}

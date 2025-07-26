@@ -101,7 +101,7 @@ char	*find_redir(t_lexer_handler handler, int index, int n)
 		file = ft_strdup(handler.tokens[index + 1].token_str);
 	else
 	{
-		handler.cmd->cmd_line->err_msg = "syntax error: No se especificó un archivo para la redirección";
+		handler.cmd->cmd_line->err_msg = "syntax error: redirection file not specified";
 		handler.cmd->cmd_line->execute = false;
 	}
 	return (file);
@@ -319,18 +319,81 @@ void	get_cmd_info(t_command_line *cmd_line, t_command *cmd, char *cmd_str)
 	free_handler(&handler);
 }
 
-void	get_cmds_info(t_command_line *cmd_line, char *line)
+int	count_cmds(char *line)
+{
+	bool	in_sq;
+	bool	in_dq;
+    int		i;
+    int		count;
+    
+    in_sq = false;
+	in_dq = false;
+	i = -1;
+	count = 1;
+    while (line[++i])
+    {
+        if (line[i] == '\'' && !in_dq)
+			in_sq = !in_sq;
+        else if (line[i] == '\"' && !in_sq)
+			in_dq = !in_dq;
+        else if (line[i] == '|' && !in_sq && !in_dq)
+            count++;
+    }
+	return (count);
+}
+
+void	update_mask(char c, int *f)
+{
+	if (c == '\'' && !(*f & 2))
+		*f ^= 1;
+	else if (c == '\"'&& !(*f & 1))
+		*f ^= 2;
+}
+
+char	**split_pipes(char *line, int n_cmds)
 {
 	char	**line_parts;
 	int		i;
+	int		j;
+	int		start;
+	int		f;
 
-	line_parts = ft_split(line, '|');
+	line_parts = safe_malloc(sizeof(char *) * (n_cmds + 1), true);
+	i = -1;
+	j = 0;
+	start = 0;
+	f = 0;
+	while (line[++i])
+    {
+        if (line[i] == '\'' || line[i] == '\"')
+			update_mask(line[i], &f);
+        else if (line[i] == '|' && !f)
+        {
+            line_parts[j++] = ft_substr(line, start, i - start);
+            start = i + 1;
+        }
+    }
+	line_parts[j++] = ft_substr(line, start, i - start);
+	line_parts[j] = NULL;
+	return (line_parts);
+}
+
+void	get_cmds_info(t_command_line *cmd_line, char *line)
+{
+	t_command	*cmds;
+	char	**line_parts;
+	int		i;
+
+	cmd_line->n_cmds = count_cmds(line);
+	cmds = safe_malloc(sizeof(t_command) * (cmd_line->n_cmds), true);
+	cmd_line->cmds = cmds;
+	line_parts = split_pipes(line, cmd_line->n_cmds);
 	i = -1;
 	while (line_parts[++i])
 		get_cmd_info(cmd_line, &cmd_line->cmds[i], line_parts[i]);
-	if (i != cmd_line->n_cmds && i > 0)
+	if (ft_empty_str(line_parts[cmd_line->n_cmds - 1]))
 	{
-		cmd_line->err_msg = "syntax error: Pipeline not closed";
+		cmd_line->err_msg = "syntax error: pipeline not closed";
 		cmd_line->execute = false;
 	}
 	ft_free_matrix(line_parts);
@@ -404,11 +467,6 @@ void	free_cmd_line(t_command_line *cmd_line)
 
 void	parse_line(t_command_line *cmd_line, char *line)
 {
-	t_command	*cmds;
-
-	cmd_line->n_cmds = (ft_occurrence(line, '|') + 1);
-	cmds = safe_malloc(sizeof(t_command) * (cmd_line->n_cmds), true);
-	cmd_line->cmds = cmds;
 	cmd_line->line = ft_strdup(line);
 	cmd_line->execute = true;
 	get_cmds_info(cmd_line, line);

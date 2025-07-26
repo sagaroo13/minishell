@@ -11,6 +11,7 @@ SRC = ft_isalpha.c	\
 	ft_isascii.c	\
 	ft_isprint.c	\
 	ft_isspace.c 	\
+	ft_empty_str.c	\
 	ft_strlen.c		\
 	ft_memset.c		\
 	ft_memcpy.c		\
