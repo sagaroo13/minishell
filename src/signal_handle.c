@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 18:53:28 by shirakim          #+#    #+#             */
-/*   Updated: 2025/07/23 15:18:01 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/07/25 19:48:03 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,12 @@ void sigquit_handler_in_child(int sig)
 }
 
 // Manejador SIGINT en heredoc
-void	sigint_handler_heredoc(int sig)
+void	sigint_heredoc_handler(int sig)
 {
 	(void)sig;
-	exit(128 + sig);
+	write(1, "\n", 1); // Para que el prompt no quede en la misma línea
+	get_next_line(-1); // Libera buffers internos del GNL
+	exit(130);         // Código de salida estándar para Ctrl+C
 }
 
 // Asignar manejadores según el modo
@@ -66,7 +68,7 @@ void	set_signals(int mode)
 	}
        	else if (mode == MODE_HEREDOC)
 	{
-		signal(SIGINT, sigint_handler_heredoc);
+		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_IGN);
 	}
 	else if (mode == MODE_SHELL)

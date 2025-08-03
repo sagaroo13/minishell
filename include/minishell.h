@@ -175,6 +175,7 @@ void	parse_line(t_command_line *cmd_line, char *line);
 // SIGNALS
 void	sigint_handler(int sig);
 void	set_signals(int mode);
+void	sigint_heredoc_handler(int sig); 
 /* void	sigint_handler_in_process(int sig);
 void	sigquit_handler_in_process(int sig); */
 void	disable_echoctl();

@@ -45,6 +45,7 @@ void	exec_last(t_command *cmd, char **envp)
 
 	if (cmd->builtin)
 	{
+		redirs(cmd);
 		int ret = exec_builtin(cmd->args, envp);
 		update_last_exit_status(&g_last_exit_status, ret);
 		return;

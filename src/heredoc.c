@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 17:30:14 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/07/23 15:24:21 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/07/25 22:27:59 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,11 @@ void	heredoc(t_command *cmd)
 	if (pipe(pipe_fd) == -1)
 		exit(EXIT_FAILURE);
 	pid = fork();
-	set_signals(MODE_HEREDOC); 
 	if (pid == -1)
 		exit(EXIT_FAILURE);
 	if (!pid)
 	{
-		set_signals(MODE_CHILD);
+		
 		read_from_stdin(pipe_fd, cmd->heredoc.redirs[0]);
 	}
 	else

@@ -1,0 +1,10 @@
+total 80
+-rw-r--r-- 1 shirakim shirakim  1603 Jul 25 16:04 Makefile
+-rw-r--r-- 1 shirakim shirakim   383 Jul 25 16:04 README.md
+drwxr-xr-x 2 shirakim shirakim  4096 Jul 25 16:16 builts
+-rw-r--r-- 1 shirakim shirakim     0 Jul 25 16:18 files.txt
+drwxr-xr-x 2 shirakim shirakim  4096 Jul 25 16:04 include
+drwxr-xr-x 2 shirakim shirakim  4096 Jul 25 16:16 libft
+-rwxr-xr-x 1 shirakim shirakim 52008 Jul 25 16:16 minishell
+drwxr-xr-x 2 shirakim shirakim  4096 Jul 25 16:16 src
+-rw-r--r-- 1 shirakim shirakim    41 Jul 25 16:16 text.txt
