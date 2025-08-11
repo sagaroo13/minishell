@@ -1,16 +1,28 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_built_in.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/05 23:30:27 by shirakim          #+#    #+#             */
+/*   Updated: 2025/08/05 23:30:28 by shirakim         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
-int is_builtin(char *command)
+int	is_builtin(char *command)
 {
 	if (!command)
 		return (0);
-	if (ft_strncmp(command, "cd", 3) == 0 ||
-		ft_strncmp(command, "echo", 5) == 0 ||
-		ft_strncmp(command, "pwd", 4) == 0 ||
-		ft_strncmp(command, "exit", 5) == 0 ||
-		ft_strncmp(command, "env", 4) == 0 ||
-		ft_strncmp(command, "export", 7) == 0 ||
-		ft_strncmp(command, "unset", 6) == 0)
+	if (ft_strncmp(command, "cd", 3) == 0
+		|| ft_strncmp(command, "echo", 5) == 0
+		|| ft_strncmp(command, "pwd", 4) == 0
+		|| ft_strncmp(command, "exit", 5) == 0
+		|| ft_strncmp(command, "env", 4) == 0
+		|| ft_strncmp(command, "export", 7) == 0
+		|| ft_strncmp(command, "unset", 6) == 0)
 		return (1);
 	return (0);
 }

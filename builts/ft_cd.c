@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:50:58 by shirakim          #+#    #+#             */
-/*   Updated: 2025/07/24 16:54:58 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/04 00:07:24 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	exec_cd(char **args)
 	}
 	if (args[1][0] == '-' || args[1][0] == '~' || args[1][1] == '\0')
 	{
-		//chdir(getenv("OLDPWD"));
+		chdir(getenv("OLDPWD"));
 		return (1);
 	}
 	if (chdir(args[1]) != 0)

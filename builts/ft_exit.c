@@ -14,7 +14,9 @@
 
 int	is_numeric(char *str)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	if (!str)
 		return (0);
 	if (str[0] == '+' || str[0] == '-')
@@ -32,19 +34,19 @@ int	exec_exit(char **args)
 {
 	int	code;
 
-	write(STDOUT_FILENO, "exit\n", 5);
+	write (STDOUT_FILENO, "exit\n", 5);
 	if (!args[1])
-		exit(0);
+		exit (0);
 	if (!is_numeric(args[1]))
 	{
-		write(2, "exit: numeric argument required\n", 32);
-		exit(255);
+		write (2, "exit: numeric argument required\n", 32);
+		exit (255);
 	}
 	if (args[2])
 	{
-		write(2, "exit: too many arguments\n", 26);
-		return (1); // No salimos del shell
+		write (2, "exit: too many arguments\n", 26);
+		return (1);
 	}
 	code = atoi(args[1]);
-	exit(code);
+	exit (code);
 }

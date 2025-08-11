@@ -12,21 +12,19 @@
 
 #include "../include/minishell.h"
 
-
-int exec_pwd(void)
+int	exec_pwd(void)
 {
-    char cwd[1024];
+	char	cwd[1024];
 
-    if (getcwd(cwd, sizeof(cwd)) != NULL)
-    {
-        write(STDOUT_FILENO, cwd, ft_strlen(cwd));
-        write(STDOUT_FILENO, "\n", 1);
-        return (1);
-    }
-    else
-    {
-        perror("getcwd() error");
-        return (0);
-    }
+	if (getcwd(cwd, sizeof(cwd)) != NULL)
+	{
+		write (STDOUT_FILENO, cwd, ft_strlen(cwd));
+		write (STDOUT_FILENO, "\n", 1);
+		return (1);
+	}
+	else
+	{
+		perror ("getcwd() error");
+		return (0);
+	}
 }
-

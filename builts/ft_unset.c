@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 19:46:54 by shirakim          #+#    #+#             */
-/*   Updated: 2025/07/14 19:46:59 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/12 00:48:53 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,15 @@
 
 int	env_unset(char **argv, char **envp)
 {
-	int		i, j;
-	char	*var;
-	int		found = 0;
+	int		i;
+	int		j;
 
 	if (!argv[1])
-		return (0); // No se pasó ninguna variable
-	var = argv[1];
+		return (0);
 	i = 0;
 	while (envp[i])
 	{
-		if (ft_strcmp(envp[i], var) == 0)
+		if (ft_strcmp(envp[i], argv[1]) == 0)
 		{
 			j = i;
 			while (envp[j])
@@ -32,12 +30,10 @@ int	env_unset(char **argv, char **envp)
 				envp[j] = envp[j + 1];
 				j++;
 			}
-			found = 1;
-			continue; // No incrementar i, porque ahora envp[i] es la siguiente
+			return (1);
 		}
 		i++;
 	}
-	if (!found)
-		printf("unset: variable %s not found\n", var);
+	printf ("unset: variable %s not found\n", argv[1]);
 	return (1);
 }

@@ -1,56 +1,34 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   safe_funcs.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/08 15:22:19 by shirakim          #+#    #+#             */
+/*   Updated: 2025/08/08 15:24:53 by shirakim         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
-void *safe_malloc(size_t size, bool calloc_flag)
-{
-    void *ptr;
-
-    if (size == 0)
-        perror(RED"[ERROR]"RESET" Memory allocation failed.");
-    if (calloc_flag)
-        ptr = ft_calloc(1, size);
-    else
-        ptr = malloc(size);
-    if (!ptr)
-        perror(RED"[ERROR]"RESET" Memory allocation failed.");
-    return (ptr);
-}
-
-void *safe_realloc(void *ptr, size_t old_size, size_t new_size)
-{
-	void *new_ptr;
-
-	if (new_size == 0)
-		return (NULL);
-	if (old_size == new_size)
-		return (ptr);
-	new_ptr = realloc(ptr, new_size);
-	if (!new_ptr)
-		perror(RED"[ERROR]"RESET" Memory reallocation failed.");
-	return (new_ptr);
-}
-
-void safe_getcwd(char *buf, size_t size)
-{
-	if (getcwd(buf, size) == NULL)
-		perror(RED"[ERROR]"RESET" getcwd failed.");
-}
-
-void safe_chdir(const char *path)
+void	safe_chdir(const char *path)
 {
 	if (chdir(path) == -1)
 		perror(RED"[ERROR]"RESET" chdir failed.");
 }
 
-void safe_close(int fd)
+void	safe_close(int fd)
 {
 	if (close(fd) == -1)
 		perror(RED"[ERROR]"RESET" close failed.");
 }
 
-int safe_open(const char *path, t_open_flags flags)
+int	safe_open(const char *path, t_open_flags flags)
 {
-	int fd = 0;
+	int	fd;
 
+	fd = 0;
 	if (flags == READ)
 		fd = open(path, O_RDONLY);
 	else if (flags == WRITE)
@@ -67,7 +45,7 @@ int safe_open(const char *path, t_open_flags flags)
 	return (fd);
 }
 
-void safe_dup2(int oldfd, int newfd)
+void	safe_dup2(int oldfd, int newfd)
 {
 	if (dup2(oldfd, newfd) == -1)
 		perror(RED"[ERROR]"RESET" dup2 failed.");
@@ -75,7 +53,7 @@ void safe_dup2(int oldfd, int newfd)
 
 int	safe_dup(int fd)
 {
-	int new_fd;
+	int	new_fd;
 
 	new_fd = dup(fd);
 	if (new_fd == -1)

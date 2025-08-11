@@ -80,6 +80,16 @@ typedef struct	s_token
 	bool	quoted;
 } t_token;
 
+//struct to manage int count fuction
+typedef struct s_token_state {
+	int		i;
+	int		count;
+	bool	in_sq;
+	bool	in_dq;
+	bool	in_token;
+}	t_token_state;
+
+
 typedef struct	s_lexer_handler
 {
 	char *buffer;
@@ -127,6 +137,15 @@ typedef struct s_stdfd
 	int saved_stderr;
 } t_stdfd;
 
+typedef struct s_shell_data
+{
+	char	*line;
+	char	*prompt;
+	t_stdfd	stdfd;
+	char	cwd[BUFFER_SIZE];
+}	t_shell_data;
+
+
 typedef enum e_open_flags
 {
 	READ,
@@ -147,10 +166,10 @@ typedef struct last_exit_status
     int status;
     int last_exit_code;
     bool exit_called;
-} t_last_exit_status;
+} t_last_status;
 
 // 👇 Solo declaración (sin inicializar)
- extern t_last_exit_status g_last_exit_status; 
+ extern t_last_status g_last_exit_status; 
 
 
 /******************************************************************************
@@ -166,11 +185,25 @@ char	*get_path(char *line);
 void	free_args(char **args);
 void	exec_line(char *line, char **envp);
 void	exec(char *cmd_name, char **cmd_lst, char **envp);
-void	expand_exit_status(char **args, t_last_exit_status *status);
-void 	update_last_exit_status(t_last_exit_status *status_struct, int new_status);
+void	expand_exit_status(char **args, t_last_status *status);
+void 	update_last_exit_status(t_last_status *status_struct, int new_status);
+
 
 // PARSE
 void	parse_line(t_command_line *cmd_line, char *line);
+void	push_buffer(t_lexer_handler *handler, bool quoted);
+void	handle_var(t_lexer_handler *handler, char **s);
+void	lexer(t_lexer_handler *handler, t_command *cmd, char *cmd_str);
+void	get_arguments(t_command *cmd, t_lexer_handler handler);
+char	**get_redirec(t_lexer_handler handler, char *redir, int len, int n);
+void	get_redirecs(t_command *cmd, t_lexer_handler handler, char *cmd_str);
+void	free_handler(t_lexer_handler *handler);
+void	get_cmds_info(t_command_line *cmd_line, char *line);
+void	init_handler(t_lexer_handler *handler, t_command *cmd, char *cmd_str);
+bool	is_file(t_command *cmd, char *str);
+int		count_tokens(const char *s);
+void	get_cmd_info(t_command_line *cmd_line, t_command *cmd, char *cmd_str);
+int	count_argv(t_command *cmd, t_lexer_handler handler);
 
 // SIGNALS
 void	sigint_handler(int sig);
@@ -186,6 +219,7 @@ void set_exit_status_direct(int code);
 void	exec_pipe(t_command *cmd, char **envp);
 void	exec_last(t_command *cmd, char **envp);
 void	redirs(t_command *cmd);
+void	search_last_redir(t_redirections red, char *cmd_str, int *iter);
 
 // HEREDOC
 void	heredoc(t_command *cmd);

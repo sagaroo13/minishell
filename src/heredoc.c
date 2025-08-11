@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 17:30:14 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/07/25 22:27:59 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/08 17:54:42 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,14 +51,16 @@ void	heredoc(t_command *cmd)
 		exit(EXIT_FAILURE);
 	if (!pid)
 	{
-		
+		set_signals(MODE_CHILD);
 		read_from_stdin(pipe_fd, cmd->heredoc.redirs[0]);
 	}
 	else
-	{	
+	{
 		signal(SIGINT, SIG_IGN);
+		signal(SIGQUIT, SIG_IGN);
 		close(pipe_fd[1]);
 		dup2(pipe_fd[0], STDIN_FILENO);
 		wait(NULL);
+		set_signals(MODE_SHELL);
 	}
 }

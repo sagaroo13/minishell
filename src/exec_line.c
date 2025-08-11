@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_line.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/05 23:31:25 by shirakim          #+#    #+#             */
+/*   Updated: 2025/08/05 23:36:44 by shirakim         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
@@ -56,53 +67,53 @@ char	*get_path(char *line)
 	return (executable_path);
 }
 
-void exec(char *cmd_name, char **cmd_args, char **envp)
+void	exec(char *cmd_name, char **cmd_args, char **envp)
 {
-    expand_exit_status(cmd_args, &g_last_exit_status);
+	int		builtin_status;
+	char	*path;
 
-    if (is_builtin(cmd_name))
-    {
-        int builtin_status = exec_builtin(cmd_args, envp);
-        // NO usar exit() aquí - los builtins deben ejecutarse en el proceso padre
-        update_last_exit_status(&g_last_exit_status, builtin_status);
-        return;  // ✅ USAR return para builtins
-    }
-    // Para comandos externos
-    char *path = get_path(cmd_name);
-    if (!path)
-    {
-        perror("command not found");
-        exit(127);  // ✅ CORRECTO: exit() para comandos externos (proceso hijo)
-    }
-    if (execve(path, cmd_args, envp) == -1)
-    {
-        perror("execve");
-       exit(127);  // ✅ CORRECTO: exit() para comandos externos (proceso hijo)
-    }
-    free(path);  // Nunca se ejecutará después de execve exitoso
+	expand_exit_status(cmd_args, &g_last_exit_status);
+	if (is_builtin(cmd_name))
+	{
+		builtin_status = exec_builtin(cmd_args, envp);
+		update_last_exit_status(&g_last_exit_status, builtin_status);
+		return ;
+	}
+	path = get_path(cmd_name);
+	if (!path)
+	{
+		perror("command not found");
+		exit(127);
+	}
+	if (execve(path, cmd_args, envp) == -1)
+	{
+		perror("execve");
+		exit(127);
+	}
+	free(path);
 }
 
-void exec_line(char *line, char **envp)
+void	exec_line(char *line, char **envp)
 {
-    t_command_line	cmd_line;
-    int				i;
+	t_command_line	cmd_line;
+	int				i;
 
-    parse_line(&cmd_line, line);
-    if (!cmd_line.execute)
-    {
-        perror(cmd_line.err_msg);
-        free_cmd_line(&cmd_line);
-        return ;
-    }
-    i = -1;
-    while (++i < cmd_line.n_cmds)
-    {
-        if (cmd_line.cmds[i].heredoc.redirs)
-            heredoc(&cmd_line.cmds[i]);
-        if (i != cmd_line.n_cmds - 1)
-            exec_pipe(&cmd_line.cmds[i], envp);
-        else
-            exec_last(&cmd_line.cmds[i], envp);
-    }
-    free_cmd_line(&cmd_line);
+	parse_line(&cmd_line, line);
+	if (!cmd_line.execute)
+	{
+		perror(cmd_line.err_msg);
+		free_cmd_line(&cmd_line);
+		return ;
+	}
+	i = -1;
+	while (++i < cmd_line.n_cmds)
+	{
+		if (cmd_line.cmds[i].heredoc.redirs)
+			heredoc(&cmd_line.cmds[i]);
+		if (i != cmd_line.n_cmds - 1)
+			exec_pipe(&cmd_line.cmds[i], envp);
+		else
+			exec_last(&cmd_line.cmds[i], envp);
+	}
+	free_cmd_line(&cmd_line);
 }

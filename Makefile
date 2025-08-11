@@ -13,7 +13,6 @@ BUILT_DIR = builts/
 
 SRC = $(SRC_DIR)main.c				\
       $(SRC_DIR)utils.c 			\
-      $(SRC_DIR)error.c			\
       $(SRC_DIR)exec_line.c		\
       $(SRC_DIR)parse.c			\
       $(SRC_DIR)pipes.c			\
@@ -27,6 +26,11 @@ SRC = $(SRC_DIR)main.c				\
 	  $(BUILT_DIR)ft_export.c	\
 	  $(BUILT_DIR)ft_unset.c		\
       $(SRC_DIR)exec_built_in.c	\
+	  $(SRC_DIR)parse_utils.c	\
+	  $(SRC_DIR)parse_utils_2.c	\
+	  $(SRC_DIR)parse_utils_3.c	\
+	  $(SRC_DIR)utils_2.c		\
+	  $(SRC_DIR)safe_utils.c \
 	  $(SRC_DIR)expand.c		\
       $(SRC_DIR)safe_funcs.c		\
       $(SRC_DIR)signal_handle.c	\

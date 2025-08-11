@@ -1,10 +1,18 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/07 14:38:38 by shirakim          #+#    #+#             */
+/*   Updated: 2025/08/07 14:38:38 by shirakim         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "../include/minishell.h"
 
-
 // main.c
-t_last_exit_status g_last_exit_status = {0, 0, false}; 
-
+t_last_status	g_last_exit_status = {0, 0, false};
 
 void	save_fds(t_stdfd *std)
 {
@@ -25,30 +33,28 @@ void	restore_fds(t_stdfd *std)
 
 void	minishell(char **envp)
 {
-	char	*line;
-	char	*prompt;
-	t_stdfd	stdfd;
-	char	cwd[BUFFER_SIZE];
+	t_shell_data	shell;
 
 	disable_echoctl();
 	using_history();
+	set_signals(MODE_SHELL);
 	while (true)
 	{
-		safe_getcwd(cwd, sizeof(cwd));
-		prompt = ft_strjoin(cwd, "$> ");
-		save_fds(&stdfd);
-		line = readline(prompt);
-		free(prompt);
-		if (!line)
+		safe_getcwd(shell.cwd, sizeof(shell.cwd));
+		shell.prompt = ft_strjoin(shell.cwd, "$> ");
+		save_fds(&shell.stdfd);
+		shell.line = readline(shell.prompt);
+		free(shell.prompt);
+		if (!shell.line)
 			break ;
 		else
 		{
 			set_signals(MODE_SHELL);
-			add_history(line);
-			exec_line(line, envp);
+			add_history(shell.line);
+			exec_line(shell.line, envp);
 		}
-		free(line);
-		restore_fds(&stdfd);
+		free(shell.line);
+		restore_fds(&shell.stdfd);
 	}
 	restore_terminal();
 	clear_history();
