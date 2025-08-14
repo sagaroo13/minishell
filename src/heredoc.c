@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 17:30:14 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/08/08 17:54:42 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/12 01:05:39 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void	read_from_stdin(int pipe_fd[2], char *delim)
 	char	*line;
 	char	*new_line;
 
-	close(pipe_fd[0]);
 	write(1, "heredoc> ", 9);
 	line = get_next_line(0);
 	while (line)

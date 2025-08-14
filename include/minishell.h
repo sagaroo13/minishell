@@ -53,14 +53,14 @@
 # define BOLD "\033[1m"
 # define UNDERLINE "\033[4m"
 
-# define BANNER ("\n"GREEN BOLD"\
+# define BANNER "\n\033[32m\033[1m\
 ███╗   ███╗██╗███╗   ██╗██╗███████╗██╗  ██╗███████╗██╗     ██╗     \n\
 ████╗ ████║██║████╗  ██║██║██╔════╝██║  ██║██╔════╝██║     ██║     \n\
 ██╔████╔██║██║██╔██╗ ██║██║███████╗███████║█████╗  ██║     ██║     \n\
 ██║╚██╔╝██║██║██║╚██╗██║██║╚════██║██╔══██║██╔══╝  ██║     ██║     \n\
 ██║ ╚═╝ ██║██║██║ ╚████║██║███████║██║  ██║███████╗███████╗███████╗\n\
 ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝\n\
-\n"RESET)
+\n\033[0m"
 
 # define BUFF_SIZE 1250
 # define ECHOCTL 0001000
@@ -71,17 +71,18 @@
  *																			  *
  ******************************************************************************/
 
-typedef struct	s_command_line t_command_line;
-typedef struct	s_command t_command;
+typedef struct s_command_line	t_command_line;
+typedef struct s_command		t_command;
 
-typedef struct	s_token
+typedef struct s_token
 {
 	char	*token_str;
 	bool	quoted;
-} t_token;
+}	t_token;
 
 //struct to manage int count fuction
-typedef struct s_token_state {
+typedef struct s_token_state
+{
 	int		i;
 	int		count;
 	bool	in_sq;
@@ -89,53 +90,52 @@ typedef struct s_token_state {
 	bool	in_token;
 }	t_token_state;
 
-
-typedef struct	s_lexer_handler
+typedef struct s_lexer_handler
 {
-	char *buffer;
-	char *cmd_str;
-	int buf_len;
-	int	buffer_size;
-	int	argc; // Number of arguments
-	int	n_tokens;
+	char		*buffer;
+	char		*cmd_str;
+	int			buf_len;
+	int			buffer_size;
+	int			argc;
+	int			n_tokens;
 	t_command	*cmd;
-	t_token *tokens;
-} t_lexer_handler;
+	t_token	*tokens;
+}	t_lexer_handler;
 
-typedef struct	s_redirections
+typedef struct s_redirections
 {
 	int				n_redirs;
 	char			**redirs;
-} t_redirections;
+}	t_redirections;
 
-typedef struct	s_command
-{
-	char	**args; // Array of command arguments
-	char	*cmd_str;
-	bool	builtin; // Flag for background execution
-	t_redirections	stdin;
-	t_redirections	stdout;
-	t_redirections	stderr;
-	t_redirections	append;
-	t_redirections	heredoc;
-	t_command_line	*cmd_line;
-} t_command;
-
-typedef struct	s_command_line
+typedef struct s_command_line
 {
 	char		*line;
 	char		*err_msg;	
 	int			n_cmds;
 	bool		execute;
 	t_command	*cmds;
-} t_command_line;
+}	t_command_line;
+
+typedef struct s_command
+{
+	char	**args;
+	char	*cmd_str;
+	bool	builtin;
+	t_redirections		stdin;
+	t_redirections		stdout;
+	t_redirections		stderr;
+	t_redirections		append;
+	t_redirections	heredoc;
+	t_command_line	*cmd_line;
+}		t_command;
 
 typedef struct s_stdfd
 {
-	int saved_stdin;
-	int saved_stdout;
-	int saved_stderr;
-} t_stdfd;
+	int	saved_stdin;
+	int	saved_stdout;
+	int	saved_stderr;
+}	t_stdfd;
 
 typedef struct s_shell_data
 {
@@ -144,7 +144,6 @@ typedef struct s_shell_data
 	t_stdfd	stdfd;
 	char	cwd[BUFFER_SIZE];
 }	t_shell_data;
-
 
 typedef enum e_open_flags
 {
@@ -163,14 +162,13 @@ typedef enum e_mode
 
 typedef struct last_exit_status
 {
-    int status;
-    int last_exit_code;
-    bool exit_called;
-} t_last_status;
+	int		status;
+	int		last_exit_code;
+	bool	exit_called;
+}	t_last_status;
 
 // 👇 Solo declaración (sin inicializar)
- extern t_last_status g_last_exit_status; 
-
+extern t_last_status			g_last_exit_status;
 
 /******************************************************************************
  *  																		  *
@@ -186,8 +184,7 @@ void	free_args(char **args);
 void	exec_line(char *line, char **envp);
 void	exec(char *cmd_name, char **cmd_lst, char **envp);
 void	expand_exit_status(char **args, t_last_status *status);
-void 	update_last_exit_status(t_last_status *status_struct, int new_status);
-
+void	update_last_exit_status(t_last_status *status_struct, int new_status);
 
 // PARSE
 void	parse_line(t_command_line *cmd_line, char *line);
@@ -203,17 +200,17 @@ void	init_handler(t_lexer_handler *handler, t_command *cmd, char *cmd_str);
 bool	is_file(t_command *cmd, char *str);
 int		count_tokens(const char *s);
 void	get_cmd_info(t_command_line *cmd_line, t_command *cmd, char *cmd_str);
-int	count_argv(t_command *cmd, t_lexer_handler handler);
+int		count_argv(t_command *cmd, t_lexer_handler handler);
 
 // SIGNALS
 void	sigint_handler(int sig);
 void	set_signals(int mode);
-void	sigint_heredoc_handler(int sig); 
+//void	sigint_heredoc_handler(int sig);
 /* void	sigint_handler_in_process(int sig);
 void	sigquit_handler_in_process(int sig); */
-void	disable_echoctl();
-void	restore_terminal();
-void set_exit_status_direct(int code);
+void	disable_echoctl(void);
+void	restore_terminal(void);
+void	set_exit_status_direct(int code);
 
 // PIPE & REDIRS
 void	exec_pipe(t_command *cmd, char **envp);
@@ -223,16 +220,16 @@ void	search_last_redir(t_redirections red, char *cmd_str, int *iter);
 
 // HEREDOC
 void	heredoc(t_command *cmd);
-void	read_from_stdin(int pipe_fd[2], char  *delim);
+void	read_from_stdin(int pipe_fd[2], char *delim);
 
 // BUILT INS
-int		exec_echo(char **args); 
+int		exec_echo(char **args);
 int		exec_pwd(void);
 int		exec_env(char **envp);
-int 	exec_cd(char **args);
+int		exec_cd(char **args);
 int		exec_exit(char **args);
-int 	env_unset(char **argv, char **envp);
-int 	env_export(char **argv, char **envp);
+int		env_unset(char **argv, char **envp);
+int		env_export(char **argv, char **envp);
 
 // EXEC BUILT INS
 int		is_builtin(char *command);
