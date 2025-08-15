@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 17:30:14 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/08/12 01:05:39 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/15 16:53:46 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	heredoc(t_command *cmd)
 	pid_t	pid;
 
 	if (cmd->heredoc.n_redirs > 1)
-		perror("syntax error: too much heredocs");
+		perror("minishell: syntax error: too much heredocs");
 	if (pipe(pipe_fd) == -1)
 		exit(EXIT_FAILURE);
 	pid = fork();

@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:33:09 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/07 14:19:07 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/15 16:53:06 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	update_last_exit_status(t_last_status *status_struct, int new_status)
 	else
 	{
 		status_struct->last_exit_code = 1;
-		printf("Warning: Unexpected status value: %d\n", new_status);
+		printf("minishell: Unexpected status value: %d\n", new_status);
 	}
 	status_struct->exit_called = true;
 }

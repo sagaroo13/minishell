@@ -16,7 +16,7 @@ t_last_status		g_last_exit_status = {0, 0, false};
 
 void	save_fds(t_stdfd *std)
 {
-	std->saved_stdin =   safe_dup(STDIN_FILENO);
+	std->saved_stdin = safe_dup(STDIN_FILENO);
 	std->saved_stdout = safe_dup(STDOUT_FILENO);
 	std->saved_stderr = safe_dup(STDERR_FILENO);
 }

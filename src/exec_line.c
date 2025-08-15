@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 23:31:25 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/05 23:36:44 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/15 16:52:29 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ void	exec(char *cmd_name, char **cmd_args, char **envp)
 	}
 	if (execve(path, cmd_args, envp) == -1)
 	{
-		perror("execve");
+		perror("minishell");
 		exit(127);
 	}
 	free(path);

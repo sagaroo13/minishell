@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:04:17 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/08 14:47:58 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/15 16:54:19 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ char	*find_redir(t_lexer_handler handler, int index, int n)
 		file = ft_strdup(handler.tokens[index + 1].token_str);
 	else
 	{
-		handler.cmd->cmd_line->err_msg = "error: Need a file for redirection";
+		handler.cmd->cmd_line->err_msg = "minishell: error: Need file for redirect";
 		handler.cmd->cmd_line->execute = false;
 	}
 	return (file);

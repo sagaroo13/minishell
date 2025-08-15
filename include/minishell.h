@@ -92,13 +92,13 @@ typedef struct s_token_state
 
 typedef struct s_lexer_handler
 {
-	char		*buffer;
-	char		*cmd_str;
-	int			buf_len;
-	int			buffer_size;
-	int			argc;
-	int			n_tokens;
-	t_command	*cmd;
+	int		n_tokens;
+	int		buf_len;
+	int		buffer_size;
+	int		argc;
+	char	*buffer;
+	char	*cmd_str;
+	t_command					*cmd;
 	t_token	*tokens;
 }	t_lexer_handler;
 
