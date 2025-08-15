@@ -201,6 +201,9 @@ bool	is_file(t_command *cmd, char *str);
 int		count_tokens(const char *s);
 void	get_cmd_info(t_command_line *cmd_line, t_command *cmd, char *cmd_str);
 int		count_argv(t_command *cmd, t_lexer_handler handler);
+char	**split_pipes(char *line, int n_cmds);
+int	count_cmds(char *line);
+
 
 // SIGNALS
 void	sigint_handler(int sig);

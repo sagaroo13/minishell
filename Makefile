@@ -29,6 +29,7 @@ SRC = $(SRC_DIR)main.c				\
 	  $(SRC_DIR)parse_utils.c	\
 	  $(SRC_DIR)parse_utils_2.c	\
 	  $(SRC_DIR)parse_utils_3.c	\
+	  $(SRC_DIR)parse_utils_4.c \
 	  $(SRC_DIR)utils_2.c		\
 	  $(SRC_DIR)safe_utils.c \
 	  $(SRC_DIR)expand.c		\

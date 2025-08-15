@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dediaz-f <dediaz-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:14:19 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/08 14:28:19 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/15 17:21:31 by dediaz-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,11 +77,6 @@ void	lexer(t_lexer_handler *handler, t_command *cmd, char *cmd_str)
 
 void	parse_line(t_command_line *cmd_line, char *line)
 {
-	t_command	*cmds;
-
-	cmd_line->n_cmds = (ft_occurrence(line, '|') + 1);
-	cmds = safe_malloc(sizeof(t_command) * (cmd_line->n_cmds), true);
-	cmd_line->cmds = cmds;
 	cmd_line->line = ft_strdup(line);
 	cmd_line->execute = true;
 	get_cmds_info(cmd_line, line);
