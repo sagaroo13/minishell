@@ -71,8 +71,10 @@
  *																			  *
  ******************************************************************************/
 
-typedef struct s_command_line	t_command_line;
-typedef struct s_command		t_command;
+typedef struct s_command_line		t_command_line;
+typedef struct s_command			t_command;
+typedef struct s_last_exit_status	t_last_status;
+extern t_last_status				g_last_exit_status;
 
 typedef struct s_token
 {
@@ -92,14 +94,14 @@ typedef struct s_token_state
 
 typedef struct s_lexer_handler
 {
-	int		n_tokens;
-	int		buf_len;
-	int		buffer_size;
-	int		argc;
-	char	*buffer;
-	char	*cmd_str;
-	t_command					*cmd;
-	t_token	*tokens;
+	int			n_tokens;
+	int			buf_len;
+	int			buffer_size;
+	int			argc;
+	char		*buffer;
+	char		*cmd_str;
+	t_command	*cmd;
+	t_token		*tokens;
 }	t_lexer_handler;
 
 typedef struct s_redirections
@@ -119,13 +121,13 @@ typedef struct s_command_line
 
 typedef struct s_command
 {
-	char	**args;
-	char	*cmd_str;
-	bool	builtin;
-	t_redirections		stdin;
-	t_redirections		stdout;
-	t_redirections		stderr;
-	t_redirections		append;
+	char			**args;
+	char			*cmd_str;
+	bool			builtin;
+	t_redirections	stdin;
+	t_redirections	stdout;
+	t_redirections	stderr;
+	t_redirections	append;
 	t_redirections	heredoc;
 	t_command_line	*cmd_line;
 }		t_command;
@@ -160,15 +162,12 @@ typedef enum e_mode
 	MODE_HEREDOC
 }	t_mode;
 
-typedef struct last_exit_status
+typedef struct s_last_exit_status
 {
 	int		status;
 	int		last_exit_code;
 	bool	exit_called;
 }	t_last_status;
-
-// 👇 Solo declaración (sin inicializar)
-extern t_last_status			g_last_exit_status;
 
 /******************************************************************************
  *  																		  *
@@ -202,8 +201,7 @@ int		count_tokens(const char *s);
 void	get_cmd_info(t_command_line *cmd_line, t_command *cmd, char *cmd_str);
 int		count_argv(t_command *cmd, t_lexer_handler handler);
 char	**split_pipes(char *line, int n_cmds);
-int	count_cmds(char *line);
-
+int		count_cmds(char *line);
 
 // SIGNALS
 void	sigint_handler(int sig);
