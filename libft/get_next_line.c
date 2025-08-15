@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/11 13:08:54 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/03/12 20:29:07 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/15 17:05:52 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,8 +109,4 @@ char	*get_next_line(int fd)
 		storage = NULL;
 	}
 	return (line);
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/dediaz-f
