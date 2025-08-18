@@ -16,22 +16,22 @@ int	count_cmds(char *line)
 {
 	bool	in_sq;
 	bool	in_dq;
-    int		i;
-    int		count;
-    
-    in_sq = false;
+	int		i;
+	int		count;
+
+	in_sq = false;
 	in_dq = false;
 	i = -1;
 	count = 1;
-    while (line[++i])
-    {
-        if (line[i] == '\'' && !in_dq)
+	while (line[++i])
+	{
+		if (line[i] == '\'' && !in_dq)
 			in_sq = !in_sq;
-        else if (line[i] == '\"' && !in_sq)
+		else if (line[i] == '\"' && !in_sq)
 			in_dq = !in_dq;
-        else if (line[i] == '|' && !in_sq && !in_dq)
-            count++;
-    }
+		else if (line[i] == '|' && !in_sq && !in_dq)
+			count++;
+	}
 	return (count);
 }
 
@@ -39,7 +39,7 @@ static void	update_mask(char c, int *f)
 {
 	if (c == '\'' && !(*f & 2))
 		*f ^= 1;
-	else if (c == '\"'&& !(*f & 1))
+	else if (c == '\"' && !(*f & 1))
 		*f ^= 2;
 }
 
@@ -57,15 +57,15 @@ char	**split_pipes(char *line, int n_cmds)
 	start = 0;
 	f = 0;
 	while (line[++i])
-    {
-        if (line[i] == '\'' || line[i] == '\"')
+	{
+		if (line[i] == '\'' || line[i] == '\"')
 			update_mask(line[i], &f);
-        else if (line[i] == '|' && !f)
-        {
-            line_parts[j++] = ft_substr(line, start, i - start);
-            start = i + 1;
-        }
-    }
+		else if (line[i] == '|' && !f)
+		{
+			line_parts[j++] = ft_substr(line, start, i - start);
+			start = i + 1;
+		}
+	}
 	line_parts[j++] = ft_substr(line, start, i - start);
 	line_parts[j] = NULL;
 	return (line_parts);

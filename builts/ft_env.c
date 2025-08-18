@@ -6,22 +6,22 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 19:47:36 by shirakim          #+#    #+#             */
-/*   Updated: 2025/07/14 19:47:41 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/18 21:39:45 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int	exec_env(char **envp)
+int exec_env(t_shell *shell)
 {
-	int	i;
+    int i = 0;
 
-	i = 0;
-	while (envp[i])
-	{
-		write (1, envp[i], ft_strlen(envp[i]));
-		write (1, "\n", 1);
-		i++;
-	}
-	return (1);
+    while (shell->env[i])
+    {
+        write(1, shell->env[i], ft_strlen(shell->env[i]));
+        write(1, "\n", 1);
+        i++;
+    }
+    return 1; // devolver 1 como status de éxito
 }
+

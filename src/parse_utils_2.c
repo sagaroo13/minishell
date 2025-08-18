@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_utils_2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dediaz-f <dediaz-f@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:04:17 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/15 17:23:43 by dediaz-f         ###   ########.fr       */
+/*   Updated: 2025/08/16 10:42:45 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ char	*find_redir(t_lexer_handler handler, int index, int n)
 		file = ft_strdup(handler.tokens[index + 1].token_str);
 	else
 	{
-		handler.cmd->cmd_line->err_msg = "minishell: error: Need file for redirect";
+		handler.cmd->cmd_line->err_msg = "minishell: error: Need a file";
 		handler.cmd->cmd_line->execute = false;
 	}
 	return (file);

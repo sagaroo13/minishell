@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:35:53 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/09 13:29:38 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/18 21:39:45 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,31 +28,31 @@ int	is_n_flag(char *s)
 	return (1);
 }
 
-int	exec_echo(char **args)
+int exec_echo(char **args, t_shell *shell)
 {
-	int	i;
-	int	newline;
-
-	i = 1;
-	newline = 1;
-	while (args[i] && is_n_flag(args[i]))
-	{
-		newline = 0;
-		i++;
-	}
-	expand_exit_status(args, &g_last_exit_status);
-	if (args[i])
-	{
-		write (STDOUT_FILENO, args[i], ft_strlen(args[i]));
-		i++;
-		while (args[i])
-		{
-			write (STDOUT_FILENO, " ", 1);
-			write (STDOUT_FILENO, args[i], ft_strlen(args[i]));
-			i++;
-		}
-	}
-	if (newline)
-		write (STDOUT_FILENO, "\n", 1);
-	return (0);
+    int i = 1;
+    int newline = 1;
+    // Procesar las flags -n
+    while (args[i] && is_n_flag(args[i]))
+    {
+        newline = 0;
+        i++;
+    }
+    // Expandir $? usando shell->last_status
+    expand_exit_status(args, shell);
+    if (args[i])
+    {
+        write(STDOUT_FILENO, args[i], ft_strlen(args[i]));
+        i++;
+        while (args[i])
+        {
+            write(STDOUT_FILENO, " ", 1);
+            write(STDOUT_FILENO, args[i], ft_strlen(args[i]));
+            i++;
+        }
+    }
+    if (newline)
+        write(STDOUT_FILENO, "\n", 1);
+    return 0;
 }
+

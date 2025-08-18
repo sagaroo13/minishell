@@ -74,7 +74,7 @@
 typedef struct s_command_line		t_command_line;
 typedef struct s_command			t_command;
 typedef struct s_last_exit_status	t_last_status;
-extern t_last_status				g_last_exit_status;
+//extern t_last_status				g_last_exit_status;
 
 typedef struct s_token
 {
@@ -119,18 +119,29 @@ typedef struct s_command_line
 	t_command	*cmds;
 }	t_command_line;
 
+typedef struct s_last_exit_status
+{
+	int		status;
+	int		last_exit_code;
+	bool	exit_called;
+}	t_last_status;
+
 typedef struct s_command
 {
-	char			**args;
-	char			*cmd_str;
-	bool			builtin;
-	t_redirections	stdin;
-	t_redirections	stdout;
-	t_redirections	stderr;
-	t_redirections	append;
-	t_redirections	heredoc;
-	t_command_line	*cmd_line;
-}		t_command;
+    char            **args;
+    char            *cmd_str;
+    bool            builtin;
+
+    t_redirections  stdin;
+    t_redirections  stdout;
+    t_redirections  stderr;
+    t_redirections  append;
+
+    t_redirections  heredoc;     // delimitadores heredoc de ESTE comando
+    int             heredoc_fd;  // fd resultante (último heredoc válido)
+
+    struct s_command_line *cmd_line; // referencia opcional al padre
+}   t_command;
 
 typedef struct s_stdfd
 {
@@ -145,7 +156,9 @@ typedef struct s_shell_data
 	char	*prompt;
 	t_stdfd	stdfd;
 	char	cwd[BUFFER_SIZE];
-}	t_shell_data;
+	t_last_status last_status;
+	char **env;
+}	t_shell;
 
 typedef enum e_open_flags
 {
@@ -162,12 +175,8 @@ typedef enum e_mode
 	MODE_HEREDOC
 }	t_mode;
 
-typedef struct s_last_exit_status
-{
-	int		status;
-	int		last_exit_code;
-	bool	exit_called;
-}	t_last_status;
+
+
 
 /******************************************************************************
  *  																		  *
@@ -180,10 +189,9 @@ typedef struct s_last_exit_status
 char	*try_executable_path(char **paths, char *command);
 char	*get_path(char *line);
 void	free_args(char **args);
-void	exec_line(char *line, char **envp);
-void	exec(char *cmd_name, char **cmd_lst, char **envp);
-void	expand_exit_status(char **args, t_last_status *status);
-void	update_last_exit_status(t_last_status *status_struct, int new_status);
+void exec(char *cmd_name, char **cmd_args, t_shell *shell);
+void update_last_exit_status(t_shell *shell, int new_status);
+void expand_exit_status(char **args, t_shell *shell);
 
 // PARSE
 void	parse_line(t_command_line *cmd_line, char *line);
@@ -202,6 +210,7 @@ void	get_cmd_info(t_command_line *cmd_line, t_command *cmd, char *cmd_str);
 int		count_argv(t_command *cmd, t_lexer_handler handler);
 char	**split_pipes(char *line, int n_cmds);
 int		count_cmds(char *line);
+void run_child(t_command *cmd, t_shell *shell, int in_fd, int out_fd);
 
 // SIGNALS
 void	sigint_handler(int sig);
@@ -211,30 +220,35 @@ void	set_signals(int mode);
 void	sigquit_handler_in_process(int sig); */
 void	disable_echoctl(void);
 void	restore_terminal(void);
-void	set_exit_status_direct(int code);
+void	sigint_handler_in_child(int sig);
+void set_exit_status_direct(t_shell *shell, int code);
 
 // PIPE & REDIRS
-void	exec_pipe(t_command *cmd, char **envp);
-void	exec_last(t_command *cmd, char **envp);
+void exec_last(t_command *cmd, t_shell *shell);
+void exec_line(char *line, t_shell *shell);
+void exec_pipe(t_command *cmd, t_shell *shell);
+
 void	redirs(t_command *cmd);
 void	search_last_redir(t_redirections red, char *cmd_str, int *iter);
 
 // HEREDOC
 void	heredoc(t_command *cmd);
-void	read_from_stdin(int pipe_fd[2], char *delim);
+//void	read_from_stdin(int pipe_fd[2], char *delim);
+//void sigint_handler_in_heredoc(int sig);
 
 // BUILT INS
-int		exec_echo(char **args);
+int exec_echo(char **args, t_shell *shell);
 int		exec_pwd(void);
-int		exec_env(char **envp);
+int exec_env(t_shell *shell);
+
 int		exec_cd(char **args);
 int		exec_exit(char **args);
-int		env_unset(char **argv, char **envp);
-int		env_export(char **argv, char **envp);
+int		env_unset(char **argv, t_shell *shell);
+int		env_export(char **argv, t_shell *shell);
 
 // EXEC BUILT INS
 int		is_builtin(char *command);
-int		exec_builtin(char **args, char **envp);
+int exec_builtin(char **args, t_shell *shell);	
 
 // SAFE FUNCTIONS
 void	*safe_malloc(size_t size, bool calloc_flag);

@@ -9,10 +9,32 @@
 /*   Updated: 2025/08/07 14:38:38 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../include/minishell.h"
 
-// main.c
-t_last_status		g_last_exit_status = {0, 0, false};
+char	**copy_envp(char **envp)
+{
+	int		i;
+	int		n;
+	char	**new_env;
+
+	i = 0;
+	n = 0;
+	if (!envp)
+		return (NULL);
+	while (envp[n])
+		n++;
+	new_env = malloc(sizeof(char *) * (n + 1));
+	if (!new_env)
+		return (NULL);
+	while (i < n)
+	{
+		new_env[i] = strdup(envp[i]);
+		i++;
+	}
+	new_env[n] = NULL;
+	return (new_env);
+}
 
 void	save_fds(t_stdfd *std)
 {
@@ -31,30 +53,28 @@ void	restore_fds(t_stdfd *std)
 	close(std->saved_stderr);
 }
 
-void	minishell(char **envp)
+void	minishell(t_shell *shell)
 {
-	t_shell_data	shell;
-
 	disable_echoctl();
 	using_history();
 	set_signals(MODE_SHELL);
 	while (true)
 	{
-		safe_getcwd(shell.cwd, sizeof(shell.cwd));
-		shell.prompt = ft_strjoin(shell.cwd, "$> ");
-		save_fds(&shell.stdfd);
-		shell.line = readline(shell.prompt);
-		free(shell.prompt);
-		if (!shell.line)
+		safe_getcwd(shell->cwd, sizeof(shell->cwd));
+		shell->prompt = ft_strjoin(shell->cwd, "$> ");
+		save_fds(&shell->stdfd);
+		shell->line = readline(shell->prompt);
+		free(shell->prompt);
+		if (!shell->line)
 			break ;
 		else
 		{
 			set_signals(MODE_SHELL);
-			add_history(shell.line);
-			exec_line(shell.line, envp);
+			add_history(shell->line);
+			exec_line(shell->line, shell);
 		}
-		free(shell.line);
-		restore_fds(&shell.stdfd);
+		free(shell->line);
+		restore_fds(&shell->stdfd);
 	}
 	restore_terminal();
 	clear_history();
@@ -62,9 +82,22 @@ void	minishell(char **envp)
 
 int	main(int argc, char **argv, char **envp)
 {
+	t_shell	shell;
+
 	(void)argc;
 	(void)argv;
+	shell.line = NULL;
+	shell.prompt = NULL;
+	shell.last_status.status = 0;
+	shell.last_status.last_exit_code = 0;
+	shell.last_status.exit_called = false;
+	shell.env = copy_envp(envp);
+	if (!shell.env)
+	{
+		perror("Failed to copy environment");
+		return (EXIT_FAILURE);
+	}
 	printf(BANNER);
-	minishell(envp);
+	minishell(&shell);
 	return (EXIT_SUCCESS);
 }

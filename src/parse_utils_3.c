@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_utils_3.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dediaz-f <dediaz-f@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:05:57 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/15 17:24:01 by dediaz-f         ###   ########.fr       */
+/*   Updated: 2025/08/18 22:48:42 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ void	init_handler(t_lexer_handler *handler, t_command *cmd, char *cmd_str)
 void	get_cmds_info(t_command_line *cmd_line, char *line)
 {
 	t_command	*cmds;
-	char	**line_parts;
-	int		i;
+	char		**line_parts;
+	int			i;
 
 	cmd_line->n_cmds = count_cmds(line);
 	cmds = safe_malloc(sizeof(t_command) * (cmd_line->n_cmds), true);
@@ -51,10 +51,14 @@ void	get_cmds_info(t_command_line *cmd_line, char *line)
 	i = -1;
 	while (line_parts[++i])
 		get_cmd_info(cmd_line, &cmd_line->cmds[i], line_parts[i]);
-	if (ft_empty_str(line_parts[cmd_line->n_cmds - 1]))
+	i = -1;
+	while (++i < cmd_line->n_cmds)
 	{
-		cmd_line->err_msg = "syntax error: pipeline not closed";
-		cmd_line->execute = false;
+		if (ft_empty_str(line_parts[i]))
+		{
+			cmd_line->err_msg = "syntax error: pipeline not closed";
+			cmd_line->execute = false;
+		}
 	}
 	ft_free_matrix(line_parts);
 }

@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 23:30:27 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/05 23:30:28 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/18 21:39:45 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,12 @@ int	is_builtin(char *command)
 	return (0);
 }
 
-int	exec_builtin(char **args, char **envp)
+int	exec_builtin(char **args, t_shell *shell)
 {
 	if (!args || !args[0])
 		return (0);
 	if (ft_strncmp(args[0], "echo", 5) == 0)
-		return (exec_echo(args));
+		return (exec_echo(args, shell));
 	else if (ft_strncmp(args[0], "pwd", 4) == 0)
 		return (exec_pwd());
 	else if (ft_strncmp(args[0], "exit", 5) == 0)
@@ -40,10 +40,10 @@ int	exec_builtin(char **args, char **envp)
 	else if (ft_strncmp(args[0], "cd", 3) == 0)
 		return (exec_cd(args));
 	else if (ft_strncmp(args[0], "env", 4) == 0)
-		return (exec_env(envp));
+		return (exec_env(shell));
 	else if (ft_strncmp(args[0], "export", 6) == 0)
-		return (env_export(args, envp));
+		return (env_export(args, shell));
 	else if (ft_strncmp(args[0], "unset", 6) == 0)
-		return (env_unset(args, envp));
+		return (env_unset(args, shell));
 	return (0);
 }
