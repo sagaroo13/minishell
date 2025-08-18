@@ -6,13 +6,21 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 17:30:14 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/08/18 23:05:34 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/18 23:32:17 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-#include "../include/minishell.h"
+
+void sigint_handler_in_heredoc(int sig)
+{
+    (void)sig;
+    write(STDOUT_FILENO, "\n", 1);  // imprime el salto de línea inmediatamente
+   // get_next_line(-1); // limpiar buffers internos
+    exit(130);
+}
+
 
 static void	read_from_stdin(int pipe_fd[2], char *delim)
 {
@@ -43,45 +51,62 @@ static void	read_from_stdin(int pipe_fd[2], char *delim)
 	exit(EXIT_SUCCESS);
 }
 
+static int	run_single_heredoc(char *delim, int is_last)
+{
+	int		pipe_fd[2];
+	pid_t	pid;
+	int		status;
+
+	if (pipe(pipe_fd) == -1)
+		exit(EXIT_FAILURE);
+	pid = fork();
+	if (pid == -1)
+		exit(EXIT_FAILURE);
+	if (pid == 0) // hijo
+	{
+		signal(SIGINT, sigint_handler_in_heredoc);
+		read_from_stdin(pipe_fd, delim);
+	}
+	else // padre
+	{
+		signal(SIGINT, SIG_IGN);
+		close(pipe_fd[1]);
+		waitpid(pid, &status, 0);
+		set_signals(MODE_SHELL);
+		if (is_last)
+			return (pipe_fd[0]);
+		close(pipe_fd[0]);
+	}
+	return (-1);
+}
+
+static int	process_all_heredocs(t_command *cmd)
+{
+	int	i;
+	int	last_fd = -1;
+
+	i = 0;
+	while (i < cmd->heredoc.n_redirs)
+	{
+		last_fd = run_single_heredoc(
+			cmd->heredoc.redirs[i],
+			(i == cmd->heredoc.n_redirs - 1)
+		);
+		i++;
+	}
+	return (last_fd);
+}
+
 void	heredoc(t_command *cmd)
 {
-	int		i;
-	int		pipe_fd[2];
-	int		last_fd = -1;
-	pid_t	pid;
+	int	last_fd;
 
 	if (cmd->heredoc.n_redirs > 16) // límite arbitrario por seguridad
 	{
 		perror("syntax error: too many heredocs");
 		return ;
 	}
-	i = 0;
-	while (i < cmd->heredoc.n_redirs)
-	{
-		if (pipe(pipe_fd) == -1)
-			exit(EXIT_FAILURE);
-		pid = fork();
-		if (pid == -1)
-			exit(EXIT_FAILURE);
-		if (pid == 0) // hijo
-		{
-			set_signals(MODE_CHILD);
-			read_from_stdin(pipe_fd, cmd->heredoc.redirs[i]);
-		}
-		else // padre
-		{
-			int	status;
-
-			signal(SIGINT, SIG_IGN);
-			close(pipe_fd[1]);        // padre no escribe
-			waitpid(pid, &status, 0); // esperar hijo
-			if (i == cmd->heredoc.n_redirs - 1)
-				last_fd = pipe_fd[0]; // último heredoc → conservar fd
-			else
-				close(pipe_fd[0]);    // descartar fd intermedio
-		}
-		i++;
-	}
+	last_fd = process_all_heredocs(cmd);
 	if (last_fd != -1)
 	{
 		dup2(last_fd, STDIN_FILENO);

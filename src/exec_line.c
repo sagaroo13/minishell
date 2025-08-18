@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 23:31:25 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/18 23:10:04 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/18 23:14:54 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 // 	}
 // 	return (env_path);
 // }
+
 
 char	*try_executable_path(char **paths, char *line)
 {
@@ -114,29 +115,29 @@ void exec_line(char *line, t_shell*shell)
     }
     while (i < cmd_line.n_cmds)
     {
-        printf("[DEBUG] Before command %d: last_exit_code = %d\n", i, shell->last_status.last_exit_code);
+       // printf("[DEBUG] Before command %d: last_exit_code = %d\n", i, shell->last_status.last_exit_code);
 
         if (cmd_line.cmds[i].heredoc.redirs)
         {
-            printf("[DEBUG] Before heredoc: last_exit_code = %d\n", shell->last_status.last_exit_code);
+           // printf("[DEBUG] Before heredoc: last_exit_code = %d\n", shell->last_status.last_exit_code);
             heredoc(&cmd_line.cmds[i]);
-            printf("[DEBUG] After heredoc: last_exit_code = %d\n", shell->last_status.last_exit_code);
+            //printf("[DEBUG] After heredoc: last_exit_code = %d\n", shell->last_status.last_exit_code);
         }
 
         if (i != cmd_line.n_cmds - 1)
         {
-            printf("[DEBUG] Before exec_pipe: last_exit_code = %d\n", shell->last_status.last_exit_code);
+            //printf("[DEBUG] Before exec_pipe: last_exit_code = %d\n", shell->last_status.last_exit_code);
             exec_pipe(&cmd_line.cmds[i], shell);
-            printf("[DEBUG] After exec_pipe: last_exit_code = %d\n", shell->last_status.last_exit_code);
+           // printf("[DEBUG] After exec_pipe: last_exit_code = %d\n", shell->last_status.last_exit_code);
         }
         else
         {
-            printf("[DEBUG] Before exec_last: last_exit_code = %d\n", shell->last_status.last_exit_code);
+           // printf("[DEBUG] Before exec_last: last_exit_code = %d\n", shell->last_status.last_exit_code);
             exec_last(&cmd_line.cmds[i], shell);
-            printf("[DEBUG] After exec_last: last_exit_code = %d\n", shell->last_status.last_exit_code);
+           // printf("[DEBUG] After exec_last: last_exit_code = %d\n", shell->last_status.last_exit_code);
         }
 
-        printf("[DEBUG] After command %d: last_exit_code = %d\n", i, shell->last_status.last_exit_code);
+        //printf("[DEBUG] After command %d: last_exit_code = %d\n", i, shell->last_status.last_exit_code);
         i++;
     }
     free_cmd_line(&cmd_line);
