@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:04:17 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/16 10:42:45 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/20 00:10:21 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,22 +60,35 @@ char	*find_redir(t_lexer_handler handler, int index, int n)
 	}
 	return (file);
 }
-
-void	get_cmd_info(t_command_line *cmd_line, t_command *cmd, char *cmd_str)
+void	get_cmd_info(t_command_line *cmd_line, t_command *cmd,
+		char *cmd_str, t_shell *shell)
 {
 	t_lexer_handler	handler;
 
 	cmd->cmd_str = ft_strdup(cmd_str);
 	cmd->cmd_line = cmd_line;
-	lexer(&handler, cmd, cmd_str);
+	cmd->shell = shell;  // 🔑 guardamos referencia al shell para expansiones/env
+
+	printf("[DEBUG] get_cmd_info: cmd_str='%s'\n", cmd_str);
+
+	lexer(&handler, cmd, cmd_str, shell);
+
 	get_redirecs(cmd, handler, cmd_str);
 	get_arguments(cmd, handler);
+
 	if (is_builtin(cmd->args[0]))
 		cmd->builtin = true;
 	else
 		cmd->builtin = false;
+
 	free_handler(&handler);
+
+	printf("[DEBUG] get_cmd_info: args[0]='%s'\n",
+		cmd->args && cmd->args[0] ? cmd->args[0] : "(null)");
 }
+
+
+
 
 char	**get_redirec(t_lexer_handler handler, char *redir, int len, int n)
 {

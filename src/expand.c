@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:33:09 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/18 21:39:45 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/19 20:54:42 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	update_last_exit_status(t_shell *shell, int new_status)
 
 void	expand_exit_status(char **args, t_shell *shell)
 {
+	printf("[DEBUG] expand_exit_status: starting expansion\n");
 	int		i;
 	char	*rest;
 	char	*exit_code_str;
@@ -58,3 +59,35 @@ void	expand_exit_status(char **args, t_shell *shell)
 		i++;
 	}
 }
+// expand_env_vars.c
+void expand_env_vars(char **args, t_shell *shell)
+{
+    int i = 1; // empezamos en 1 porque args[0] es "echo"
+    char *val;
+
+	printf("[DEBUG] expand_env_vars: starting expansion\n");
+    while (args[i])
+    {
+        // Solo procesamos strings que empiezan por '$' y no sean solo '$'
+        if (args[i][0] == '$' && args[i][1] != '\0' && args[i][1] != '?')
+        {
+            printf("[DEBUG] expand_env_vars: arg='%s'\n", args[i]);
+            val = get_env_value(shell, args[i] + 1); // saltamos '$'
+            free(args[i]);
+            if (val)
+            {
+                args[i] = ft_strdup(val);
+                printf("[DEBUG] expand_env_vars: found value='%s'\n", val);
+            }
+            else
+            {
+                args[i] = ft_strdup("");
+                printf("[DEBUG] expand_env_vars: variable not defined\n");
+            }
+        }
+        i++;
+    }
+}
+
+
+

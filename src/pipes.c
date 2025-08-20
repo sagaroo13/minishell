@@ -12,82 +12,105 @@
 
 #include "../include/minishell.h"
 
-void	run_child(t_command *cmd, t_shell *shell, int in_fd, int out_fd)
-{
-	int	ret;
 
-	set_signals(MODE_CHILD);
-	if (in_fd != STDIN_FILENO)
-	{
-		safe_dup2(in_fd, STDIN_FILENO);
-		safe_close(in_fd);
-	}
-	if (out_fd != STDOUT_FILENO)
-	{
-		safe_dup2(out_fd, STDOUT_FILENO);
-		safe_close(out_fd);
-	}
-	redirs(cmd);
-	if (cmd->builtin)
-	{
-		ret = exec_builtin(cmd->args, shell);
-		update_last_exit_status(shell, ret);
-		exit(ret);
-	}
-	exec(cmd->args[0], cmd->args, shell);
-	update_last_exit_status(shell, 1);
-	exit(EXIT_FAILURE);
+void exec_last(t_command *cmd, t_shell *shell)
+{
+    pid_t pid;
+    int status;
+
+    if (cmd->builtin)
+    {
+        int ret = exec_builtin(cmd->args, shell);
+        update_last_exit_status(shell, ret);
+        return;
+    }
+
+    pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        return;
+    }
+
+    if (pid == 0) // HIJO
+    {
+    // Señales por defecto para que Ctrl+C mate solo al hijo
+    set_signals(MODE_CHILD);
+
+        // Aplicar redirecciones si existen
+        redirs(cmd);
+
+        // Ejecutar comando externo
+        exec(cmd->args[0], cmd->args, shell);
+
+        // Si exec falla
+        perror(cmd->args[0]);
+        exit(127);
+    }
+    else // PADRE
+    {
+        // Ignorar Ctrl+C y Ctrl+\ mientras espera al hijo
+        set_signals(MODE_PIPE);
+
+        waitpid(pid, &status, 0);
+
+        // Normalizar status si el hijo murió por señal
+        if (WIFSIGNALED(status))
+            update_last_exit_status(shell, 128 + WTERMSIG(status));
+        else
+            update_last_exit_status(shell, WEXITSTATUS(status));
+
+        // Restaurar manejadores de la shell (Ctrl+C no mata la shell)
+        set_signals(MODE_SHELL);
+    }
 }
 
-void	exec_pipe(t_command *cmd, t_shell *shell)
+// ------------------------- exec_pipe -------------------------
+void exec_pipe(t_command *cmd, t_shell *shell)
 {
-	int		pipe_fd[2];
-	pid_t	pid;
-	int		status;
+    int pipe_fd[2];
+    pid_t pid;
+    int status;
 
-	if (pipe(pipe_fd) == -1)
-		return ;
-	pid = fork();
-	if (pid == -1)
-		return ;
-	if (pid == 0)
-		run_child(cmd, shell, STDIN_FILENO, pipe_fd[1]);
-	else
-	{
-		safe_close(pipe_fd[1]);
-		if (waitpid(pid, &status, 0) == -1)
-			perror("waitpid");
-		update_last_exit_status(shell, status);
-		safe_dup2(pipe_fd[0], STDIN_FILENO);
-		safe_close(pipe_fd[0]);
-	}
-}
+    if (pipe(pipe_fd) == -1)
+        exit(EXIT_FAILURE);
 
-void	exec_last(t_command *cmd, t_shell *shell)
-{
-	int		ret;
-	pid_t	pid;
-	int		status;
+    pid = fork();
+    if (pid == -1)
+        exit(EXIT_FAILURE);
 
-	if (cmd->builtin)
-	{
-		redirs(cmd);
-		ret = exec_builtin(cmd->args, shell);
-		update_last_exit_status(shell, ret);
-		return ;
-	}
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		return ;
-	}
-	if (pid == 0)
-		run_child(cmd, shell, STDIN_FILENO, STDOUT_FILENO);
-	else
-	{
-		if (waitpid(pid, &status, 0) == -1)
-			perror("waitpid");
-		update_last_exit_status(shell, status);
-	}
+    if (pid == 0) // HIJO
+    {
+        set_signals(MODE_CHILD);
+
+        // Configurar pipe para escritura
+        safe_close(pipe_fd[0]);
+        safe_dup2(pipe_fd[1], STDOUT_FILENO);
+        safe_close(pipe_fd[1]);
+
+        redirs(cmd);
+        exec(cmd->args[0], cmd->args, shell);
+
+        exit(127); // si exec falla
+    }
+    else // PADRE
+    {
+        set_signals(MODE_PIPE);
+
+        // Configurar pipe para lectura
+        safe_close(pipe_fd[1]);
+        safe_dup2(pipe_fd[0], STDIN_FILENO);
+        safe_close(pipe_fd[0]);
+
+        waitpid(pid, &status, 0);
+
+    // Normalizar exit status
+        if (WIFSIGNALED(status))
+            update_last_exit_status(shell, 128 + WTERMSIG(status));
+        else
+            update_last_exit_status(shell, WEXITSTATUS(status));
+
+    // Volver a modo shell (Ctrl+C imprime nueva línea y prompt)
+    set_signals(MODE_SHELL);
+    }
 }

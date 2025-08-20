@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:35:53 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/18 21:39:45 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/19 20:54:26 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,19 +27,19 @@ int	is_n_flag(char *s)
 	}
 	return (1);
 }
-
 int exec_echo(char **args, t_shell *shell)
 {
     int i = 1;
     int newline = 1;
-    // Procesar las flags -n
+
+    expand_env_vars(args, shell);
+    expand_exit_status(args, shell);
+    
     while (args[i] && is_n_flag(args[i]))
     {
         newline = 0;
         i++;
     }
-    // Expandir $? usando shell->last_status
-    expand_exit_status(args, shell);
     if (args[i])
     {
         write(STDOUT_FILENO, args[i], ft_strlen(args[i]));
@@ -55,4 +55,7 @@ int exec_echo(char **args, t_shell *shell)
         write(STDOUT_FILENO, "\n", 1);
     return 0;
 }
+
+
+
 

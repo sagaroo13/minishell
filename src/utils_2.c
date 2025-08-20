@@ -6,33 +6,55 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:09:35 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/08 15:12:51 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/20 00:27:17 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	handle_var(t_lexer_handler *handler, char **s)
+void handle_var(t_lexer_handler *handler, char **s, t_shell *shell)
 {
-	int		i;
-	char	var[64];
-	char	*val;
+    char var[64];
+    char *val;
+    int i = 0;
 
-	i = 0;
-	(*s)++;
-	while (**s && (ft_isalnum(**s) || **s == '_') && i < handler->buffer_size)
-		var[i++] = *(*s)++;
-	var[i] = '\0';
-	val = getenv(var);
-	if (val)
-	{
-		while (*val)
-		{
-			if (handler->buf_len < handler->buffer_size)
-				handler->buffer[handler->buf_len++] = *val++;
-		}
-	}
+    if (!handler || !s || !shell)
+    {
+        printf("[DEBUG] handle_var: invalid parameters!\n");
+        return;
+    }
+
+    (*s)++; // saltar el $
+    while (**s && (ft_isalnum(**s) || **s == '_') && i < 63)
+        var[i++] = *(*s)++;
+    var[i] = '\0';
+
+    printf("[DEBUG] handle_var: detected var='%s'\n", var);
+
+    val = get_env_value(shell, var); // tu función para buscar en env
+    if (!val)
+    {
+        printf("[DEBUG] handle_var: variable '%s' no encontrada, usando ''\n", var);
+        val = "";
+    }
+    else
+        printf("[DEBUG] handle_var: variable '%s' value='%s'\n", var, val);
+
+    // copiar el valor al buffer del lexer de forma segura
+    while (*val)
+    {
+        if (handler->buf_len < handler->buffer_size - 1)
+            handler->buffer[handler->buf_len++] = *val++;
+        else
+            break; // prevenir overflow
+    }
 }
+
+
+
+
+
+
 
 /* void	print_info(t_command_line *cmd_line)
 {

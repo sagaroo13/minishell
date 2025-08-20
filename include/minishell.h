@@ -71,62 +71,75 @@
  *																			  *
  ******************************************************************************/
 
+//extern sig_atomic_t g_interrupted;
 typedef struct s_command_line		t_command_line;
 typedef struct s_command			t_command;
 typedef struct s_last_exit_status	t_last_status;
 //extern t_last_status				g_last_exit_status;
 
-typedef struct s_token
-{
-	char	*token_str;
-	bool	quoted;
-}	t_token;
 
-//struct to manage int count fuction
-typedef struct s_token_state
-{
-	int		i;
-	int		count;
-	bool	in_sq;
-	bool	in_dq;
-	bool	in_token;
-}	t_token_state;
 
-typedef struct s_lexer_handler
-{
-	int			n_tokens;
-	int			buf_len;
-	int			buffer_size;
-	int			argc;
-	char		*buffer;
-	char		*cmd_str;
-	t_command	*cmd;
-	t_token		*tokens;
-}	t_lexer_handler;
 
+// ----- TIPOS BASE -----
+typedef struct s_last_exit_status t_last_status;
+typedef struct s_stdfd t_stdfd;
+typedef struct s_token t_token;
+typedef struct s_token_state t_token_state;
+
+// ----- TIPOS AUXILIARES -----
+struct s_stdfd
+{
+    int saved_stdin;
+    int saved_stdout;
+    int saved_stderr;
+};
+
+struct s_last_exit_status
+{
+    int status;
+    int last_exit_code;
+    bool exit_called;
+};
+
+struct s_token
+{
+    char *token_str;
+    bool quoted;
+};
+
+struct s_token_state
+{
+    int i;
+    int count;
+    bool in_sq;
+    bool in_dq;
+    bool in_token;
+};
+
+// ----- TIPOS PRINCIPALES -----
 typedef struct s_redirections
 {
-	int				n_redirs;
-	char			**redirs;
-}	t_redirections;
+    int n_redirs;
+    char **redirs;
+} t_redirections;
 
-typedef struct s_command_line
+// Declaraciones adelantadas para referencias cruzadas
+typedef struct s_command_line t_command_line;
+typedef struct s_command t_command;
+
+// ----- SHELL -----
+typedef struct s_shell_data
 {
-	char		*line;
-	char		*err_msg;	
-	int			n_cmds;
-	bool		execute;
-	t_command	*cmds;
-}	t_command_line;
+    char *line;
+    char *prompt;
+    t_stdfd stdfd;
+    char cwd[BUFFER_SIZE];
+    t_last_status last_status;
+    char **env;
+} t_shell;
 
-typedef struct s_last_exit_status
-{
-	int		status;
-	int		last_exit_code;
-	bool	exit_called;
-}	t_last_status;
-
-typedef struct s_command
+// ----- COMMAND -----
+struct s_command
 {
     char            **args;
     char            *cmd_str;
@@ -136,46 +149,50 @@ typedef struct s_command
     t_redirections  stdout;
     t_redirections  stderr;
     t_redirections  append;
+    t_shell         *shell;        // referencia al shell para expansiones/env
+    t_redirections  heredoc;       // delimitadores heredoc de ESTE comando
+    int             heredoc_fd;    // fd resultante (último heredoc válido)
+    t_command_line  *cmd_line;     // referencia opcional al padre
+};
 
-    t_redirections  heredoc;     // delimitadores heredoc de ESTE comando
-    int             heredoc_fd;  // fd resultante (último heredoc válido)
-
-    struct s_command_line *cmd_line; // referencia opcional al padre
-}   t_command;
-
-typedef struct s_stdfd
+// ----- COMMAND LINE -----
+struct s_command_line
 {
-	int	saved_stdin;
-	int	saved_stdout;
-	int	saved_stderr;
-}	t_stdfd;
+    char       *line;
+    char       *err_msg;
+    int         n_cmds;
+    bool        execute;
+    t_command  *cmds;
+};
 
-typedef struct s_shell_data
+// ----- LEXER -----
+typedef struct s_lexer_handler
 {
-	char	*line;
-	char	*prompt;
-	t_stdfd	stdfd;
-	char	cwd[BUFFER_SIZE];
-	t_last_status last_status;
-	char **env;
-}	t_shell;
+    int       n_tokens;
+    int       buf_len;
+    int       buffer_size;
+    int       argc;
+    char     *buffer;
+    char     *cmd_str;
+    t_command *cmd;
+    t_token  *tokens;
+} t_lexer_handler;
 
+// ----- ENUMS -----
 typedef enum e_open_flags
 {
-	READ,
-	WRITE,
-	APPEND,
-}	t_open_flags;
+    READ,
+    WRITE,
+    APPEND,
+} t_open_flags;
 
 typedef enum e_mode
 {
-	MODE_SHELL,
-	MODE_CHILD,
-	MODE_PIPE,
-	MODE_HEREDOC
-}	t_mode;
-
-
+    MODE_SHELL,
+    MODE_CHILD,
+    MODE_PIPE,
+    MODE_HEREDOC
+} t_mode;
 
 
 /******************************************************************************
@@ -187,30 +204,32 @@ typedef enum e_mode
 // EXEC
 //char	*find_path(char **envp);
 char	*try_executable_path(char **paths, char *command);
-char	*get_path(char *line);
+char	*get_path(char *line, t_shell *shell);
 void	free_args(char **args);
 void exec(char *cmd_name, char **cmd_args, t_shell *shell);
 void update_last_exit_status(t_shell *shell, int new_status);
 void expand_exit_status(char **args, t_shell *shell);
+void	get_cmd_info(t_command_line *cmd_line, t_command *cmd,
+		char *cmd_str, t_shell *shell);
 
 // PARSE
-void	parse_line(t_command_line *cmd_line, char *line);
+void parse_line(t_command_line *cmd_line, t_shell *shell, char *line);
 void	push_buffer(t_lexer_handler *handler, bool quoted);
-void	handle_var(t_lexer_handler *handler, char **s);
-void	lexer(t_lexer_handler *handler, t_command *cmd, char *cmd_str);
+void handle_var(t_lexer_handler *handler, char **s, t_shell *shell);
+void lexer(t_lexer_handler *handler, t_command *cmd, char *cmd_str, t_shell *shell);
 void	get_arguments(t_command *cmd, t_lexer_handler handler);
 char	**get_redirec(t_lexer_handler handler, char *redir, int len, int n);
 void	get_redirecs(t_command *cmd, t_lexer_handler handler, char *cmd_str);
 void	free_handler(t_lexer_handler *handler);
-void	get_cmds_info(t_command_line *cmd_line, char *line);
+ void get_cmds_info(t_command_line *cmd_line, t_shell *shell, char *line);
 void	init_handler(t_lexer_handler *handler, t_command *cmd, char *cmd_str);
 bool	is_file(t_command *cmd, char *str);
 int		count_tokens(const char *s);
-void	get_cmd_info(t_command_line *cmd_line, t_command *cmd, char *cmd_str);
 int		count_argv(t_command *cmd, t_lexer_handler handler);
 char	**split_pipes(char *line, int n_cmds);
 int		count_cmds(char *line);
-void run_child(t_command *cmd, t_shell *shell, int in_fd, int out_fd);
+//void run_child(t_command *cmd, t_shell *shell, int in_fd, int out_fd);
+void  expand_env_vars(char **args, t_shell *shell);
 
 // SIGNALS
 void	sigint_handler(int sig);
@@ -240,7 +259,7 @@ void	heredoc(t_command *cmd);
 int exec_echo(char **args, t_shell *shell);
 int		exec_pwd(void);
 int exec_env(t_shell *shell);
-
+char *get_env_value(t_shell *shell, const char *name);
 int		exec_cd(char **args);
 int		exec_exit(char **args);
 int		env_unset(char **argv, t_shell *shell);
