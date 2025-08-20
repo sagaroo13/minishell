@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 19:00:38 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/05 23:07:04 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/20 18:49:58 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@ void	process_redirs(char **args, char **redir)
 	redir[2] = NULL;
 	while (args[++i])
 	{
-		if (!strcmp(args[i], "<"))
+		if (!ft_strcmp(args[i], "<"))
 			type = 0;
-		else if (!strcmp(args[i], ">"))
+		else if (!ft_strcmp(args[i], ">"))
 			type = 1;
-		else if (!strcmp(args[i], "2>"))
+		else if (!ft_strcmp(args[i], "2>"))
 			type = 2;
 		if (type != -1 && args[i + 1])
 		{

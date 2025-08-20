@@ -6,55 +6,40 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:09:35 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/20 00:27:17 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/20 17:03:05 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void handle_var(t_lexer_handler *handler, char **s, t_shell *shell)
+void	handle_var(t_lexer *handler, char **s, t_shell *shell)
 {
-    char var[64];
-    char *val;
-    int i = 0;
+	char	var[64];
+	char	*val;
+	int		i;
 
-    if (!handler || !s || !shell)
-    {
-        printf("[DEBUG] handle_var: invalid parameters!\n");
-        return;
-    }
-
-    (*s)++; // saltar el $
-    while (**s && (ft_isalnum(**s) || **s == '_') && i < 63)
-        var[i++] = *(*s)++;
-    var[i] = '\0';
-
-    printf("[DEBUG] handle_var: detected var='%s'\n", var);
-
-    val = get_env_value(shell, var); // tu función para buscar en env
-    if (!val)
-    {
-        printf("[DEBUG] handle_var: variable '%s' no encontrada, usando ''\n", var);
-        val = "";
-    }
-    else
-        printf("[DEBUG] handle_var: variable '%s' value='%s'\n", var, val);
-
-    // copiar el valor al buffer del lexer de forma segura
-    while (*val)
-    {
-        if (handler->buf_len < handler->buffer_size - 1)
-            handler->buffer[handler->buf_len++] = *val++;
-        else
-            break; // prevenir overflow
-    }
+	i = 0;
+	if (!handler || !s || !shell)
+	{
+		printf("[DEBUG] handle_var: invalid parameters!\n");
+		return ;
+	}
+	(*s)++;
+	while (**s && (ft_isalnum(**s) || **s == '_') && i < 63)
+		var[i++] = *(*s)++;
+	var[i] = '\0';
+	printf("[DEBUG] handle_var: detected var='%s'\n", var);
+	val = get_env_value(shell, var);
+	if (!val)
+		val = "";
+	while (*val)
+	{
+		if (handler->buf_len < handler->buffer_size - 1)
+			handler->buffer[handler->buf_len++] = *val++;
+		else
+			break ;
+	}
 }
-
-
-
-
-
-
 
 /* void	print_info(t_command_line *cmd_line)
 {
@@ -98,7 +83,7 @@ void handle_var(t_lexer_handler *handler, char **s, t_shell *shell)
 	}
 } */
 
-int	count_argv(t_command *cmd, t_lexer_handler handler)
+int	count_argv(t_command *cmd, t_lexer handler)
 {
 	int	count;
 	int	i;

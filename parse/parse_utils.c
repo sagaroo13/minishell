@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 16:27:22 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/08 14:24:38 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/20 19:01:29 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	free_cmd_line(t_command_line *cmd_line)
 	cmd_line->cmds = NULL;
 }
 
-void	free_handler(t_lexer_handler *handler)
+void	free_handler(t_lexer *handler)
 {
 	int	i;
 

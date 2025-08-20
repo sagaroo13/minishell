@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 14:19:08 by shirakim          #+#    #+#             */
-/*   Updated: 2025/07/14 19:15:21 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/20 19:43:58 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,12 @@ int	exec_exit(char **args)
 		exit (0);
 	if (!is_numeric(args[1]))
 	{
-		write (2, "exit: numeric argument required\n", 32);
+		ft_putendl_fd("minishell: exit: numeric argument required", 2);
 		exit (255);
 	}
 	if (args[2])
 	{
-		write (2, "exit: too many arguments\n", 26);
+		ft_putendl_fd("minishell: exit: too many arguments", 2);
 		return (1);
 	}
 	code = atoi(args[1]);

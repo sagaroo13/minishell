@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 23:30:27 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/18 21:39:45 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/20 18:49:59 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	exec_builtin(char **args, t_shell *shell)
 	else if (ft_strncmp(args[0], "exit", 5) == 0)
 		return (exec_exit(args));
 	else if (ft_strncmp(args[0], "cd", 3) == 0)
-		return (exec_cd(args));
+		return (exec_cd(args, shell));
 	else if (ft_strncmp(args[0], "env", 4) == 0)
 		return (exec_env(shell));
 	else if (ft_strncmp(args[0], "export", 6) == 0)

@@ -1,27 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_env.c                                           :+:      :+:    :+:   */
+/*   fd_utils.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/14 19:47:36 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/20 20:46:39 by shirakim         ###   ########.fr       */
+/*   Created: 2025/08/21 00:49:56 by shirakim          #+#    #+#             */
+/*   Updated: 2025/08/21 00:49:57 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int	exec_env(t_shell *shell)
+void	save_fds(t_stdfd *std)
 {
-	int	i;
+	std->saved_stdin = safe_dup(STDIN_FILENO);
+	std->saved_stdout = safe_dup(STDOUT_FILENO);
+	std->saved_stderr = safe_dup(STDERR_FILENO);
+}
 
-	i = 0;
-	while (shell->env[i])
-	{
-		write(1, shell->env[i], ft_strlen(shell->env[i]));
-		write(1, "\n", 1);
-		i++;
-	}
-	return (1);
+void	restore_fds(t_stdfd *std)
+{
+	safe_dup2(std->saved_stdin, STDIN_FILENO);
+	safe_dup2(std->saved_stdout, STDOUT_FILENO);
+	safe_dup2(std->saved_stderr, STDERR_FILENO);
+	close(std->saved_stdin);
+	close(std->saved_stdout);
+	close(std->saved_stderr);
 }

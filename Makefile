@@ -10,26 +10,34 @@ NAME = minishell
 RM = rm -rf
 SRC_DIR = src/
 BUILT_DIR = builts/
+PARSE_DIR = parse/
 
 SRC = $(SRC_DIR)main.c				\
       $(SRC_DIR)utils.c 			\
       $(SRC_DIR)exec_line.c		\
-      $(SRC_DIR)parse.c			\
       $(SRC_DIR)pipes.c			\
+	$(SRC_DIR)pipes_utils.c		\
       $(SRC_DIR)redirs.c			\
       $(SRC_DIR)heredoc.c			\
+	$(SRC_DIR)heredoc_utils.c		\
+	$(SRC_DIR)heredoc_utils_2.c		\
+	$(SRC_DIR)env_utils.c		\
+	$(SRC_DIR)fd_utils.c		\
+	$(SRC_DIR)shell_loop.c		\
       $(BUILT_DIR)ft_exit.c		\
       $(BUILT_DIR)ft_env.c		\
 	  $(BUILT_DIR)ft_cd.c		\
 	  $(BUILT_DIR)ft_echo.c		\
 	  $(BUILT_DIR)ft_pwd.c		\
 	  $(BUILT_DIR)ft_export.c	\
+	  $(BUILT_DIR)ft_export_utils.c	\
 	  $(BUILT_DIR)ft_unset.c		\
       $(SRC_DIR)exec_built_in.c	\
-	  $(SRC_DIR)parse_utils.c	\
-	  $(SRC_DIR)parse_utils_2.c	\
-	  $(SRC_DIR)parse_utils_3.c	\
-	  $(SRC_DIR)parse_utils_4.c \
+	  $(PARSE_DIR)parse.c	\
+	  $(PARSE_DIR)parse_utils.c	\
+	  $(PARSE_DIR)parse_utils_2.c	\
+	  $(PARSE_DIR)parse_utils_3.c	\
+	  $(PARSE_DIR)parse_utils_4.c	\
 	  $(SRC_DIR)utils_2.c		\
 	  $(SRC_DIR)safe_utils.c \
 	  $(SRC_DIR)expand.c		\
