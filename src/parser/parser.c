@@ -6,13 +6,13 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:14:19 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 12:47:44 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 17:20:45 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void	get_redirecs(t_command *cmd, t_lexer handler, char *cmd_str)
+static void	get_redirecs(t_command *cmd, t_lexer handler, char *cmd_str)
 {
 	cmd->stdin.n_redirs = ft_count_substr(cmd_str, "<");
 	cmd->stdout.n_redirs = ft_count_substr(cmd_str, ">");
@@ -26,7 +26,7 @@ void	get_redirecs(t_command *cmd, t_lexer handler, char *cmd_str)
 	cmd->heredoc.redirs = get_redirec(handler, "<<", cmd->heredoc.n_redirs, 2);
 }
 
-void	get_arguments(t_command *cmd, t_lexer handler)
+static void	get_arguments(t_command *cmd, t_lexer handler)
 {
 	int	n_args;
 	int	i;
@@ -47,7 +47,7 @@ void	get_arguments(t_command *cmd, t_lexer handler)
 	cmd->args[++j] = NULL;
 }
 
-void	get_cmd_info(t_command_line *cmd_line, t_command *cmd,
+static void	get_cmd_info(t_command_line *cmd_line, t_command *cmd,
 		char *cmd_str, t_shell *shell)
 {
 	t_lexer	handler;
@@ -65,7 +65,7 @@ void	get_cmd_info(t_command_line *cmd_line, t_command *cmd,
 	free_handler(&handler);
 }
 
-void	get_cmds_info(t_command_line *cmd_line, t_shell *shell, char *line)
+static void	get_cmds_info(t_command_line *cmd_line, t_shell *shell, char *line)
 {
 	t_command	*cmds;
 	char		**line_parts;

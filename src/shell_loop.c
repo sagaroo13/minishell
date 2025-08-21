@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:36:52 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 15:13:02 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:32:21 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ void	minishell(t_shell *shell)
 		set_signals(MODE_SHELL);
 		line = readline(shell->prompt);
 		add_history(line);
+		shell->line = line;
 		free(shell->prompt);
 		if (!line)
 			break ;

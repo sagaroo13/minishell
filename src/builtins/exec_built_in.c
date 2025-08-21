@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 23:30:27 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 13:27:49 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:08:49 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	exec_builtin(char **args, t_shell *shell)
 	else if (ft_strncmp(args[0], "pwd", 4) == 0)
 		return (exec_pwd());
 	else if (ft_strncmp(args[0], "exit", 5) == 0)
-		return (exec_exit(args));
+		return (exec_exit(args, shell));
 	else if (ft_strncmp(args[0], "cd", 3) == 0)
 		return (exec_cd(args, shell));
 	else if (ft_strncmp(args[0], "env", 4) == 0)

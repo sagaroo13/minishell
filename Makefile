@@ -1,4 +1,3 @@
-# Colores
 GREEN = \033[0;32m
 RED = \033[0;31m
 RESET = \033[0m
@@ -14,13 +13,13 @@ PARSER_DIR = parser/
 LEXER_DIR = lexer/
 HEREDOC_DIR = heredoc/
 PIPES_DIR = pipes/
-REDIRS_DIR = redirs/set_signals(MODE_CHILD);ncs/
+REDIRS_DIR = redirs/
+SAFE_FUNCS_DIR = safe_funcs/
 SIGNALS_DIR = signals/
 
 SRC =	$(SRC_DIR)main.c				\
     	$(SRC_DIR)utils.c 				\
-    	$(SRC_DIR)exec_line.c			\
-		$(SRC_DIR)env_utils.c			\
+    	$(SRC_DIR)exec.c			\
 		$(SRC_DIR)shell_loop.c			\
 		$(SRC_DIR)utils_2.c				\
 		$(SRC_DIR)expand.c				\
@@ -56,29 +55,29 @@ OBJ = $(SRC:.c=.o)
 all: $(NAME)
 
 libft/libft.a:
-	@echo -e "$(GREEN)Compiling libft...$(RESET)"
-	@$(MAKE) -C libft > /dev/null
-	@echo -e "$(GREEN)Libft compiled successfully!$(RESET)"
+	@echo "$(GREEN)Compiling libft...$(RESET)"
+	@$(MAKE) -C libft
+	@echo "$(GREEN)Libft compiled successfully!$(RESET)"
 
 $(NAME): $(OBJ) libft/libft.a
-	@echo -e "$(GREEN)Compiling $(NAME)...$(RESET)"
+	@echo "$(GREEN)Compiling $(NAME)...$(RESET)"
 	@$(CC) $(FLAGS) $(OBJ) libft/libft.a -o $(NAME) $(LDFLAGS)
-	@echo -e "$(GREEN)$(NAME) compiled successfully!$(RESET)"
+	@echo "$(GREEN)$(NAME) compiled successfully!$(RESET)"
 
 %.o: %.c
-	@$(CC) $(FLAGS) -c $< -o $@ > /dev/null
+	@$(CC) $(FLAGS) -c $< -o $@
 
 clean:
-	@echo -e "$(RED)Cleaning objects...$(RESET)"
+	@echo "$(RED)Cleaning objects...$(RESET)"
 	@$(RM) $(OBJ)
-	@$(MAKE) clean -C libft > /dev/null
-	@echo -e "$(RED)Objects cleaned!$(RESET)"
+	@$(MAKE) clean -C libft
+	@echo "$(RED)Objects cleaned!$(RESET)"
 
-fclean:
-	@echo "$(RED)Cleaning executables and objects...$(RESET)"
+fclean: clean
+	@echo "$(RED)Cleaning executables...$(RESET)"
 	@$(RM) $(OBJ) $(NAME)
-	@$(MAKE) fclean -C libft > /dev/null
-	@echo "$(RED)Executables and objects cleaned!$(RESET)"
+	@$(MAKE) fclean -C libft
+	@echo "$(RED)Executables cleaned!$(RESET)"
 
 re: fclean all
 

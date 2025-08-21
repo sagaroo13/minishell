@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 14:19:08 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 13:10:48 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:34:01 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,13 @@ int	is_numeric(char *str)
 	return (1);
 }
 
-int	exec_exit(char **args)
+int	exec_exit(char **args, t_shell *shell)
 {
 	int	code;
 
+	free_cmd_line(shell->cmd_line);
+	cleanup_shell(shell);
+	free(shell->line);
 	write (STDOUT_FILENO, "exit\n", 5);
 	if (!args[1])
 		exit (0);
@@ -48,5 +51,7 @@ int	exec_exit(char **args)
 		return (1);
 	}
 	code = atoi(args[1]);
-	exit (code);
+	restore_terminal();
+	rl_clear_history();
+	exit(code);
 }
