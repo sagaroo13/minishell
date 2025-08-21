@@ -198,6 +198,13 @@ typedef enum e_mode
     MODE_HEREDOC
 } t_mode;
 
+// ----- LOGICAL OPERATORS -----
+typedef struct s_cmd_parts
+{
+    char *cmd;       // Comando a ejecutar
+    int operator;    // 0: ninguno, 1: pipe, 2: &&, 3: ||
+} t_cmd_parts;
+
 
 /******************************************************************************
  *  																		  *
@@ -298,6 +305,12 @@ int exec_builtin(char **args, t_shell *shell);
 // SAFE FUNCTIONS
 void	*safe_malloc(size_t size, bool calloc_flag);
 void	safe_getcwd(char *buf, size_t size);
+
+// LOGICAL OPERATORS
+int     count_cmds_with_logical_ops(char *line);
+t_cmd_parts *split_cmds_with_logical_ops(char *line, int n_cmds);
+void    process_logical_line(char *line, t_shell *shell);
+bool    contains_logical_operators(char *line);
 int		safe_open(const char *path, t_open_flags flags);
 void	safe_chdir(const char *path);
 void	safe_close(int fd);

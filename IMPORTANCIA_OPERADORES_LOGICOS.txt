@@ -1,0 +1,72 @@
+# Importancia de los Operadores Lógicos en Minishell
+
+## ¿Por qué son fundamentales los operadores lógicos?
+
+Los operadores lógicos (`&&` y `||`) son una característica esencial en cualquier shell por las siguientes razones:
+
+### 1. Control de Flujo Condicional
+Permiten crear secuencias de comandos que se ejecutan condicionalmente. Esta capacidad es crucial para:
+- Scripts de shell complejos
+- Comandos en una sola línea que dependen unos de otros
+- Implementación de lógica condicional sin necesidad de bloques if/else
+
+### 2. Eficiencia en la Ejecución
+El sistema de operadores lógicos evita ejecutar comandos innecesarios:
+- `cmd1 && cmd2`: Si cmd1 falla (exit code != 0), cmd2 no se ejecuta
+- `cmd1 || cmd2`: Si cmd1 tiene éxito (exit code = 0), cmd2 no se ejecuta
+Esto optimiza el tiempo de ejecución y evita efectos secundarios no deseados.
+
+### 3. Manejo de Errores Simplificado
+Proporcionan una forma concisa de implementar lógica de respaldo y manejo de errores:
+- `mkdir directorio || echo "No se pudo crear el directorio"`
+- `test -f archivo && cat archivo || echo "El archivo no existe"`
+
+### 4. Compatibilidad con Bash
+Los usuarios esperan que estos operadores funcionen como en bash. No implementarlos limitaría seriamente la utilidad del shell y crearía confusión.
+
+### 5. Integración con Características Avanzadas
+Los operadores lógicos deben funcionar correctamente con todas las características del shell:
+- Redirecciones: `cat < archivo && echo "Éxito"`
+- Pipes: `cat archivo | grep patrón && echo "Patrón encontrado"`
+- Heredocs: `cat << EOF1 && cat << EOF2` (caso específico mencionado)
+
+## Implementación en Minishell
+
+Nuestra implementación de operadores lógicos incluye:
+
+1. **Detección**: `contains_logical_operators()` identifica si una línea contiene estos operadores
+2. **Conteo**: `count_cmds_with_logical_ops()` cuenta comandos considerando operadores lógicos
+3. **División**: `split_cmds_with_logical_ops()` separa la línea en comandos individuales
+4. **Ejecución**: `process_logical_line()` ejecuta los comandos respetando la lógica de los operadores
+
+La estructura `t_cmd_parts` almacena cada comando junto con el operador que le sigue:
+```c
+typedef struct s_cmd_parts
+{
+    char *cmd;       // Comando a ejecutar
+    int operator;    // 0: ninguno, 1: pipe, 2: &&, 3: ||
+} t_cmd_parts;
+```
+
+## Casos de uso principales
+
+1. **Comprobación de condiciones**: 
+   `test -d directorio && echo "El directorio existe"`
+
+2. **Manejo de errores**: 
+   `mkdir -p directorio || echo "No se pudo crear el directorio"`
+
+3. **Secuencias de comandos condicionadas**:
+   `make && make install || echo "Error en la compilación"`
+
+4. **Heredocs secuenciales**:
+   `cat << EOF1 && cat << EOF2`
+
+## Consideraciones de diseño
+
+- Nuestra implementación respeta las comillas (no interpreta operadores dentro de comillas)
+- Distingue entre pipes simples (`|`) y operadores lógicos (`||`)
+- Maneja correctamente el estado de salida de los comandos anteriores
+- Libera adecuadamente la memoria asignada
+
+La implementación de operadores lógicos eleva significativamente la funcionalidad y utilidad de nuestro minishell, acercándolo al comportamiento esperado de un shell completo como bash.

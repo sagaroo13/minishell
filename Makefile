@@ -24,6 +24,7 @@ SRC = $(SRC_DIR)main.c				\
 	$(SRC_DIR)env_utils.c		\
 	$(SRC_DIR)fd_utils.c		\
 	$(SRC_DIR)shell_loop.c		\
+	$(SRC_DIR)logical_operators.c	\
       $(BUILT_DIR)ft_exit.c		\
       $(BUILT_DIR)ft_env.c		\
 	  $(BUILT_DIR)ft_cd.c		\

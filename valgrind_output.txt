@@ -1,0 +1,1696 @@
+==345592== Memcheck, a memory error detector
+==345592== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==345592== Using Valgrind-3.22.0-bd4db67b1d-20231031 and LibVEX; rerun with -h for copyright info
+==345592== Command: ./minishell
+==345592== 
+--345592-- Valgrind options:
+--345592--    --leak-check=full
+--345592--    --show-leak-kinds=all
+--345592--    --track-origins=yes
+--345592--    --verbose
+--345592--    --suppressions=./readline.supp
+--345592-- Contents of /proc/version:
+--345592--   Linux version 5.15.167.4-microsoft-standard-WSL2 (root@f9c826d3017f) (gcc (GCC) 11.2.0, GNU ld (GNU Binutils) 2.37) #1 SMP Tue Nov 5 00:21:55 UTC 2024
+--345592-- 
+--345592-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-ssse3-avx-avx2-bmi-f16c-rdrand-rdseed
+--345592-- Page sizes: currently 4096, max supported 4096
+--345592-- Valgrind library directory: /usr/libexec/valgrind
+--345592-- Reading syms from /home/shirakim/Proyectos/minishell/minishell
+--345592-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+--345592--   Considering /usr/lib/debug/.build-id/28/1ac1521b4102509b1c7ac7004db7c1efb81796.debug ..
+--345592--   .. build-id is valid
+--345592-- Reading syms from /usr/libexec/valgrind/memcheck-amd64-linux
+--345592--    object doesn't have a dynamic symbol table
+--345592-- Scheduler: using generic scheduler lock implementation.
+--345592-- Reading suppressions file: ./readline.supp
+--345592-- Reading suppressions file: /usr/libexec/valgrind/default.supp
+==345592== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-345592-by-shirakim-on-???
+==345592== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-345592-by-shirakim-on-???
+==345592== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-345592-by-shirakim-on-???
+==345592== 
+==345592== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==345592== don't want to do, unless you know exactly what you're doing,
+==345592== or are doing some strange experiment):
+==345592==   /usr/bin/vgdb --pid=345592 ...command...
+==345592== 
+==345592== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==345592==   /path/to/gdb ./minishell
+==345592== and then give GDB the following command
+==345592==   target remote | /usr/bin/vgdb --pid=345592
+==345592== --pid is optional if only one valgrind process is running
+==345592== 
+--345592-- REDIR: 0x4028b00 (ld-linux-x86-64.so.2:strlen) redirected to 0x580c2e1a (???)
+--345592-- REDIR: 0x40272b0 (ld-linux-x86-64.so.2:index) redirected to 0x580c2e34 (???)
+--345592-- Reading syms from /usr/libexec/valgrind/vgpreload_core-amd64-linux.so
+--345592-- Reading syms from /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so
+==345592== WARNING: new redirection conflicts with existing -- ignoring it
+--345592--     old: 0x04028b00 (strlen              ) R-> (0000.0) 0x580c2e1a ???
+--345592--     new: 0x04028b00 (strlen              ) R-> (2007.0) 0x0484f340 strlen
+--345592-- REDIR: 0x40274e0 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4850460 (strcmp)
+--345592-- REDIR: 0x4026910 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4853cd0 (mempcpy)
+--345592-- Reading syms from /usr/lib/x86_64-linux-gnu/libreadline.so.8.2
+--345592-- Reading syms from /usr/lib/x86_64-linux-gnu/libc.so.6
+--345592--   Considering /usr/lib/debug/.build-id/28/2c2c16e7b6600b0b22ea0c99010d2795752b5f.debug ..
+--345592--   .. build-id is valid
+--345592-- Reading syms from /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4
+--345592-- REDIR: 0x4028ca0 (ld-linux-x86-64.so.2:strncmp) redirected to 0x484fc90 (strncmp)
+--345592-- REDIR: 0x4970050 (libc.so.6:strnlen) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x49700e0 (libc.so.6:strpbrk) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496e1a0 (libc.so.6:strcmp) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x49873b0 (libc.so.6:wcsnlen) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496d290 (libc.so.6:memset) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x4986b20 (libc.so.6:wcslen) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x49f23c0 (libc.so.6:__memcpy_chk) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496d200 (libc.so.6:memrchr) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x4987350 (libc.so.6:wcsncpy) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496c720 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x49858e0 (libc.so.6:wcschr) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496e090 (libc.so.6:index) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x4970110 (libc.so.6:rindex) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x4985990 (libc.so.6:wcscmp) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496d4b0 (libc.so.6:stpncpy) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x4993eb0 (libc.so.6:wmemchr) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496fef0 (libc.so.6:strncmp) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496d510 (libc.so.6:strcasecmp) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496f310 (libc.so.6:strcspn) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x49868f0 (libc.so.6:wcscpy) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496e020 (libc.so.6:strcat) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496fdf0 (libc.so.6:strncasecmp_l) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496e110 (libc.so.6:strchrnul) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496c630 (libc.so.6:bcmp) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496f2a0 (libc.so.6:strcpy) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496d5b0 (libc.so.6:strcasecmp_l) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496fcc0 (libc.so.6:strlen) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496ff90 (libc.so.6:strncpy) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x4993f30 (libc.so.6:wmemcmp) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x49f24e0 (libc.so.6:__memmove_chk) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+==345592== WARNING: new redirection conflicts with existing -- ignoring it
+--345592--     old: 0x04a439d0 (__memcpy_chk_avx_una) R-> (2030.0) 0x04853dd0 __memcpy_chk
+--345592--     new: 0x04a439d0 (__memcpy_chk_avx_una) R-> (2024.0) 0x04853740 __memmove_chk
+--345592-- REDIR: 0x496d440 (libc.so.6:stpcpy) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496cfc0 (libc.so.6:memmove) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+==345592== Preferring higher priority redirection:
+--345592--     old: 0x04a43a00 (__memcpy_avx_unalign) R-> (2018.0) 0x04851580 __memcpy_avx_unaligned_erms
+--345592--     new: 0x04a43a00 (__memcpy_avx_unalign) R-> (2018.1) 0x04852d60 memmove
+--345592-- REDIR: 0x496c5b0 (libc.so.6:memchr) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x49702e0 (libc.so.6:strspn) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496d0e0 (libc.so.6:mempcpy) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496fd50 (libc.so.6:strncasecmp) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x496fe90 (libc.so.6:strncat) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x4970ba0 (libc.so.6:strstr) redirected to 0x483d1c0 (_vgnU_ifunc_wrapper)
+--345592-- REDIR: 0x4a485f0 (libc.so.6:__strrchr_avx2) redirected to 0x484ed20 (rindex)
+--345592-- REDIR: 0x4968650 (libc.so.6:malloc) redirected to 0x48467b0 (malloc)
+--345592-- REDIR: 0x4a45da0 (libc.so.6:__strchrnul_avx2) redirected to 0x48537b0 (strchrnul)
+--345592-- REDIR: 0x4a43a00 (libc.so.6:__memcpy_avx_unaligned_erms) redirected to 0x4852d60 (memmove)
+--345592-- REDIR: 0x4a439c0 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x48538d0 (mempcpy)
+==345592== Syscall param ioctl(TCSET{S,SW,SF}) points to uninitialised byte(s)
+==345592==    at 0x49D7D10: tcsetattr (tcsetattr.c:83)
+==345592==    by 0x10E5DA: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AED9: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==  Address 0x1ffefff570 is on thread 1's stack
+==345592==  in frame #0, created by tcsetattr (tcsetattr.c:45)
+==345592==  Uninitialised value was created by a stack allocation
+==345592==    at 0x10E590: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+--345592-- REDIR: 0x4a46740 (libc.so.6:__strlen_avx2) redirected to 0x484f220 (strlen)
+--345592-- REDIR: 0x4a47820 (libc.so.6:__strncmp_avx2) redirected to 0x484fab0 (strncmp)
+--345592-- REDIR: 0x4905d30 (libc.so.6:setenv) redirected to 0x48547d0 (setenv)
+--345592-- REDIR: 0x4a45b60 (libc.so.6:__strchr_avx2) redirected to 0x484ef00 (index)
+--345592-- REDIR: 0x49690a0 (libc.so.6:realloc) redirected to 0x484db00 (realloc)
+--345592-- REDIR: 0x4a439d0 (libc.so.6:__memcpy_chk_avx_unaligned_erms) redirected to 0x4853dd0 (__memcpy_chk)
+--345592-- REDIR: 0x4a45f90 (libc.so.6:__strcmp_avx2) redirected to 0x4850360 (strcmp)
+--345592-- REDIR: 0x49697a0 (libc.so.6:calloc) redirected to 0x484d8a0 (calloc)
+--345592-- REDIR: 0x4a48320 (libc.so.6:__strnlen_avx2) redirected to 0x484f1c0 (strnlen)
+--345592-- REDIR: 0x4968d30 (libc.so.6:free) redirected to 0x4849820 (free)
+--345592-- REDIR: 0x4a464f0 (libc.so.6:__strcpy_avx2) redirected to 0x484f370 (strcpy)
+--345592-- REDIR: 0x4a44400 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4852c50 (memset)
+--345592-- REDIR: 0x4a47e80 (libc.so.6:__strncpy_avx2) redirected to 0x484f4f0 (strncpy)
+--345592-- REDIR: 0x4a43000 (libc.so.6:__memchr_avx2) redirected to 0x48504e0 (memchr)
+--345592-- REDIR: 0x4a44e50 (libc.so.6:__strcasecmp_l_avx2) redirected to 0x484ff70 (strcasecmp_l)
+--345592-- REDIR: 0x4a446b0 (libc.so.6:__stpcpy_avx2) redirected to 0x48525a0 (stpcpy)
+--345592-- REDIR: 0x4a44e40 (libc.so.6:__strcasecmp_avx2) redirected to 0x484fcf0 (strcasecmp)
+--345592-- REDIR: 0x4a468c0 (libc.so.6:__strncasecmp_avx2) redirected to 0x484fdd0 (strncasecmp)
+--345592-- REDIR: 0x4a432a0 (libc.so.6:__memcmp_avx2_movbe) redirected to 0x4852480 (bcmp)
+==345606== 
+==345606== HEAP SUMMARY:
+==345606==     in use at exit: 238,270 bytes in 321 blocks
+==345606==   total heap usage: 750 allocs, 429 frees, 287,118 bytes allocated
+==345606== 
+==345606== Searching for pointers to 321 not-freed blocks
+==345606== Checked 270,552 bytes
+==345606== 
+==345606== 4 bytes in 1 blocks are still reachable in loss record 1 of 87
+==345606==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10CF1D: get_arguments (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D16A: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 5 bytes in 1 blocks are still reachable in loss record 2 of 87
+==345606==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D028: find_redir (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D301: get_redirec (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D5AF: get_redirecs (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D124: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 8 bytes in 1 blocks are still reachable in loss record 4 of 87
+==345606==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x48A2C81: xrealloc (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x488E3BE: ??? (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x488ECCD: rl_expand_prompt (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x487D47F: rl_set_prompt (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x4889891: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 12 bytes in 1 blocks are still reachable in loss record 9 of 87
+==345606==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10C831: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 12 bytes in 1 blocks are still reachable in loss record 10 of 87
+==345606==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D08B: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 14 bytes in 1 blocks are still reachable in loss record 12 of 87
+==345606==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE6657: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AECF4F: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AECFD9: _nc_trim_sgr0 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE99B7: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 16 bytes in 1 blocks are still reachable in loss record 16 of 87
+==345606==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x10EA0A: ft_calloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10DE4E: safe_malloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10CE60: get_arguments (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D16A: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 16 bytes in 1 blocks are still reachable in loss record 17 of 87
+==345606==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x10EA0A: ft_calloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10DE4E: safe_malloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D208: get_redirec (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D5AF: get_redirecs (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D124: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 47 bytes in 1 blocks are still reachable in loss record 23 of 87
+==345606==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AEC4A8: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606== 
+==345606== 48 bytes in 1 blocks are still reachable in loss record 25 of 87
+==345606==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x4ADEB9B: _nc_first_db (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AEDA8A: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 128 bytes in 1 blocks are still reachable in loss record 32 of 87
+==345606==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x10EA0A: ft_calloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10DE4E: safe_malloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10D6AF: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 156 bytes in 1 blocks are still reachable in loss record 33 of 87
+==345606==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AEC4C6: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606== 
+==345606== 168 bytes in 1 blocks are still reachable in loss record 34 of 87
+==345606==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x4AE161E: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE6278: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AECF4F: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AECFD9: _nc_trim_sgr0 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE99B7: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 400 bytes in 1 blocks are still reachable in loss record 37 of 87
+==345606==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x10BBF1: add_env_var (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10BD97: add_or_update_env (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10B93F: process_export_arg (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10B9FC: env_export (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10C427: exec_builtin (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x109EFB: exec_last (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x109E0F: process_heredoc_and_exec (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x109EA3: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 712 bytes in 1 blocks are still reachable in loss record 38 of 87
+==345606==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x4AEC783: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 760 bytes in 1 blocks are still reachable in loss record 40 of 87
+==345606==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x4AE926F: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 1,108 bytes in 1 blocks are still reachable in loss record 50 of 87
+==345606==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x4ADD418: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE92F7: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 1,536 bytes in 1 blocks are still reachable in loss record 51 of 87
+==345606==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x48A2C81: xrealloc (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x487F017: rl_add_funmap_entry (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x487F057: rl_initialize_funmap (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x48895F4: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 4,000 bytes in 1 blocks are still reachable in loss record 56 of 87
+==345606==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AEC4E4: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606== 
+==345606== 4,309 bytes in 48 blocks are still reachable in loss record 73 of 87
+==345606==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AC09: copy_envp (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x109562: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== 7,952 bytes in 1 blocks are still reachable in loss record 74 of 87
+==345606==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345606==    by 0x4ADBC77: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4ADD69D: _nc_find_type_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x4AE03C1: tgetstr_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345606==    by 0x489DD22: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345606==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+==345606== LEAK SUMMARY:
+==345606==    definitely lost: 0 bytes in 0 blocks
+==345606==    indirectly lost: 0 bytes in 0 blocks
+==345606==      possibly lost: 0 bytes in 0 blocks
+==345606==    still reachable: 21,411 bytes in 68 blocks
+==345606==         suppressed: 216,859 bytes in 253 blocks
+==345606== 
+==345606== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==345606== 
+==345606== 1 errors in context 1 of 1:
+==345606== Syscall param ioctl(TCSET{S,SW,SF}) points to uninitialised byte(s)
+==345606==    at 0x49D7D10: tcsetattr (tcsetattr.c:83)
+==345606==    by 0x10E5DA: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x10AED9: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345606==  Address 0x1ffefff570 is on thread 1's stack
+==345606==  in frame #0, created by tcsetattr (tcsetattr.c:45)
+==345606==  Uninitialised value was created by a stack allocation
+==345606==    at 0x10E590: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345606== 
+--345606-- 
+--345606-- used_suppression:     66 Readline ./readline.supp:2 suppressed: 216,859 bytes in 253 blocks
+==345606== 
+==345606== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+minishell: command not found: texto
+==345711== 
+==345711== HEAP SUMMARY:
+==345711==     in use at exit: 238,275 bytes in 322 blocks
+==345711==   total heap usage: 837 allocs, 515 frees, 287,920 bytes allocated
+==345711== 
+==345711== Searching for pointers to 322 not-freed blocks
+==345711== Checked 270,496 bytes
+==345711== 
+==345711== 6 bytes in 1 blocks are still reachable in loss record 2 of 85
+==345711==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10C831: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 6 bytes in 1 blocks are still reachable in loss record 3 of 85
+==345711==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10D08B: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 6 bytes in 1 blocks are still reachable in loss record 4 of 85
+==345711==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10CF1D: get_arguments (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10D16A: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 8 bytes in 1 blocks are still reachable in loss record 6 of 85
+==345711==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x48A2C81: xrealloc (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x488E3BE: ??? (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x488ECCD: rl_expand_prompt (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x487D47F: rl_set_prompt (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x4889891: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 14 bytes in 1 blocks are still reachable in loss record 11 of 85
+==345711==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE6657: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AECF4F: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AECFD9: _nc_trim_sgr0 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE99B7: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 16 bytes in 1 blocks are still reachable in loss record 15 of 85
+==345711==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x10EA0A: ft_calloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10DE4E: safe_malloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10CE60: get_arguments (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10D16A: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 47 bytes in 1 blocks are still reachable in loss record 21 of 85
+==345711==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AEC4A8: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711== 
+==345711== 48 bytes in 1 blocks are still reachable in loss record 23 of 85
+==345711==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x4ADEB9B: _nc_first_db (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AEDA8A: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 128 bytes in 1 blocks are still reachable in loss record 29 of 85
+==345711==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x10EA0A: ft_calloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10DE4E: safe_malloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10D6AF: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 156 bytes in 1 blocks are still reachable in loss record 31 of 85
+==345711==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AEC4C6: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711== 
+==345711== 168 bytes in 1 blocks are still reachable in loss record 32 of 85
+==345711==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x4AE161E: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE6278: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AECF4F: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AECFD9: _nc_trim_sgr0 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE99B7: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 400 bytes in 1 blocks are still reachable in loss record 35 of 85
+==345711==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x10BBF1: add_env_var (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10BD97: add_or_update_env (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10B93F: process_export_arg (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10B9FC: env_export (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10C427: exec_builtin (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x109EFB: exec_last (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x109E0F: process_heredoc_and_exec (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x109EA3: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 712 bytes in 1 blocks are still reachable in loss record 36 of 85
+==345711==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x4AEC783: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 760 bytes in 1 blocks are still reachable in loss record 38 of 85
+==345711==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x4AE926F: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 1,108 bytes in 1 blocks are still reachable in loss record 48 of 85
+==345711==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x4ADD418: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE92F7: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 1,536 bytes in 1 blocks are still reachable in loss record 49 of 85
+==345711==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x48A2C81: xrealloc (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x487F017: rl_add_funmap_entry (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x487F057: rl_initialize_funmap (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x48895F4: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 4,000 bytes in 1 blocks are still reachable in loss record 54 of 85
+==345711==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AEC4E4: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711== 
+==345711== 4,309 bytes in 48 blocks are still reachable in loss record 71 of 85
+==345711==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AC09: copy_envp (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x109562: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== 7,952 bytes in 1 blocks are still reachable in loss record 72 of 85
+==345711==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345711==    by 0x4ADBC77: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4ADD69D: _nc_find_type_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x4AE03C1: tgetstr_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345711==    by 0x489DD22: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345711==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+==345711== LEAK SUMMARY:
+==345711==    definitely lost: 0 bytes in 0 blocks
+==345711==    indirectly lost: 0 bytes in 0 blocks
+==345711==      possibly lost: 0 bytes in 0 blocks
+==345711==    still reachable: 21,380 bytes in 66 blocks
+==345711==         suppressed: 216,895 bytes in 256 blocks
+==345711== 
+==345711== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==345711== 
+==345711== 1 errors in context 1 of 1:
+==345711== Syscall param ioctl(TCSET{S,SW,SF}) points to uninitialised byte(s)
+==345711==    at 0x49D7D10: tcsetattr (tcsetattr.c:83)
+==345711==    by 0x10E5DA: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x10AED9: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345711==  Address 0x1ffefff570 is on thread 1's stack
+==345711==  in frame #0, created by tcsetattr (tcsetattr.c:45)
+==345711==  Uninitialised value was created by a stack allocation
+==345711==    at 0x10E590: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345711== 
+--345711-- 
+--345711-- used_suppression:     66 Readline ./readline.supp:2 suppressed: 216,895 bytes in 256 blocks
+==345711== 
+==345711== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+minishell: command not found: multiples
+==345712== 
+==345712== HEAP SUMMARY:
+==345712==     in use at exit: 238,337 bytes in 325 blocks
+==345712==   total heap usage: 857 allocs, 532 frees, 289,851 bytes allocated
+==345712== 
+==345712== Searching for pointers to 325 not-freed blocks
+==345712== Checked 270,576 bytes
+==345712== 
+==345712== 8 bytes in 1 blocks are still reachable in loss record 2 of 85
+==345712==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x48A2C81: xrealloc (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x488E3BE: ??? (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x488ECCD: rl_expand_prompt (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x487D47F: rl_set_prompt (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x4889891: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 10 bytes in 1 blocks are still reachable in loss record 6 of 85
+==345712==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10C831: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 10 bytes in 1 blocks are still reachable in loss record 7 of 85
+==345712==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10D08B: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 10 bytes in 1 blocks are still reachable in loss record 8 of 85
+==345712==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10CF1D: get_arguments (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10D16A: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 14 bytes in 1 blocks are still reachable in loss record 11 of 85
+==345712==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE6657: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AECF4F: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AECFD9: _nc_trim_sgr0 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE99B7: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 16 bytes in 1 blocks are still reachable in loss record 15 of 85
+==345712==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x10EA0A: ft_calloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10DE4E: safe_malloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10CE60: get_arguments (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10D16A: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 47 bytes in 1 blocks are still reachable in loss record 21 of 85
+==345712==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AEC4A8: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712== 
+==345712== 48 bytes in 1 blocks are still reachable in loss record 23 of 85
+==345712==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x4ADEB9B: _nc_first_db (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AEDA8A: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 128 bytes in 1 blocks are still reachable in loss record 28 of 85
+==345712==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x10EA0A: ft_calloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10DE4E: safe_malloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10D6AF: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 156 bytes in 1 blocks are still reachable in loss record 31 of 85
+==345712==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AEC4C6: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712== 
+==345712== 168 bytes in 1 blocks are still reachable in loss record 32 of 85
+==345712==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x4AE161E: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE6278: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AECF4F: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AECFD9: _nc_trim_sgr0 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE99B7: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 400 bytes in 1 blocks are still reachable in loss record 35 of 85
+==345712==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x10BBF1: add_env_var (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10BD97: add_or_update_env (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10B93F: process_export_arg (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10B9FC: env_export (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10C427: exec_builtin (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x109EFB: exec_last (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x109E0F: process_heredoc_and_exec (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x109EA3: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 712 bytes in 1 blocks are still reachable in loss record 36 of 85
+==345712==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x4AEC783: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 760 bytes in 1 blocks are still reachable in loss record 38 of 85
+==345712==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x4AE926F: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 1,108 bytes in 1 blocks are still reachable in loss record 48 of 85
+==345712==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x4ADD418: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE92F7: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 1,536 bytes in 1 blocks are still reachable in loss record 49 of 85
+==345712==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x48A2C81: xrealloc (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x487F017: rl_add_funmap_entry (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x487F057: rl_initialize_funmap (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x48895F4: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 4,000 bytes in 1 blocks are still reachable in loss record 54 of 85
+==345712==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AEC4E4: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712== 
+==345712== 4,309 bytes in 48 blocks are still reachable in loss record 71 of 85
+==345712==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AC09: copy_envp (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x109562: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== 7,952 bytes in 1 blocks are still reachable in loss record 72 of 85
+==345712==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345712==    by 0x4ADBC77: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4ADD69D: _nc_find_type_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x4AE03C1: tgetstr_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345712==    by 0x489DD22: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345712==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+==345712== LEAK SUMMARY:
+==345712==    definitely lost: 0 bytes in 0 blocks
+==345712==    indirectly lost: 0 bytes in 0 blocks
+==345712==      possibly lost: 0 bytes in 0 blocks
+==345712==    still reachable: 21,392 bytes in 66 blocks
+==345712==         suppressed: 216,945 bytes in 259 blocks
+==345712== 
+==345712== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==345712== 
+==345712== 1 errors in context 1 of 1:
+==345712== Syscall param ioctl(TCSET{S,SW,SF}) points to uninitialised byte(s)
+==345712==    at 0x49D7D10: tcsetattr (tcsetattr.c:83)
+==345712==    by 0x10E5DA: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x10AED9: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345712==  Address 0x1ffefff570 is on thread 1's stack
+==345712==  in frame #0, created by tcsetattr (tcsetattr.c:45)
+==345712==  Uninitialised value was created by a stack allocation
+==345712==    at 0x10E590: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345712== 
+--345712-- 
+--345712-- used_suppression:     66 Readline ./readline.supp:2 suppressed: 216,945 bytes in 259 blocks
+==345712== 
+==345712== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+minishell: command not found: lineas
+==345713== 
+==345713== HEAP SUMMARY:
+==345713==     in use at exit: 238,368 bytes in 328 blocks
+==345713==   total heap usage: 877 allocs, 549 frees, 291,397 bytes allocated
+==345713== 
+==345713== Searching for pointers to 328 not-freed blocks
+==345713== Checked 270,584 bytes
+==345713== 
+==345713== 7 bytes in 1 blocks are still reachable in loss record 2 of 85
+==345713==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10C831: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 7 bytes in 1 blocks are still reachable in loss record 3 of 85
+==345713==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10D08B: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 7 bytes in 1 blocks are still reachable in loss record 4 of 85
+==345713==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10CF1D: get_arguments (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10D16A: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 8 bytes in 1 blocks are still reachable in loss record 6 of 85
+==345713==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x48A2C81: xrealloc (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x488E3BE: ??? (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x488ECCD: rl_expand_prompt (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x487D47F: rl_set_prompt (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x4889891: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 14 bytes in 1 blocks are still reachable in loss record 11 of 85
+==345713==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE6657: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AECF4F: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AECFD9: _nc_trim_sgr0 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE99B7: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 16 bytes in 1 blocks are still reachable in loss record 15 of 85
+==345713==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x10EA0A: ft_calloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10DE4E: safe_malloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10CE60: get_arguments (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10D16A: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 47 bytes in 1 blocks are still reachable in loss record 21 of 85
+==345713==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AEC4A8: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713== 
+==345713== 48 bytes in 1 blocks are still reachable in loss record 23 of 85
+==345713==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x4ADEB9B: _nc_first_db (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AEDA8A: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 128 bytes in 1 blocks are still reachable in loss record 28 of 85
+==345713==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x10EA0A: ft_calloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10DE4E: safe_malloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10D6AF: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 156 bytes in 1 blocks are still reachable in loss record 30 of 85
+==345713==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AEC4C6: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713== 
+==345713== 168 bytes in 1 blocks are still reachable in loss record 32 of 85
+==345713==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x4AE161E: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE6278: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AECF4F: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AECFD9: _nc_trim_sgr0 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE99B7: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 400 bytes in 1 blocks are still reachable in loss record 35 of 85
+==345713==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x10BBF1: add_env_var (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10BD97: add_or_update_env (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10B93F: process_export_arg (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10B9FC: env_export (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10C427: exec_builtin (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x109EFB: exec_last (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x109E0F: process_heredoc_and_exec (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x109EA3: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 712 bytes in 1 blocks are still reachable in loss record 36 of 85
+==345713==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x4AEC783: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 760 bytes in 1 blocks are still reachable in loss record 38 of 85
+==345713==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x4AE926F: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 1,108 bytes in 1 blocks are still reachable in loss record 48 of 85
+==345713==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x4ADD418: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE92F7: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 1,536 bytes in 1 blocks are still reachable in loss record 49 of 85
+==345713==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x48A2C81: xrealloc (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x487F017: rl_add_funmap_entry (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x487F057: rl_initialize_funmap (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x48895F4: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 4,000 bytes in 1 blocks are still reachable in loss record 54 of 85
+==345713==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AEC4E4: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713== 
+==345713== 4,309 bytes in 48 blocks are still reachable in loss record 71 of 85
+==345713==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AC09: copy_envp (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x109562: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== 7,952 bytes in 1 blocks are still reachable in loss record 72 of 85
+==345713==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345713==    by 0x4ADBC77: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4ADD69D: _nc_find_type_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x4AE03C1: tgetstr_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345713==    by 0x489DD22: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345713==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+==345713== LEAK SUMMARY:
+==345713==    definitely lost: 0 bytes in 0 blocks
+==345713==    indirectly lost: 0 bytes in 0 blocks
+==345713==      possibly lost: 0 bytes in 0 blocks
+==345713==    still reachable: 21,383 bytes in 66 blocks
+==345713==         suppressed: 216,985 bytes in 262 blocks
+==345713== 
+==345713== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==345713== 
+==345713== 1 errors in context 1 of 1:
+==345713== Syscall param ioctl(TCSET{S,SW,SF}) points to uninitialised byte(s)
+==345713==    at 0x49D7D10: tcsetattr (tcsetattr.c:83)
+==345713==    by 0x10E5DA: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x10AED9: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345713==  Address 0x1ffefff570 is on thread 1's stack
+==345713==  in frame #0, created by tcsetattr (tcsetattr.c:45)
+==345713==  Uninitialised value was created by a stack allocation
+==345713==    at 0x10E590: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345713== 
+--345713-- 
+--345713-- used_suppression:     66 Readline ./readline.supp:2 suppressed: 216,985 bytes in 262 blocks
+==345713== 
+==345713== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+minishell: command not found: HERE
+==345714== 
+==345714== HEAP SUMMARY:
+==345714==     in use at exit: 238,401 bytes in 331 blocks
+==345714==   total heap usage: 897 allocs, 566 frees, 292,981 bytes allocated
+==345714== 
+==345714== Searching for pointers to 331 not-freed blocks
+==345714== Checked 270,624 bytes
+==345714== 
+==345714== 5 bytes in 1 blocks are still reachable in loss record 2 of 85
+==345714==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10C831: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 5 bytes in 1 blocks are still reachable in loss record 3 of 85
+==345714==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10D08B: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 5 bytes in 1 blocks are still reachable in loss record 4 of 85
+==345714==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10CF1D: get_arguments (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10D16A: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 8 bytes in 1 blocks are still reachable in loss record 6 of 85
+==345714==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x48A2C81: xrealloc (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x488E3BE: ??? (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x488ECCD: rl_expand_prompt (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x487D47F: rl_set_prompt (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x4889891: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 14 bytes in 1 blocks are still reachable in loss record 11 of 85
+==345714==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE6657: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AECF4F: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AECFD9: _nc_trim_sgr0 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE99B7: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 16 bytes in 1 blocks are still reachable in loss record 15 of 85
+==345714==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x10EA0A: ft_calloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10DE4E: safe_malloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10CE60: get_arguments (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10D16A: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 47 bytes in 1 blocks are still reachable in loss record 21 of 85
+==345714==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AEC4A8: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714== 
+==345714== 48 bytes in 1 blocks are still reachable in loss record 23 of 85
+==345714==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x4ADEB9B: _nc_first_db (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AEDA8A: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 128 bytes in 1 blocks are still reachable in loss record 28 of 85
+==345714==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x10EA0A: ft_calloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10DE4E: safe_malloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10D6AF: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 156 bytes in 1 blocks are still reachable in loss record 30 of 85
+==345714==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AEC4C6: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714== 
+==345714== 168 bytes in 1 blocks are still reachable in loss record 31 of 85
+==345714==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x4AE161E: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE6278: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AECF4F: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AECFD9: _nc_trim_sgr0 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE99B7: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 400 bytes in 1 blocks are still reachable in loss record 35 of 85
+==345714==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x10BBF1: add_env_var (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10BD97: add_or_update_env (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10B93F: process_export_arg (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10B9FC: env_export (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10C427: exec_builtin (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x109EFB: exec_last (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x109E0F: process_heredoc_and_exec (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x109EA3: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 712 bytes in 1 blocks are still reachable in loss record 36 of 85
+==345714==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x4AEC783: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 760 bytes in 1 blocks are still reachable in loss record 38 of 85
+==345714==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x4AE926F: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 1,108 bytes in 1 blocks are still reachable in loss record 48 of 85
+==345714==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x4ADD418: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE92F7: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 1,536 bytes in 1 blocks are still reachable in loss record 49 of 85
+==345714==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x48A2C81: xrealloc (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x487F017: rl_add_funmap_entry (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x487F057: rl_initialize_funmap (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x48895F4: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 4,000 bytes in 1 blocks are still reachable in loss record 54 of 85
+==345714==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AEC4E4: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714== 
+==345714== 4,309 bytes in 48 blocks are still reachable in loss record 71 of 85
+==345714==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AC09: copy_envp (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x109562: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== 7,952 bytes in 1 blocks are still reachable in loss record 72 of 85
+==345714==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345714==    by 0x4ADBC77: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4ADD69D: _nc_find_type_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x4AE03C1: tgetstr_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345714==    by 0x489DD22: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345714==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+==345714== LEAK SUMMARY:
+==345714==    definitely lost: 0 bytes in 0 blocks
+==345714==    indirectly lost: 0 bytes in 0 blocks
+==345714==      possibly lost: 0 bytes in 0 blocks
+==345714==    still reachable: 21,377 bytes in 66 blocks
+==345714==         suppressed: 217,024 bytes in 265 blocks
+==345714== 
+==345714== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==345714== 
+==345714== 1 errors in context 1 of 1:
+==345714== Syscall param ioctl(TCSET{S,SW,SF}) points to uninitialised byte(s)
+==345714==    at 0x49D7D10: tcsetattr (tcsetattr.c:83)
+==345714==    by 0x10E5DA: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x10AED9: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345714==  Address 0x1ffefff570 is on thread 1's stack
+==345714==  in frame #0, created by tcsetattr (tcsetattr.c:45)
+==345714==  Uninitialised value was created by a stack allocation
+==345714==    at 0x10E590: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345714== 
+--345714-- 
+--345714-- used_suppression:     66 Readline ./readline.supp:2 suppressed: 217,024 bytes in 265 blocks
+==345714== 
+==345714== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==345592== 
+==345592== HEAP SUMMARY:
+==345592==     in use at exit: 238,442 bytes in 334 blocks
+==345592==   total heap usage: 838 allocs, 504 frees, 292,503 bytes allocated
+==345592== 
+==345592== Searching for pointers to 334 not-freed blocks
+==345592== Checked 270,688 bytes
+==345592== 
+==345592== 5 bytes in 1 blocks are still reachable in loss record 2 of 85
+==345592==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10C831: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 5 bytes in 1 blocks are still reachable in loss record 3 of 85
+==345592==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10D08B: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 5 bytes in 1 blocks are still reachable in loss record 4 of 85
+==345592==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10CF1D: get_arguments (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10D16A: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 8 bytes in 1 blocks are still reachable in loss record 6 of 85
+==345592==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x48A2C81: xrealloc (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x488E3BE: ??? (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x488ECCD: rl_expand_prompt (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x487D47F: rl_set_prompt (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x4889891: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 14 bytes in 1 blocks are still reachable in loss record 11 of 85
+==345592==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE6657: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AECF4F: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AECFD9: _nc_trim_sgr0 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE99B7: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 16 bytes in 1 blocks are still reachable in loss record 15 of 85
+==345592==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x10EA0A: ft_calloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10DE4E: safe_malloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10CE60: get_arguments (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10D16A: get_cmd_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10D71E: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 47 bytes in 1 blocks are still reachable in loss record 21 of 85
+==345592==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AEC4A8: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592== 
+==345592== 48 bytes in 1 blocks are still reachable in loss record 23 of 85
+==345592==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x4ADEB9B: _nc_first_db (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AEDA8A: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 128 bytes in 1 blocks are still reachable in loss record 28 of 85
+==345592==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x10EA0A: ft_calloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10DE4E: safe_malloc (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10D6AF: get_cmds_info (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10C857: parse_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x109E62: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 156 bytes in 1 blocks are still reachable in loss record 30 of 85
+==345592==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AEC4C6: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592== 
+==345592== 168 bytes in 1 blocks are still reachable in loss record 31 of 85
+==345592==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x4AE161E: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE6278: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AECF4F: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AECFD9: _nc_trim_sgr0 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE99B7: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 400 bytes in 1 blocks are still reachable in loss record 35 of 85
+==345592==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x10BBF1: add_env_var (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10BD97: add_or_update_env (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10B93F: process_export_arg (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10B9FC: env_export (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10C427: exec_builtin (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x109EFB: exec_last (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x109E0F: process_heredoc_and_exec (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x109EA3: exec_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AEC1: process_input_line (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AF89: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 712 bytes in 1 blocks are still reachable in loss record 36 of 85
+==345592==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x4AEC783: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 760 bytes in 1 blocks are still reachable in loss record 38 of 85
+==345592==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x4AE926F: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 1,108 bytes in 1 blocks are still reachable in loss record 48 of 85
+==345592==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x4ADD418: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE92F7: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 1,536 bytes in 1 blocks are still reachable in loss record 49 of 85
+==345592==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x48A2C81: xrealloc (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x487F017: rl_add_funmap_entry (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x487F057: rl_initialize_funmap (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x48895F4: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 4,000 bytes in 1 blocks are still reachable in loss record 54 of 85
+==345592==    at 0x484DB80: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x4ADD9DC: _nc_doalloc (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AEC4E4: _nc_read_termtype (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AED5C1: _nc_read_file_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AED94C: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AEDAB0: _nc_read_entry2 (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE9135: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE92C5: _nc_setupterm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE97D6: tgetent_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x489DCE4: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592== 
+==345592== 4,309 bytes in 48 blocks are still reachable in loss record 71 of 85
+==345592==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x10EA79: ft_strdup (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AC09: copy_envp (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x109562: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== 7,952 bytes in 1 blocks are still reachable in loss record 72 of 85
+==345592==    at 0x484D953: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==345592==    by 0x4ADBC77: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4ADD69D: _nc_find_type_entry (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x4AE03C1: tgetstr_sp (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.4)
+==345592==    by 0x489DD22: _rl_init_terminal_io (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x48895D7: rl_initialize (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x4889896: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.2)
+==345592==    by 0x10AF5B: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+==345592== LEAK SUMMARY:
+==345592==    definitely lost: 0 bytes in 0 blocks
+==345592==    indirectly lost: 0 bytes in 0 blocks
+==345592==      possibly lost: 0 bytes in 0 blocks
+==345592==    still reachable: 21,377 bytes in 66 blocks
+==345592==         suppressed: 217,065 bytes in 268 blocks
+==345592== 
+==345592== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==345592== 
+==345592== 1 errors in context 1 of 1:
+==345592== Syscall param ioctl(TCSET{S,SW,SF}) points to uninitialised byte(s)
+==345592==    at 0x49D7D10: tcsetattr (tcsetattr.c:83)
+==345592==    by 0x10E5DA: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x10AED9: minishell (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==    by 0x1095CE: main (in /home/shirakim/Proyectos/minishell/minishell)
+==345592==  Address 0x1ffefff570 is on thread 1's stack
+==345592==  in frame #0, created by tcsetattr (tcsetattr.c:45)
+==345592==  Uninitialised value was created by a stack allocation
+==345592==    at 0x10E590: disable_echoctl (in /home/shirakim/Proyectos/minishell/minishell)
+==345592== 
+--345592-- 
+--345592-- used_suppression:     66 Readline ./readline.supp:2 suppressed: 217,065 bytes in 268 blocks
+==345592== 
+==345592== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

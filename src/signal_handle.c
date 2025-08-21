@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 18:53:28 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/20 16:43:21 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 09:09:05 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	set_signals(int mode)
 	}
 	else if (mode == MODE_HEREDOC)
 	{
-		signal(SIGINT, SIG_IGN);
+		signal(SIGINT, SIG_IGN);  // Parent ignora SIGINT durante heredoc
 		signal(SIGQUIT, SIG_IGN);
 	}
 }

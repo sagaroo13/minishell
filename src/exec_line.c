@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 23:31:25 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 00:40:39 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 09:09:04 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,11 @@ void	exec(char *cmd_name, char **cmd_args, t_shell *shell)
 	{
 		ft_putstr_fd("minishell: ", 2);
 		perror(cmd_name);
+		free(path); // Liberar path antes de actualizar el estado de salida
 		update_last_exit_status(shell, 127);
+		return;
 	}
-	free(path);
+	free(path); // Este código nunca se ejecutará si execve tiene éxito, pero es una buena práctica
 }
 
 static void	process_heredoc_and_exec(t_command_line *cmd_line,
@@ -128,6 +130,5 @@ void	exec_line(char *line, t_shell *shell)
 		return ;
 	}
 	process_heredoc_and_exec(&cmd_line, shell);
-	if (cmd_line.execute)
-		free_cmd_line(&cmd_line);
+	free_cmd_line(&cmd_line);  // Siempre liberamos, ya sea que se ejecute o no
 }

@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:36:52 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 01:37:12 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 09:09:10 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,12 @@ static void	process_input_line(char *line, t_shell *shell)
 	if (line[0] != '\0')
 	{
 		add_history(line);
-		exec_line(line, shell);
+		
+		// Si la línea contiene operadores lógicos, usamos el nuevo procesador
+		if (contains_logical_operators(line))
+			process_logical_line(line, shell);
+		else
+			exec_line(line, shell);
 	}
 }
 

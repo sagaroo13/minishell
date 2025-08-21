@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:05:57 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/20 19:01:19 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 08:46:59 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ void	push_buffer(t_lexer *handler, bool quoted)
 		handler->tokens[handler->argc].quoted = false;
 	handler->buffer[handler->buf_len] = '\0';
 	handler->tokens[handler->argc++].token_str = ft_strdup(handler->buffer);
-	free(handler->buffer);
-	handler->buffer = safe_malloc(sizeof(char) * (handler->buffer_size), true);
+	// Reiniciamos el buffer para el siguiente token
 	handler->buf_len = 0;
 }

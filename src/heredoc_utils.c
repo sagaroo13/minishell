@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:06:42 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 01:11:09 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 09:09:14 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 static void	_sigint_heredoc(int sig)
 {
 	(void)sig;
+	write(STDOUT_FILENO, "\n", 1);
+	close(STDIN_FILENO);  // Cerramos STDIN para interrumpir get_next_line
 	exit(130);
 }
 
