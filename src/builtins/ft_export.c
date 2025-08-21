@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 19:44:17 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/20 20:28:54 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:10:57 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 char	*ft_strjoin3(const char *s1, const char *s2, const char *s3)
 {

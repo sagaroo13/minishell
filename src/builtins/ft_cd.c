@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_cd.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:50:58 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 00:13:42 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:48:04 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 int	print_cd_(const char *msg, const char *arg)
 {
@@ -31,7 +31,8 @@ static int	cd_to_home(t_shell *shell)
 	const char	*home;
 	const char	*msg;
 
-	home = get_env_value(shell, "HOME");
+	(void)shell;
+	home = getenv("HOME");
 	if (!home || chdir(home) != 0)
 	{
 		msg = "minishell: cd: HOME not accessible\n";
@@ -45,7 +46,8 @@ static int	cd_to_oldpwd(t_shell *shell)
 	const char	*oldpwd;
 	const char	*msg;
 
-	oldpwd = get_env_value(shell, "OLDPWD");
+	(void)shell;
+	oldpwd = getenv("OLDPWD");
 	if (!oldpwd)
 	{
 		msg = "minishell: OLDPWD not set\n";

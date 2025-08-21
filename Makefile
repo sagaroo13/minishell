@@ -9,42 +9,48 @@ LDFLAGS = -lreadline -lhistory
 NAME = minishell
 RM = rm -rf
 SRC_DIR = src/
-BUILT_DIR = builts/
-PARSE_DIR = parse/
+BUILTINS_DIR = builtins/
+PARSER_DIR = parser/
+LEXER_DIR = lexer/
+HEREDOC_DIR = heredoc/
+PIPES_DIR = pipes/
+REDIRS_DIR = redirs/
+SAFE_FUNCS_DIR = safe_funcs/
+SIGNALS_DIR = signals/
 
-SRC = $(SRC_DIR)main.c				\
-      $(SRC_DIR)utils.c 			\
-      $(SRC_DIR)exec_line.c		\
-      $(SRC_DIR)pipes.c			\
-	$(SRC_DIR)pipes_utils.c		\
-      $(SRC_DIR)redirs.c			\
-      $(SRC_DIR)heredoc.c			\
-	$(SRC_DIR)heredoc_utils.c		\
-	$(SRC_DIR)heredoc_utils_2.c		\
-	$(SRC_DIR)env_utils.c		\
-	$(SRC_DIR)fd_utils.c		\
-	$(SRC_DIR)shell_loop.c		\
-	$(SRC_DIR)logical_operators.c	\
-      $(BUILT_DIR)ft_exit.c		\
-      $(BUILT_DIR)ft_env.c		\
-	  $(BUILT_DIR)ft_cd.c		\
-	  $(BUILT_DIR)ft_echo.c		\
-	  $(BUILT_DIR)ft_pwd.c		\
-	  $(BUILT_DIR)ft_export.c	\
-	  $(BUILT_DIR)ft_export_utils.c	\
-	  $(BUILT_DIR)ft_unset.c		\
-      $(SRC_DIR)exec_built_in.c	\
-	  $(PARSE_DIR)parse.c	\
-	  $(PARSE_DIR)parse_utils.c	\
-	  $(PARSE_DIR)parse_utils_2.c	\
-	  $(PARSE_DIR)parse_utils_3.c	\
-	  $(PARSE_DIR)parse_utils_4.c	\
-	  $(SRC_DIR)utils_2.c		\
-	  $(SRC_DIR)safe_utils.c \
-	  $(SRC_DIR)expand.c		\
-      $(SRC_DIR)safe_funcs.c		\
-      $(SRC_DIR)signal_handle.c	\
-      $(SRC_DIR)termios_off.c
+SRC =	$(SRC_DIR)main.c				\
+    	$(SRC_DIR)utils.c 				\
+    	$(SRC_DIR)exec_line.c			\
+		$(SRC_DIR)env_utils.c			\
+		$(SRC_DIR)shell_loop.c			\
+		$(SRC_DIR)utils_2.c				\
+		$(SRC_DIR)expand.c				\
+		$(SRC_DIR)$(BUILTINS_DIR)exec_built_in.c		\
+    	$(SRC_DIR)$(BUILTINS_DIR)ft_env.c			\
+    	$(SRC_DIR)$(BUILTINS_DIR)ft_exit.c			\
+		$(SRC_DIR)$(BUILTINS_DIR)ft_cd.c				\
+		$(SRC_DIR)$(BUILTINS_DIR)ft_echo.c			\
+		$(SRC_DIR)$(BUILTINS_DIR)ft_pwd.c			\
+		$(SRC_DIR)$(BUILTINS_DIR)ft_export.c			\
+		$(SRC_DIR)$(BUILTINS_DIR)ft_export_utils.c	\
+		$(SRC_DIR)$(BUILTINS_DIR)ft_unset.c			\
+		$(SRC_DIR)$(HEREDOC_DIR)heredoc.c				\
+		$(SRC_DIR)$(HEREDOC_DIR)heredoc_utils.c		\
+		$(SRC_DIR)$(HEREDOC_DIR)heredoc_utils_2.c		\
+		$(SRC_DIR)$(LEXER_DIR)lexer.c		\
+		$(SRC_DIR)$(LEXER_DIR)lexer_utils.c		\
+		$(SRC_DIR)$(PARSER_DIR)parser.c				\
+		$(SRC_DIR)$(PARSER_DIR)parser_utils.c		\
+		$(SRC_DIR)$(PARSER_DIR)parser_utils_2.c		\
+		$(SRC_DIR)$(PARSER_DIR)parser_split.c		\
+		$(SRC_DIR)$(PIPES_DIR)pipes.c				\
+		$(SRC_DIR)$(PIPES_DIR)pipes_utils.c				\
+		$(SRC_DIR)$(REDIRS_DIR)redirs.c				\
+		$(SRC_DIR)$(REDIRS_DIR)redirs_utils.c				\
+		$(SRC_DIR)$(SAFE_FUNCS_DIR)safe_funcs.c			\
+		$(SRC_DIR)$(SAFE_FUNCS_DIR)safe_funcs2.c 		\
+		$(SRC_DIR)$(SIGNALS_DIR)signal_handle.c		\
+    	$(SRC_DIR)$(SIGNALS_DIR)termios_off.c			\
 
 OBJ = $(SRC:.c=.o)
 

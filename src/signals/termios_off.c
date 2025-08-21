@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   termios_off.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 18:44:41 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/13 17:42:54 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:29:15 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 void	disable_echoctl(void)
 {

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 20:19:07 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 00:05:40 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:10:52 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 int	update_env_var(char *name, char *new_var, t_shell *shell)
 {

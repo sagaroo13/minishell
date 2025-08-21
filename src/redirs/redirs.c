@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 void	redir_in(t_command *cmd)
 {
@@ -20,19 +20,6 @@ void	redir_in(t_command *cmd)
 	{
 		fd = safe_open(cmd->stdin.redirs[cmd->stdin.n_redirs - 1], READ);
 		safe_dup2(fd, STDIN_FILENO);
-		safe_close(fd);
-	}
-}
-
-void	open_all_files(t_redirections red, t_open_flags flags)
-{
-	int	i;
-	int	fd;
-
-	i = -1;
-	while (++i < red.n_redirs)
-	{
-		fd = safe_open(red.redirs[i], flags);
 		safe_close(fd);
 	}
 }

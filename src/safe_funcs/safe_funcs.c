@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   safe_funcs.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:22:19 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/20 19:43:57 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:25:56 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 void	safe_chdir(const char *path)
 {

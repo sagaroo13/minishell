@@ -3,67 +3,50 @@
 /*                                                        :::      ::::::::   */
 /*   exec_line.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 23:31:25 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 09:09:04 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:23:34 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-// char *find_path(char **envp)
+//No es necesario, ya tenemos la función getenv que se puede utilizar
+// char	*get_env_value(t_shell *shell, const char *name)
 // {
-// 	char *env_path;
-// 	int i;
+// 	int		i;
+// 	char	*eq;
 
-// 	env_path = NULL;
 // 	i = 0;
-// 	while (envp[i])
+// 	if (!shell || !name)
+// 		return (NULL);
+// 	while (shell->env && shell->env[i])
 // 	{
-// 		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-// 		{
-// 			env_path = envp[i] + 5;
-// 			break ;
-// 		}
+// 		eq = ft_strchr(shell->env[i], '=');
+// 		if (eq && ft_strncmp(shell->env[i], name, eq - shell->env[i]) == 0
+// 			&& (size_t)(eq - shell->env[i]) == ft_strlen(name))
+// 			return (eq + 1);
 // 		i++;
 // 	}
-// 	return (env_path);
+// 	return (NULL);
 // }
 
-char	*get_env_value(t_shell *shell, const char *name)
-{
-	int		i;
-	char	*eq;
-
-	i = 0;
-	if (!shell || !name)
-		return (NULL);
-	while (shell->env && shell->env[i])
-	{
-		eq = ft_strchr(shell->env[i], '=');
-		if (eq && ft_strncmp(shell->env[i], name, eq - shell->env[i]) == 0
-			&& (size_t)(eq - shell->env[i]) == ft_strlen(name))
-			return (eq + 1);
-		i++;
-	}
-	return (NULL);
-}
-
-static void	handle_command_not_found(char *cmd_name, t_shell *shell)
-{
-	if (!ft_strchr(cmd_name, '/'))
-	{
-		ft_putstr_fd("minishell: command not found: ", 2);
-		ft_putendl_fd(cmd_name, 2);
-	}
-	else
-	{
-		ft_putstr_fd("minishell: No such file or directory: ", 2);
-		ft_putendl_fd(cmd_name, 2);
-	}
-	update_last_exit_status(shell, 127);
-}
+//Diría que no se necesita
+// static void	handle_command_not_found(char *cmd_name, t_shell *shell)
+// {
+// 	if (!ft_strchr(cmd_name, '/'))
+// 	{
+// 		ft_putstr_fd("minishell: command not found: ", 2);
+// 		ft_putendl_fd(cmd_name, 2);
+// 	}
+// 	else
+// 	{
+// 		ft_putstr_fd("minishell: No such file or directory: ", 2);
+// 		ft_putendl_fd(cmd_name, 2);
+// 	}
+// 	update_last_exit_status(shell, 127);
+// }
 
 void	exec(char *cmd_name, char **cmd_args, t_shell *shell)
 {
@@ -78,11 +61,12 @@ void	exec(char *cmd_name, char **cmd_args, t_shell *shell)
 		return ;
 	}
 	path = get_path(cmd_name, shell);
-	if (!path)
-	{
-		handle_command_not_found(cmd_name, shell);
-		return ;
-	}
+	// Siempre va a encontrar el comando
+	// if (!path)
+	// {
+	// 	handle_command_not_found(cmd_name, shell);
+	// 	return ;
+	// }
 	if (execve(path, cmd_args, shell->env) == -1)
 	{
 		ft_putstr_fd("minishell: ", 2);
@@ -130,5 +114,5 @@ void	exec_line(char *line, t_shell *shell)
 		return ;
 	}
 	process_heredoc_and_exec(&cmd_line, shell);
-	free_cmd_line(&cmd_line);  // Siempre liberamos, ya sea que se ejecute o no
+	free_cmd_line(&cmd_line);
 }

@@ -1,46 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse_utils_2.c                                    :+:      :+:    :+:   */
+/*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 17:04:17 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/20 20:49:09 by shirakim         ###   ########.fr       */
+/*   Created: 2025/08/07 16:27:22 by shirakim          #+#    #+#             */
+/*   Updated: 2025/08/21 13:50:48 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
-bool	is_meta(char *str)
+void	free_cmd_line(t_command_line *cmd_line)
 {
-	if (!str || !*str)
-		return (true);
-	if (ft_strstr(str, ">") || ft_strstr(str, "<") || ft_strstr(str, ">>")
-		|| ft_strstr(str, "<<") || ft_strstr(str, "2>"))
-		return (true);
-	return (false);
-}
-
-void	get_arguments(t_command *cmd, t_lexer handler)
-{
-	int	n_args;
 	int	i;
-	int	j;
 
-	n_args = count_argv(cmd, handler);
-	cmd->args = safe_malloc(sizeof(char *) * (n_args + 1), true);
+	if (!cmd_line || !cmd_line->cmds)
+		return ;
 	i = -1;
-	j = -1;
-	while (++i < handler.n_tokens - 1)
+	while (++i < cmd_line->n_cmds)
 	{
-		if ((ft_strchr_charset(handler.tokens[i].token_str, "<>")
-				&& !handler.tokens[i].quoted) || is_file(cmd,
-				handler.tokens[i].token_str))
-			continue ;
-		cmd->args[++j] = ft_strdup(handler.tokens[i].token_str);
+		ft_free_matrix(cmd_line->cmds[i].args);
+		ft_free_matrix(cmd_line->cmds[i].stdin.redirs);
+		ft_free_matrix(cmd_line->cmds[i].stdout.redirs);
+		ft_free_matrix(cmd_line->cmds[i].stderr.redirs);
+		ft_free_matrix(cmd_line->cmds[i].append.redirs);
+		ft_free_matrix(cmd_line->cmds[i].heredoc.redirs);
+		free(cmd_line->cmds[i].cmd_str);
 	}
-	cmd->args[++j] = NULL;
+	free(cmd_line->line);
+	free(cmd_line->cmds);
+	cmd_line->n_cmds = 0;
+	cmd_line->line = NULL;
+	cmd_line->cmds = NULL;
 }
 
 char	*find_redir(t_lexer handler, int index, int n)
@@ -59,25 +52,6 @@ char	*find_redir(t_lexer handler, int index, int n)
 		handler.cmd->cmd_line->execute = false;
 	}
 	return (file);
-}
-
-void	get_cmd_info(t_command_line *cmd_line, t_command *cmd,
-		char *cmd_str, t_shell *shell)
-{
-	t_lexer	handler;
-
-	cmd->cmd_str = ft_strdup(cmd_str);
-	cmd->cmd_line = cmd_line;
-	cmd->shell = shell;
-	printf("[DEBUG] get_cmd_info: cmd_str='%s'\n", cmd_str);
-	lexer(&handler, cmd, cmd_str, shell);
-	get_redirecs(cmd, handler, cmd_str);
-	get_arguments(cmd, handler);
-	if (is_builtin(cmd->args[0]))
-		cmd->builtin = true;
-	else
-		cmd->builtin = false;
-	free_handler(&handler);
 }
 
 char	**get_redirec(t_lexer handler, char *redir, int len, int n)

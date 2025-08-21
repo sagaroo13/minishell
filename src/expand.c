@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:33:09 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 00:46:24 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:46:17 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,11 +64,12 @@ void	expand_env_vars(char **args, t_shell *shell)
 	char	*val;
 
 	i = 1;
+	(void)shell;
 	while (args[i])
 	{
 		if (args[i][0] == '$' && args[i][1] != '\0' && args[i][1] != '?')
 		{
-			val = get_env_value(shell, args[i] + 1);
+			val = getenv(args[i] + 1);
 			free(args[i]);
 			if (val)
 				args[i] = ft_strdup(val);

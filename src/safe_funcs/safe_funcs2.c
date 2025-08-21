@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   safe_utils.c                                       :+:      :+:    :+:   */
+/*   safe_funcs2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:17:16 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 01:38:37 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:37:14 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 void	*safe_malloc(size_t size, bool calloc_flag)
 {
@@ -31,15 +31,4 @@ void	safe_getcwd(char *buf, size_t size)
 {
 	if (getcwd(buf, size) == NULL)
 		perror(RED"[ERROR]"RESET" getcwd failed.");
-}
-void	free_env(char **env)
-{
-	int	i;
-
-	i = 0;
-	if (!env)
-		return ;
-	while (env[i])
-		free(env[i++]);
-	free(env);
 }

@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse_utils_3.c                                    :+:      :+:    :+:   */
+/*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 17:05:57 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 08:46:59 by shirakim         ###   ########.fr       */
+/*   Created: 2025/08/07 17:14:19 by shirakim          #+#    #+#             */
+/*   Updated: 2025/08/21 12:47:44 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 void	get_redirecs(t_command *cmd, t_lexer handler, char *cmd_str)
 {
@@ -26,16 +26,43 @@ void	get_redirecs(t_command *cmd, t_lexer handler, char *cmd_str)
 	cmd->heredoc.redirs = get_redirec(handler, "<<", cmd->heredoc.n_redirs, 2);
 }
 
-void	init_handler(t_lexer *handler, t_command *cmd, char *cmd_str)
+void	get_arguments(t_command *cmd, t_lexer handler)
 {
-	handler->buffer_size = BUFF_SIZE + 1;
-	handler->buffer = safe_malloc(sizeof(char) * (handler->buffer_size), true);
-	handler->cmd_str = cmd_str;
-	handler->argc = 0;
-	handler->buf_len = 0;
-	handler->n_tokens = count_tokens(cmd_str) + 1;
-	handler->cmd = cmd;
-	handler->tokens = safe_malloc(sizeof(t_token) * (handler->n_tokens), true);
+	int	n_args;
+	int	i;
+	int	j;
+
+	n_args = count_argv(cmd, handler);
+	cmd->args = safe_malloc(sizeof(char *) * (n_args + 1), true);
+	i = -1;
+	j = -1;
+	while (++i < handler.n_tokens - 1)
+	{
+		if ((ft_strchr_charset(handler.tokens[i].token_str, "<>")
+				&& !handler.tokens[i].quoted) || is_file(cmd,
+				handler.tokens[i].token_str))
+			continue ;
+		cmd->args[++j] = ft_strdup(handler.tokens[i].token_str);
+	}
+	cmd->args[++j] = NULL;
+}
+
+void	get_cmd_info(t_command_line *cmd_line, t_command *cmd,
+		char *cmd_str, t_shell *shell)
+{
+	t_lexer	handler;
+
+	cmd->cmd_str = ft_strdup(cmd_str);
+	cmd->cmd_line = cmd_line;
+	cmd->shell = shell;
+	lexer(&handler, cmd, cmd_str, shell);
+	get_redirecs(cmd, handler, cmd_str);
+	get_arguments(cmd, handler);
+	if (is_builtin(cmd->args[0]))
+		cmd->builtin = true;
+	else
+		cmd->builtin = false;
+	free_handler(&handler);
 }
 
 void	get_cmds_info(t_command_line *cmd_line, t_shell *shell, char *line)
@@ -63,17 +90,10 @@ void	get_cmds_info(t_command_line *cmd_line, t_shell *shell, char *line)
 	ft_free_matrix(line_parts);
 }
 
-void	push_buffer(t_lexer *handler, bool quoted)
+void	parse_line(t_command_line *cmd_line, t_shell *shell, char *line)
 {
-	handler->cmd_str++;
-	if (handler->buf_len == 0)
-		return ;
-	if (quoted)
-		handler->tokens[handler->argc].quoted = true;
-	else
-		handler->tokens[handler->argc].quoted = false;
-	handler->buffer[handler->buf_len] = '\0';
-	handler->tokens[handler->argc++].token_str = ft_strdup(handler->buffer);
-	// Reiniciamos el buffer para el siguiente token
-	handler->buf_len = 0;
+	(void)shell;
+	cmd_line->line = ft_strdup(line);
+	cmd_line->execute = true;
+	get_cmds_info(cmd_line, shell, line);
 }

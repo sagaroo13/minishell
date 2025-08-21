@@ -57,14 +57,14 @@
 # define BOLD "\033[1m"
 # define UNDERLINE "\033[4m"
 
-# define BANNER "\n\033[32m\033[1m\
+# define BANNER ("\n"GREEN BOLD"\
 ███╗   ███╗██╗███╗   ██╗██╗███████╗██╗  ██╗███████╗██╗     ██╗     \n\
 ████╗ ████║██║████╗  ██║██║██╔════╝██║  ██║██╔════╝██║     ██║     \n\
 ██╔████╔██║██║██╔██╗ ██║██║███████╗███████║█████╗  ██║     ██║     \n\
 ██║╚██╔╝██║██║██║╚██╗██║██║╚════██║██╔══██║██╔══╝  ██║     ██║     \n\
 ██║ ╚═╝ ██║██║██║ ╚████║██║███████║██║  ██║███████╗███████╗███████╗\n\
 ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝\n\
-\n\033[0m"
+"RESET MAGENTA"\t\t     By dediaz-f & jsagaro-\n\n"RESET)
 
 # define BUFF_SIZE 1250
 # define ECHOCTL 0001000
@@ -132,14 +132,14 @@ typedef struct s_command_line t_command_line;
 typedef struct s_command t_command;
 
 // ----- SHELL -----
-typedef struct s_shell_data
+typedef struct s_shell
 {
+    char cwd[BUFFER_SIZE];
     char *line;
     char *prompt;
-    t_stdfd stdfd;
-    char cwd[BUFFER_SIZE];
-    t_last_status last_status;
     char **env;
+    t_stdfd stdfd;
+    t_last_status last_status;
 } t_shell;
 
 // ----- COMMAND -----
@@ -216,7 +216,6 @@ typedef struct s_cmd_parts
 //char	*find_path(char **envp);
 char	*try_executable_path(char **paths, char *command);
 char	*get_path(char *line, t_shell *shell);
-void	free_args(char **args);
 void exec(char *cmd_name, char **cmd_args, t_shell *shell);
 void update_last_exit_status(t_shell *shell, int new_status);
 void expand_exit_status(char **args, t_shell *shell);
@@ -234,8 +233,8 @@ void	get_redirecs(t_command *cmd, t_lexer handler, char *cmd_str);
 void	free_handler(t_lexer *handler);
  void get_cmds_info(t_command_line *cmd_line, t_shell *shell, char *line);
 void	init_handler(t_lexer *handler, t_command *cmd, char *cmd_str);
+bool	is_meta(char *str);
 bool	is_file(t_command *cmd, char *str);
-int		count_tokens(const char *s);
 int		count_argv(t_command *cmd, t_lexer handler);
 char	**split_pipes(char *line, int n_cmds);
 int		count_cmds(char *line);
@@ -263,8 +262,10 @@ void parent_wait_and_finalize(t_shell *shell, pid_t pid);
 void child_exec_pipe(t_command *cmd, t_shell *shell, int pipe_fd[2]);
 void parent_setup_pipe_and_wait(t_shell *shell, int pipe_fd[2], pid_t pid);
 
+// REDIRS
 void	redirs(t_command *cmd);
 void	search_last_redir(t_redirections red, char *cmd_str, int *iter);
+void	open_all_files(t_redirections red, t_open_flags flags);
 
 // HEREDOC
 void	heredoc(t_command *cmd);
@@ -286,7 +287,6 @@ void attach_last_heredoc_to_stdin(int last_fd);
 int     exec_echo(char **args, t_shell *shell);
 int		exec_pwd(void);
 int     exec_env(t_shell *shell);
-char	*get_env_value(t_shell *shell, const char *name);
 int		exec_cd(char **args, t_shell *shell);
 int		exec_exit(char **args);
 int		env_unset(char **argv, t_shell *shell);
@@ -319,8 +319,8 @@ int		safe_dup(int fd);
 /* void	free_env(char **env); */
 // ENV/FD/MISC (split from main.c)
 char    **copy_envp(char **envp);
-void    free_env(char **env);
 void    cleanup_shell(t_shell *shell);
+void	setup_shell(t_shell *shell, char **envp);
 void    save_fds(t_stdfd *std);
 void    restore_fds(t_stdfd *std);
 void    minishell(t_shell *shell);

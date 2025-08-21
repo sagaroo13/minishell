@@ -1,16 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse.c                                            :+:      :+:    :+:   */
+/*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 17:14:19 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/20 19:01:34 by shirakim         ###   ########.fr       */
+/*   Created: 2025/08/21 12:44:18 by jsagaro-          #+#    #+#             */
+/*   Updated: 2025/08/21 12:49:14 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
+
+void	push_buffer(t_lexer *handler, bool quoted)
+{
+	handler->cmd_str++;
+	if (handler->buf_len == 0)
+		return ;
+	if (quoted)
+		handler->tokens[handler->argc].quoted = true;
+	else
+		handler->tokens[handler->argc].quoted = false;
+	handler->buffer[handler->buf_len] = '\0';
+	handler->tokens[handler->argc++].token_str = ft_strdup(handler->buffer);
+	handler->buf_len = 0;
+}
 
 static void	handle_sq(t_lexer *handler, char **s)
 {
@@ -73,12 +87,4 @@ void	lexer(t_lexer *handler, t_command *cmd, char *cmd_str, t_shell *shell)
 	}
 	push_buffer(handler, false);
 	handler->tokens[handler->argc].token_str = NULL;
-}
-
-void	parse_line(t_command_line *cmd_line, t_shell *shell, char *line)
-{
-	(void)shell;
-	cmd_line->line = ft_strdup(line);
-	cmd_line->execute = true;
-	get_cmds_info(cmd_line, shell, line);
 }

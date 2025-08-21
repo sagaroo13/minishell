@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   logical_operators.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 09:00:00 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 10:03:39 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 12:38:43 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+//Esto se va todo fuera yo creo
 
 /**
  * @brief Cuenta el número de comandos separados por pipes y operadores lógicos.

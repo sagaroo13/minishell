@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_utils_2.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:04:39 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 09:09:15 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:10:20 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 void	attach_last_heredoc_to_stdin(int last_fd)
 {
