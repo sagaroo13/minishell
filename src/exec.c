@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 23:31:25 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 16:56:58 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 18:10:47 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ char	*get_path(char *line, t_shell *shell)
 	char	*env_path;
 	char	**paths;
 	char	*executable_path;
-	
+
 	env_path = get_env(shell, "PATH");
 	if (!env_path || !*env_path)
 		return (NULL);
@@ -67,7 +67,7 @@ void	exec(char *cmd_name, char **cmd_args, t_shell *shell)
 		perror(cmd_name);
 		free(path);
 		update_last_exit_status(shell, 127);
-		return;
+		return ;
 	}
 	free(path);
 }

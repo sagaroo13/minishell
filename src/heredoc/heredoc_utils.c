@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:06:42 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 13:10:24 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 18:35:17 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static void	_sigint_heredoc(int sig)
 {
 	(void)sig;
 	write(STDOUT_FILENO, "\n", 1);
-	close(STDIN_FILENO);  // Cerramos STDIN para interrumpir get_next_line
+	close(STDIN_FILENO);
 	exit(130);
 }
 

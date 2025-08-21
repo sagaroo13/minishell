@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 19:44:17 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 13:10:57 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 18:39:35 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ static int	process_export_arg(char *arg, t_shell *shell)
 {
 	char	*name;
 	char	*value;
+	char	*equal_pos;
 
 	name = NULL;
 	value = NULL;
@@ -62,9 +63,11 @@ static int	process_export_arg(char *arg, t_shell *shell)
 		ft_putstr_fd(": not a valid identifier\n", 2);
 		return (1);
 	}
+	equal_pos = ft_strchr(arg, '=');
 	if (split_name_value(arg, &name, &value))
 		return (1);
-	add_or_update_env(name, value, shell);
+	if (equal_pos)
+		add_or_update_env(name, value, shell);
 	free(name);
 	free(value);
 	return (0);

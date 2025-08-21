@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:49:30 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/08/21 14:55:21 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 18:09:10 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	handle_var(t_lexer *handler, char **s, t_shell *shell)
 			if (handler->buf_len < handler->buffer_size)
 				handler->buffer[handler->buf_len++] = *val++;
 		}
-	}	
+	}
 }
 
 void	init_handler(t_lexer *handler, t_command *cmd, char *cmd_str)

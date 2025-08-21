@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal_handle.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 18:53:28 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 13:29:10 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 18:09:55 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	set_signals(int mode)
 	}
 	else if (mode == MODE_HEREDOC)
 	{
-		signal(SIGINT, SIG_IGN);  // Parent ignora SIGINT durante heredoc
+		signal(SIGINT, SIG_IGN);
 		signal(SIGQUIT, SIG_IGN);
 	}
 }

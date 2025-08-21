@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 17:30:14 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/08/21 15:15:22 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 18:06:56 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 void	heredoc(t_command *cmd)
 {
-	int		i;
-	int		pipe_fd[2];
-	int		last_fd;
-	pid_t	pid;
-	t_heredoc_ctx		ctx;
+	int				i;
+	int				pipe_fd[2];
+	int				last_fd;
+	pid_t			pid;
+	t_heredoc_ctx	ctx;
 
 	last_fd = -1;
 	i = 0;

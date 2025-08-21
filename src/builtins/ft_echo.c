@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_echo.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:35:53 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 13:59:51 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 18:04:55 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ int	exec_echo(char **args, t_shell *shell)
 
 	i = 1;
 	newline = 1;
-	// expand_env_vars(args, shell);
 	expand_exit_status(args, shell);
 	while (args[i] && is_n_flag(args[i]))
 	{

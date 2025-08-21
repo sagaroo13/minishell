@@ -1,0 +1,171 @@
+# MANEJO DE SEÑALES EN HEREDOC
+
+## 0. PROBLEMA DE TERMIOS Y SOLUCIÓN
+
+### 0.1 Error detectado por Valgrind
+
+Valgrind reportó el siguiente error:
+
+```
+Syscall param ioctl(TCSET{S,SW,SF}) points to uninitialised byte(s)
+at tcsetattr (tcsetattr.c:83)
+by disable_echoctl
+```
+
+Este error indica que estamos usando bytes no inicializados en la llamada a `tcsetattr` dentro de la función `disable_echoctl`.
+
+### 0.2 Análisis del problema
+
+El problema ocurre en el archivo `src/signals/termios_off.c` en las funciones `disable_echoctl` y `restore_terminal`.
+
+Cuando llamamos a `tcgetattr`, obtenemos los atributos actuales del terminal, pero luego solo modificamos el campo `c_lflag` (para deshabilitar o habilitar ECHOCTL) y pasamos toda la estructura a `tcsetattr`. Si hay algún byte en la estructura que no esté completamente inicializado, Valgrind lo detectará como un error.
+
+### 0.3 Solución implementada
+
+Para resolver este problema, hemos mejorado las funciones `disable_echoctl` y `restore_terminal` de la siguiente manera:
+
+```c
+void disable_echoctl(void)
+{
+    struct termios term;
+    
+    if (tcgetattr(STDIN_FILENO, &term) == -1)
+        return;  // Verificación de error
+    term.c_lflag &= ~ECHOCTL;
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
+        return;  // Verificación de error
+}
+
+void restore_terminal(void)
+{
+    struct termios term;
+    
+    if (tcgetattr(STDIN_FILENO, &term) == -1)
+        return;  // Verificación de error
+    term.c_lflag |= ECHOCTL;
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
+        return;  // Verificación de error
+}
+```
+
+Los cambios incluyen:
+1. Verificación de errores para `tcgetattr` para asegurar que la estructura está inicializada
+2. Verificación de errores para `tcsetattr` para manejar posibles fallos
+3. Retorno inmediato en caso de error para evitar comportamientos indefinidos
+
+## 1. VISIÓN GENERAL DEL HEREDOC
+
+El heredoc es una característica que permite a los shells proporcionar entrada a un comando desde el propio script o entrada del usuario, en lugar de un archivo. En minishell, se implementa a través de la sintaxis `<< DELIMITADOR`.
+
+## 2. COMPORTAMIENTO ESPERADO CON SEÑALES Y EOF
+
+### 2.1 Señal SIGINT (Ctrl+C)
+Cuando se presiona Ctrl+C durante la lectura de un heredoc:
+- La lectura debe interrumpirse
+- Se debe mostrar una nueva línea
+- El comando asociado no debe ejecutarse
+- El prompt debe volver a mostrarse
+
+### 2.2 EOF (Ctrl+D)
+Cuando se encuentra EOF (End of File) con Ctrl+D durante la lectura de un heredoc:
+- La lectura debe finalizar
+- Se debe mostrar un mensaje: `minishell: warning: here-document delimited by end-of-file (wanted 'DELIMITADOR')`
+- El comando debe ejecutarse con la entrada recopilada hasta ese punto
+- Si no se ha ingresado nada, el comando debe recibir una entrada vacía
+
+## 3. IMPLEMENTACIÓN ACTUAL
+
+### 3.1 Estructura de manejo en heredoc.c
+
+El heredoc se implementa mediante un enfoque de fork + pipe:
+1. El proceso padre crea un pipe y hace fork
+2. El hijo lee de stdin hasta encontrar el delimitador o una señal
+3. El hijo escribe los datos leídos en el pipe
+4. El padre lee del pipe y redirige a stdin del comando
+
+### 3.2 Manejo de señales en el proceso hijo
+
+En el proceso hijo que lee el heredoc:
+```c
+static void _sigint_heredoc(int sig)
+{
+    (void)sig;
+    write(STDOUT_FILENO, "\n", 1);
+    close(STDIN_FILENO);  // Cierra stdin para interrumpir get_next_line
+    exit(130);  // Código 130 = terminado por SIGINT
+}
+
+// Configuración del manejador
+signal(SIGINT, _sigint_heredoc);
+signal(SIGQUIT, SIG_IGN);
+```
+
+### 3.3 Manejo de señales en el proceso padre
+
+En el proceso padre:
+```c
+// Al iniciar el heredoc
+set_signals(MODE_HEREDOC);  // Ignora señales mientras espera al hijo
+
+// Detección de terminación anormal
+if ((WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+    || (WIFEXITED(status) && WEXITSTATUS(status) == 130))
+{
+    // El heredoc fue interrumpido por SIGINT
+    cmd->cmd_line->execute = false;  // No ejecutar el comando
+    update_last_exit_status(cmd->shell, 130);
+    // ...limpieza...
+}
+```
+
+## 4. MANEJO DE EOF (CTRL+D)
+
+La implementación actual de EOF en el heredoc está en `read_from_stdin`:
+
+```c
+void read_from_stdin(int pipe_fd[2], char *delim)
+{
+    // ...
+    while (1)
+    {
+        write(STDOUT_FILENO, "heredoc> ", 9);
+        line = get_next_line(in_fd);
+        if (!line || !process_heredoc_line(line, delim, pipe_fd))
+            break;
+    }
+    // ...
+}
+```
+
+Cuando `get_next_line` devuelve NULL (EOF), simplemente se rompe el bucle sin mostrar ningún mensaje específico.
+
+## 5. MEJORAS NECESARIAS
+
+1. **Mensaje de EOF**: Al detectar EOF, mostrar el mensaje de advertencia
+2. **Preservación de datos**: Asegurar que los datos leídos hasta el EOF se conserven
+3. **Manejo de interrupciones**: Mejorar la detección y respuesta a SIGINT
+4. **Estado de salida**: Actualizar correctamente el estado de salida
+
+## 6. COMPORTAMIENTO DE BASH
+
+En bash, el heredoc con EOF muestra:
+```
+bash: warning: here-document at line X delimited by end-of-file (wanted 'DELIM')
+```
+
+Y con SIGINT, simplemente interrumpe la lectura y muestra un nuevo prompt.
+
+## 7. PUNTOS CLAVE PARA LA IMPLEMENTACIÓN
+
+1. En el proceso hijo:
+   - Detectar correctamente EOF vs delimitador vs señal
+   - Comunicar el motivo de la finalización al padre
+
+2. En el proceso padre:
+   - Interpretar correctamente el estado del hijo
+   - Mostrar mensajes apropiados
+   - Decidir si ejecutar o no el comando
+
+3. En ambos:
+   - Manejar correctamente los descriptores de archivos
+   - Gestionar la memoria de manera segura

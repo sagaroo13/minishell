@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   termios_off.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 18:44:41 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 13:29:15 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 18:14:39 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,20 @@ void	disable_echoctl(void)
 {
 	struct termios	term;
 
-	tcgetattr(STDIN_FILENO, &term);
+	if (tcgetattr(STDIN_FILENO, &term) == -1)
+		return ;
 	term.c_lflag &= ~ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
+		return ;
 }
 
 void	restore_terminal(void)
 {
 	struct termios	term;
 
-	tcgetattr(STDIN_FILENO, &term);
+	if (tcgetattr(STDIN_FILENO, &term) == -1)
+		return ;
 	term.c_lflag |= ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
+		return ;
 }
