@@ -6,26 +6,11 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:36:52 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 12:38:58 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 15:13:02 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-// No se necesita
-// static void	process_input_line(char *line, t_shell *shell)
-// {
-// 	if (line[0] != '\0')
-// 	{
-// 		add_history(line);
-		
-// 		// Si la línea contiene operadores lógicos, usamos el nuevo procesador
-// 		if (contains_logical_operators(line))
-// 			process_logical_line(line, shell);
-// 		else
-// 			exec_line(line, shell);
-// 	}
-// }
 
 void	minishell(t_shell *shell)
 {
@@ -40,9 +25,10 @@ void	minishell(t_shell *shell)
 		safe_getcwd(shell->cwd, sizeof(shell->cwd));
 		shell->prompt = ft_strjoin(shell->cwd, "$> ");
 		if (!shell->prompt)
-			continue ;
+			break ;
 		set_signals(MODE_SHELL);
 		line = readline(shell->prompt);
+		add_history(line);
 		free(shell->prompt);
 		if (!line)
 			break ;

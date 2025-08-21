@@ -14,8 +14,7 @@ PARSER_DIR = parser/
 LEXER_DIR = lexer/
 HEREDOC_DIR = heredoc/
 PIPES_DIR = pipes/
-REDIRS_DIR = redirs/
-SAFE_FUNCS_DIR = safe_funcs/
+REDIRS_DIR = redirs/set_signals(MODE_CHILD);ncs/
 SIGNALS_DIR = signals/
 
 SRC =	$(SRC_DIR)main.c				\
@@ -76,10 +75,10 @@ clean:
 	@echo -e "$(RED)Objects cleaned!$(RESET)"
 
 fclean:
-	@echo -e "$(RED)Cleaning executables and objects...$(RESET)"
+	@echo "$(RED)Cleaning executables and objects...$(RESET)"
 	@$(RM) $(OBJ) $(NAME)
 	@$(MAKE) fclean -C libft > /dev/null
-	@echo -e "$(RED)Executables and objects cleaned!$(RESET)"
+	@echo "$(RED)Executables and objects cleaned!$(RESET)"
 
 re: fclean all
 

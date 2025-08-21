@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 00:21:36 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 13:45:05 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 14:54:27 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,8 @@ char	*get_path(char *line, t_shell *shell)
 	char	*env_path;
 	char	**paths;
 	char	*executable_path;
-
-	(void)shell;
-	env_path = getenv("PATH");
+	
+	env_path = get_env(shell, "PATH");
 	if (!env_path || !*env_path)
 		return (NULL);
 	paths = ft_split(env_path, ':');

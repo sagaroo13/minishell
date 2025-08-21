@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:49:30 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/08/21 13:08:24 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 14:55:21 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	handle_var(t_lexer *handler, char **s, t_shell *shell)
 	while (**s && (ft_isalnum(**s) || **s == '_') && i < handler->buffer_size)
 		var[i++] = *(*s)++;
 	var[i] = '\0';
-	val = getenv(var);
+	val = get_env(shell, var);
 	if (val)
 	{
 		while (*val)

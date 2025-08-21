@@ -328,7 +328,8 @@ char	*get_path(char *line, t_shell *shell);
 char	*try_executable_path(char **paths, char *line);
 
 // UTILS
-void	print_all(char **args);
+// void	print_all(char **args);
 void	free_cmd_line(t_command_line *cmd_line);
+char	*get_env(t_shell *shell, const char *name);
 
 #endif
