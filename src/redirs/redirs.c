@@ -12,16 +12,19 @@
 
 #include "../../include/minishell.h"
 
-void	redir_in(t_command *cmd)
+bool	redir_in(t_command *cmd)
 {
 	int	fd;
 
 	if (cmd->stdin.redirs)
 	{
 		fd = safe_open(cmd->stdin.redirs[cmd->stdin.n_redirs - 1], READ);
+		if (fd == -1)
+			return (false);
 		safe_dup2(fd, STDIN_FILENO);
 		safe_close(fd);
 	}
+	return (true);
 }
 
 void	redir_out(t_command *cmd)
@@ -63,9 +66,9 @@ void	redir_err(t_command *cmd)
 	}
 }
 
-void	redirs(t_command *cmd)
+bool	redirs(t_command *cmd)
 {
-	redir_in(cmd);
 	redir_out(cmd);
 	redir_err(cmd);
+	return (redir_in(cmd));
 }

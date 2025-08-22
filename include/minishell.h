@@ -238,7 +238,7 @@ void	child_exec_pipe(t_command *cmd, t_shell *shell, int pipe_fd[2]);
 void	parent_setup_pipe_and_wait(t_shell *shell, int pipe_fd[2], pid_t pid);
 
 // REDIRS
-void	redirs(t_command *cmd);
+bool	redirs(t_command *cmd);
 void	search_last_redir(t_redirections red, char *cmd_str, int *iter);
 void	open_all_files(t_redirections red, t_open_flags flags);
 

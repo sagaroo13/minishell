@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 23:31:25 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 18:10:47 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:11:31 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,8 @@ static void	process_heredoc_and_exec(t_command_line *cmd_line,
 			if (!cmd_line->execute)
 				return ;
 		}
+		if (!redirs(&cmd_line->cmds[i]))
+			return ;
 		if (i != cmd_line->n_cmds - 1)
 			exec_pipe(&cmd_line->cmds[i], shell);
 		else

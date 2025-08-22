@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:50:58 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 13:48:04 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/21 19:53:55 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static int	cd_to_home(t_shell *shell)
 	const char	*msg;
 
 	(void)shell;
-	home = getenv("HOME");
+	home = get_env(shell, "HOME");
 	if (!home || chdir(home) != 0)
 	{
 		msg = "minishell: cd: HOME not accessible\n";

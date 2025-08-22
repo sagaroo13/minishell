@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipes_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:29:04 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 18:05:36 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:09:10 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	normalize_wait_status(int status)
 void	child_exec_command(t_command *cmd, t_shell *shell)
 {
 	set_signals(MODE_CHILD);
-	redirs(cmd);
+	// redirs(cmd);
 	exec(cmd->args[0], cmd->args, shell);
 	if (errno == EACCES || errno == EISDIR || errno == ENOEXEC)
 		exit(126);
@@ -48,7 +48,7 @@ void	child_exec_pipe(t_command *cmd, t_shell *shell, int pipe_fd[2])
 	safe_close(pipe_fd[0]);
 	safe_dup2(pipe_fd[1], STDOUT_FILENO);
 	safe_close(pipe_fd[1]);
-	redirs(cmd);
+	// redirs(cmd);
 	exec(cmd->args[0], cmd->args, shell);
 	if (errno == EACCES || errno == EISDIR || errno == ENOEXEC)
 		exit(126);

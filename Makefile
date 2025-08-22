@@ -3,7 +3,7 @@ RED = \033[0;31m
 RESET = \033[0m
 
 CC = cc
-FLAGS = -Werror -Wall -Wextra
+FLAGS = -Werror -Wall -Wextra #-fsanitize=address -g3
 LDFLAGS = -lreadline -lhistory
 NAME = minishell
 RM = rm -rf
@@ -56,7 +56,7 @@ all: $(NAME)
 
 libft/libft.a:
 	@echo "$(GREEN)Compiling libft...$(RESET)"
-	@$(MAKE) -C libft
+	@$(MAKE) -C libft > /dev/null
 	@echo "$(GREEN)Libft compiled successfully!$(RESET)"
 
 $(NAME): $(OBJ) libft/libft.a
@@ -70,13 +70,13 @@ $(NAME): $(OBJ) libft/libft.a
 clean:
 	@echo "$(RED)Cleaning objects...$(RESET)"
 	@$(RM) $(OBJ)
-	@$(MAKE) clean -C libft
+	@$(MAKE) clean -C libft > /dev/null
 	@echo "$(RED)Objects cleaned!$(RESET)"
 
 fclean: clean
 	@echo "$(RED)Cleaning executables...$(RESET)"
 	@$(RM) $(OBJ) $(NAME)
-	@$(MAKE) fclean -C libft
+	@$(MAKE) fclean -C libft > /dev/null
 	@echo "$(RED)Executables cleaned!$(RESET)"
 
 re: fclean all

@@ -19,9 +19,9 @@ void	exec_last(t_command *cmd, t_shell *shell)
 	pid_t	pid;
 	int		ret;
 
-	if (cmd->builtin)
+	if (!ft_strncmp(cmd->args[0], "exit", 5))
 	{
-		ret = exec_builtin(cmd->args, shell);
+		ret = exec_exit(cmd->args, shell);
 		update_last_exit_status(shell, ret);
 		return ;
 	}

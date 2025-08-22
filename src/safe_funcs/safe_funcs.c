@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:22:19 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 13:25:56 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/22 12:16:35 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int	safe_open(const char *path, t_open_flags flags)
 	if (fd == -1)
 	{
 		ft_putstr_fd("minishell: ", 2);
-		perror("open");
+		perror(path);
 	}
 	return (fd);
 }
