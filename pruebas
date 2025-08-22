@@ -1,0 +1,63 @@
+ls
+pwd
+echo hola
+echo "hola mundo"
+echo 'hola $USER'
+echo "$USER está logueado"
+whoami
+date
+
+/bin/ls
+./minishell
+cd ..
+pwd
+cd -
+
+echo $HOME
+echo $PATH
+echo $?
+export TEST=42
+echo $TEST
+unset TEST
+echo $TEST
+
+echo hola > out.txt
+cat < out.txt
+echo mundo >> out.txt
+cat out.txt
+wc -l < out.txt
+
+ls | wc -l
+echo "hola mundo" | cat -e
+cat /etc/passwd | grep root | wc -l
+ls -l | grep minishell | awk '{print $1, $9}'
+
+ls | grep minishell > result.txt
+cat < result.txt | wc -c
+echo "123" | cat -e > file1.txt
+cat file1.txt | grep "123" >> file2.txt
+
+echo "comilla 'simple' dentro de dobles"
+echo 'comilla "doble" dentro de simples'
+echo hola\ mundo
+echo "multi    espacios"
+
+cd inexistente
+ls inexistente
+cat nofile.txt
+echo $VARIABLE_QUE_NO_EXISTE
+
+env
+export NUEVA=hola
+env | grep NUEVA
+unset NUEVA
+exit
+
+echo "" | cat -e
+echo '' | cat -e
+echo $$
+echo $?
+ls | | wc
+echo hola > out.txt > out2.txt
+
+cat "hola$?$USER<x<y<z">o
