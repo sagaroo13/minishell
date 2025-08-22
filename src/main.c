@@ -14,13 +14,18 @@
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_shell	shell;
+	t_shell			shell;
+	int				exit_code;
+	struct termios	term;
 
 	(void)argc;
 	(void)argv;
 	setup_shell(&shell, envp);
-	printf(BANNER);
+	// Solo mostrar banner si la entrada es un terminal (no pipes/redirecciones)
+	if (tcgetattr(STDIN_FILENO, &term) == 0)
+		printf(BANNER);	
 	minishell(&shell);
+	exit_code = shell.last_status.last_exit_code;
 	cleanup_shell(&shell);
-	return (EXIT_SUCCESS);
+	return (exit_code);
 }

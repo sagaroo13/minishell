@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:29:04 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 02:50:41 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 18:06:52 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,6 @@ void	parent_wait_and_finalize(t_shell *shell, pid_t pid)
 	set_exit_status_direct(shell, normalize_wait_status(status));
 	set_signals(MODE_SHELL);
 }
-
-
 
 void	child_exec_pipe(t_command *cmd, t_shell *shell, int pipe_fd[2])
 {

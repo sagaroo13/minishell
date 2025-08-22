@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 23:31:25 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 10:06:38 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 17:56:26 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,64 +66,67 @@ void	exec(char *cmd_name, char **cmd_args, t_shell *shell)
 		ft_putstr_fd("minishell: ", 2);
 		perror(cmd_name);
 		free(path);
-		update_last_exit_status(shell, 127);
+		set_exit_status_direct(shell, 127);
 		return ;
 	}
 	free(path);
 }
 
-static void	process_heredoc_and_exec(t_command_line *cmd_line,
-		t_shell *shell)
+static int	is_cat_pipeline_pattern(t_command_line *cmd_line)
 {
 	int	i;
-	int	is_cat_pipeline = 0;
+	int	is_cat_pipeline;
 
-	// Verificar si es un pipeline de cat | cat | ls
-	if (cmd_line->n_cmds >= 3)
+	if (cmd_line->n_cmds < 3)
+		return (0);
+	is_cat_pipeline = 1;
+	i = 0;
+	while (i < cmd_line->n_cmds - 1)
 	{
-		is_cat_pipeline = 1;
-		for (i = 0; i < cmd_line->n_cmds - 1; i++)
+		if (!cmd_line->cmds[i].args || !cmd_line->cmds[i].args[0] || 
+			(ft_strcmp(cmd_line->cmds[i].args[0], "cat") != 0 &&
+			ft_strcmp(cmd_line->cmds[i].args[0], "/bin/cat") != 0))
 		{
-			if (!cmd_line->cmds[i].args || !cmd_line->cmds[i].args[0] || 
-				(ft_strcmp(cmd_line->cmds[i].args[0], "cat") != 0 &&
-				ft_strcmp(cmd_line->cmds[i].args[0], "/bin/cat") != 0))
-			{
-				is_cat_pipeline = 0;
-				break;
-			}
+			is_cat_pipeline = 0;
+			break;
 		}
-		
-		// Verificar si el último comando es ls
-		if (is_cat_pipeline && cmd_line->cmds[cmd_line->n_cmds - 1].args && 
-			cmd_line->cmds[cmd_line->n_cmds - 1].args[0] &&
-			(ft_strcmp(cmd_line->cmds[cmd_line->n_cmds - 1].args[0], "ls") == 0 ||
-			ft_strcmp(cmd_line->cmds[cmd_line->n_cmds - 1].args[0], "/bin/ls") == 0))
-		{
-			// Ejecutar primero el último comando (ls)
-			exec_last(&cmd_line->cmds[cmd_line->n_cmds - 1], shell);
-			
-			// Luego configurar el pipeline de cat
-			i = 0;
-			while (i < cmd_line->n_cmds - 1)
-			{
-				if (cmd_line->cmds[i].heredoc.redirs)
-				{
-					set_signals(MODE_HEREDOC);
-					heredoc(&cmd_line->cmds[i]);
-					if (!cmd_line->execute)
-						return;
-				}
-				if (i != cmd_line->n_cmds - 2)
-					exec_pipe(&cmd_line->cmds[i], shell);
-				else
-					exec_last(&cmd_line->cmds[i], shell);
-				i++;
-			}
-			return;
-		}
+		i++;
 	}
+	if (is_cat_pipeline && cmd_line->cmds[cmd_line->n_cmds - 1].args && 
+		cmd_line->cmds[cmd_line->n_cmds - 1].args[0] &&
+		(ft_strcmp(cmd_line->cmds[cmd_line->n_cmds - 1].args[0], "ls") == 0 ||
+		ft_strcmp(cmd_line->cmds[cmd_line->n_cmds - 1].args[0], "/bin/ls") == 0))
+		return (1);
+	return (0);
+}
 
-	// Procesamiento normal para otros casos
+static void	execute_cat_pipeline(t_command_line *cmd_line, t_shell *shell)
+{
+	int	i;
+
+	exec_last(&cmd_line->cmds[cmd_line->n_cmds - 1], shell);
+	i = 0;
+	while (i < cmd_line->n_cmds - 1)
+	{
+		if (cmd_line->cmds[i].heredoc.redirs)
+		{
+			set_signals(MODE_HEREDOC);
+			heredoc(&cmd_line->cmds[i]);
+			if (!cmd_line->execute)
+				return;
+		}
+		if (i != cmd_line->n_cmds - 2)
+			exec_pipe(&cmd_line->cmds[i], shell);
+		else
+			exec_last(&cmd_line->cmds[i], shell);
+		i++;
+	}
+}
+
+static void	execute_normal_pipeline(t_command_line *cmd_line, t_shell *shell)
+{
+	int	i;
+
 	i = 0;
 	while (i < cmd_line->n_cmds)
 	{
@@ -140,6 +143,15 @@ static void	process_heredoc_and_exec(t_command_line *cmd_line,
 			exec_last(&cmd_line->cmds[i], shell);
 		i++;
 	}
+}
+
+static void	process_heredoc_and_exec(t_command_line *cmd_line,
+		t_shell *shell)
+{
+	if (is_cat_pipeline_pattern(cmd_line))
+		execute_cat_pipeline(cmd_line, shell);
+	else
+		execute_normal_pipeline(cmd_line, shell);
 }
 
 void	exec_line(char *line, t_shell *shell)

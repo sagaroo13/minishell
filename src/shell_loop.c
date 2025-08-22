@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:36:52 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 02:34:13 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 18:05:21 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,14 +40,23 @@ static bool	process_command_line(char *line, t_shell *shell)
  */
 static char	*get_command_line(t_shell *shell)
 {
-	char	*line;
+	char			*line;
+	char			*prompt_to_use;
+	struct termios	term;
 
 	safe_getcwd(shell->cwd, sizeof(shell->cwd));
 	shell->prompt = ft_strjoin(shell->cwd, "$> ");
 	if (!shell->prompt)
 		return (NULL);
 	set_signals(MODE_SHELL);
-	line = readline(shell->prompt);
+	
+	// Si la entrada no es un terminal (es un pipe), no mostrar prompt
+	if (tcgetattr(STDIN_FILENO, &term) == 0)
+		prompt_to_use = shell->prompt;
+	else
+		prompt_to_use = NULL;
+		
+	line = readline(prompt_to_use);
 	shell->line = line;
 	free(shell->prompt);
 	return (line);

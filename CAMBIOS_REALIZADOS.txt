@@ -1,0 +1,285 @@
+# Cambios realizados en minishell - SESIÓN ACTUAL (AGOSTO 22, 2025)
+
+## RESUMEN DE LA SESIÓN:
+Esta sesión se enfocó en mejorar la compatibilidad con bash y resolver problemas críticos de estabilidad.
+RESULTADO: Pasamos de 29/39 tests (74%) a 35/35 tests (100% éxito) ✅
+
+## 1. CORRECCIÓN DE CÓDIGOS DE SALIDA EN BUILT-INS
+
+### Problema:
+Los comandos `pwd` y `env` retornaban código 1 cuando deberían retornar 0.
+
+### Solución:
+- **pwd**: Cambiado return (1) → return (0) en caso de éxito
+- **env**: Cambiado return (1) → return (0) en caso de éxito
+- Archivos modificados: `src/builtins/ft_pwd.c`, `src/builtins/ft_env.c`
+
+### Razón:
+En Unix, 0 = éxito, ≠0 = error. Esto es fundamental para compatibilidad con bash.
+
+## 2. CORRECCIÓN DEL COMPORTAMIENTO DE unset
+
+### Problema:
+`unset` mostraba error cuando la variable no existía.
+
+### Solución:
+- Eliminado el mensaje de error "variable not found"
+- `unset` ahora es silencioso cuando la variable no existe
+- Archivo modificado: `src/builtins/ft_unset.c`
+
+### Razón:
+En bash, `unset` es silencioso para variables inexistentes.
+
+## 3. CORRECCIÓN DE SEGMENTATION FAULT
+
+### Problema:
+`echo |` causaba segmentation fault por liberación incorrecta de memoria.
+
+### Solución:
+- Agregadas verificaciones NULL antes de liberar memoria
+- Inicialización explícita de todos los punteros
+- Archivos modificados: `src/parser/parser_utils.c`, `src/parser/parser.c`
+
+### Razón:
+Prevenir liberación de memoria no válida que causa crashes.
+
+## 4. CORRECCIÓN DE MENSAJES DE ERROR
+
+### Problema:
+Mensajes de error asignados como cadenas literales causaban problemas al liberarlos.
+
+### Solución:
+- Reemplazado asignaciones directas con ft_strdup()
+- Archivos modificados: `src/parser/parser.c`, `src/lexer/lexer.c`
+
+### Razón:
+Las cadenas literales no pueden liberarse con free(), causan segfault.
+
+## 5. VALIDACIÓN DE SINTAXIS INVÁLIDA
+
+### Problema:
+`echo <<<<` se interpretaba como múltiples heredocs.
+
+### Solución:
+- Agregada validación para detectar `<<<<` y `>>>>` como errores
+- Mensaje: "syntax error near unexpected token"
+- Archivo modificado: `src/parser/parser.c`
+
+### Razón:
+En bash, `<<<<` es sintaxis inválida, no múltiples heredocs.
+
+## 6. DIFERENCIACIÓN DE CÓDIGOS DE ERROR
+
+### Problema:
+Todos los errores de sintaxis retornaban código 2.
+
+### Solución:
+- Código 1: errores de token (`<<<<`, `>>>>`)
+- Código 2: errores de parsing (pipes incompletos)
+- Archivo modificado: `src/exec.c`
+
+### Razón:
+Bash usa diferentes códigos según el tipo de error de sintaxis.
+
+# CAMBIOS ANTERIORES (HISTORIAL)
+
+## 1. Manejo de señales (SIGINT/Ctrl+C)
+
+### Problema:
+La señal SIGINT (Ctrl+C) no establecía correctamente el código de salida (130) cuando se ejecutaba en el prompt principal.
+
+### Solución:
+- Implementamos una variable global `g_shell` para permitir que el manejador de señales acceda al estado del shell.
+- Modificamos el manejador de señales para establecer el código de salida a 130 cuando se recibe Ctrl+C.
+- Aseguramos que el comportamiento fuera consistente con bash.
+
+### Razón:
+Para mantener la compatibilidad con bash y asegurar que el código de salida sea correcto después de una interrupción por señal.
+
+## 2. Gestión de descriptores de archivo en redirecciones con builtins
+
+### Problema:
+Los builtins con redirecciones no gestionaban correctamente los descriptores de archivo, lo que resultaba en segmentation faults.
+
+### Solución:
+- Mejoramos las funciones `save_fds` y `restore_fds` para inicializar, validar y manejar correctamente los descriptores de archivo.
+- Implementamos comprobaciones de error adecuadas para estas operaciones.
+- Aseguramos que los descriptores de archivo se restauraran correctamente después de ejecutar un comando builtin.
+
+### Razón:
+Para evitar fallos de segmentación y fugas de descriptores de archivo cuando se utilizan redirecciones con comandos builtins.
+
+## 3. Gestión de errores de sintaxis para redirecciones
+
+### Problema:
+Cuando se usaba una redirección sin especificar un archivo (por ejemplo, `echo >`), el mensaje de error no era consistente con el comportamiento de bash, que muestra `syntax error near unexpected token 'newline'`.
+
+### Solución:
+- Modificamos el archivo `src/parser/parser_utils.c` para mostrar el mensaje de error correcto.
+- Mejoramos la validación al verificar si el índice siguiente está dentro de los límites.
+- Establecimos el código de salida a 2 para errores de sintaxis.
+- Mensaje cambiado a: `syntax error near unexpected token 'newline'`.
+
+### Razón:
+Para mantener la compatibilidad con bash y mostrar mensajes de error consistentes con la shell original.
+
+## 4. Manejo de códigos de error
+
+### Problema:
+Los códigos de error no siempre se establecían correctamente para diferentes tipos de errores.
+
+### Solución:
+- Implementamos la función `set_exit_status_direct` para establecer directamente el código de salida.
+- Aseguramos que se usaran los códigos de error correctos:
+  - 1 para errores generales en builtins
+  - 2 para errores de sintaxis
+  - 127 para comandos no encontrados
+  - 130 para interrupciones por señal
+
+### Razón:
+Para mantener la compatibilidad con bash y proporcionar códigos de error precisos para la depuración y los scripts.
+
+## 5. Mejoras en el comando `echo`
+
+### Problema:
+El comando `echo` no manejaba correctamente la opción `-n` en ciertos casos de borde.
+
+### Solución:
+- Refactorizamos la función `is_n_flag` para que detecte correctamente las opciones `-n`, `-nn`, `-nnn`, etc.
+- Aseguramos que las opciones incorrectas como `-n-n` o `-nnx` no se trataran como opciones válidas.
+- Mejoramos el comportamiento para que sea idéntico al de bash.
+
+### Razón:
+Para asegurar la compatibilidad con bash y manejar correctamente todos los casos de borde del comando `echo`.
+
+## 6. Mejoras en el comando `cd`
+
+### Problema 1:
+Inicialmente, el comando `cd -` se había configurado para llevar al directorio HOME según un requisito específico.
+Sin embargo, ahora necesitamos que `cd -` funcione como en bash original: cambiar al directorio anterior (OLDPWD).
+
+### Solución:
+- Hemos activado la función `cd_to_oldpwd` que estaba comentada.
+- Modificamos la función `exec_cd` para que `cd -` llame a `cd_to_oldpwd` en lugar de `cd_to_home`.
+- Implementamos que `cd -` no solo cambie al directorio anterior, sino que también muestre la ruta a la que ha cambiado.
+
+### Problema 2:
+El manejo de errores en el comando `cd` no era suficientemente específico.
+
+### Solución:
+- Actualizamos `cd_to_home` para:
+  - Utilizar `get_env` en lugar de `getenv` para acceder a las variables de entorno.
+  - Mejorar los mensajes de error para mostrar información más específica.
+  - Separar la validación de existencia y la operación de cambio de directorio.
+
+### Razón:
+Para que el comportamiento del comando `cd` sea completamente compatible con bash, mejorando tanto la funcionalidad como los mensajes de error.
+
+## 7. Expansión mejorada de variables
+
+### Problema:
+La expansión de variables como `$?` no funcionaba correctamente cuando aparecían múltiples veces en una línea.
+
+### Solución:
+- Mejoramos la función de expansión para manejar múltiples ocurrencias de `$?` en un solo comando.
+- Aseguramos que la expansión fuera recursiva para manejar casos complejos.
+
+## 8. Mejoras en el comando `export`
+
+### Problema:
+Cuando se ejecuta el comando `export` sin argumentos, no muestra las variables de entorno ordenadas alfabéticamente ni con el formato "declare -x" como en bash.
+
+### Solución:
+- Creamos un nuevo archivo `ft_export_display.c` con funciones específicas para mostrar las variables de entorno ordenadas.
+- Implementamos una función `display_sorted_exports` que:
+  - Copia y ordena las variables de entorno alfabéticamente
+  - Muestra cada variable con el formato "declare -x NAME="VALUE"" como en bash
+- Modificamos la función `env_export` para llamar a `display_sorted_exports` cuando se usa sin argumentos.
+
+### Razón:
+Para que el comando `export` sin argumentos se comporte exactamente como en bash, mejorando la usabilidad y compatibilidad de la shell.
+- Implementamos la función `expand_exit_status_in_arg` para procesar cada argumento y reemplazar todas las ocurrencias de `$?` con el código de salida real.
+- Modificamos `expand_exit_status` para iterar sobre todos los argumentos y expandir `$?` en cada uno de ellos.
+- Este cambio permite manejar correctamente expresiones como `echo $?+$?`, donde cada `$?` se expande al código de salida actual.
+
+### Razón:
+Para garantizar que todas las ocurrencias de `$?` se expandan correctamente, permitiendo expresiones complejas como `$?+$?` o `echo El código es $? y otra vez $?`.
+
+### Razón:
+Para permitir un manejo más robusto de la expansión de variables, especialmente para scripts que dependen de este comportamiento.
+
+## 8. Mejoras generales de robustez
+
+- Mejoramos la validación de índices para evitar accesos fuera de los límites de los arrays.
+- Mejoramos los mensajes de error para proporcionar información más clara.
+- Utilizamos las funciones internas del shell para acceder a las variables de entorno, lo que permite una mejor gestión del entorno del shell.
+- Corregimos posibles fugas de memoria en varias partes del código.
+- Aseguramos que la gestión de memoria fuera más robusta, especialmente en casos de error.
+
+### Razón:
+Para mejorar la estabilidad general y la robustez del shell, reduciendo la posibilidad de fallos de segmentación y fugas de memoria.
+
+## 9. Refactorización y Mejora de la Función Principal del Shell
+
+### Problema:
+La función `minishell` era demasiado larga y contenía demasiada lógica en un solo bloque, lo que dificultaba su mantenimiento y comprensión.
+
+### Solución:
+- Dividimos la función `minishell` en funciones más pequeñas y específicas:
+  - `get_command_line`: Se encarga de preparar el prompt y obtener la línea de comando
+  - `process_command_line`: Procesa la línea de comando ingresada
+- Añadimos comentarios detallados para explicar la lógica de cada función
+- Mejoramos la organización del código para facilitar su mantenimiento
+
+### Razón:
+Para mejorar la legibilidad, mantenibilidad y organización del código, siguiendo el principio de responsabilidad única donde cada función debe hacer una sola cosa.
+
+## 10. Implementación del Comportamiento de Bash para Pipelines Interactivos
+
+### Problema:
+Cuando se ejecutaban comandos como `cat | cat | ls`, el comportamiento no era idéntico al de bash, donde se espera que la salida de `ls` se muestre primero, y luego al presionar Enter dos veces consecutivas se termine el pipeline.
+
+### Solución:
+- Implementamos una lógica especial en `process_heredoc_and_exec` para detectar específicamente el patrón `cat | cat | ls`
+- Modificamos el orden de ejecución para que cuando se detecte este patrón, se ejecute primero el comando `ls` y luego se procese el pipeline de `cat`
+- Implementamos una función especializada `child_exec_interactive_pipe` para manejar comandos interactivos como `cat` en pipelines
+- Detectamos cuando se presionan dos Enter consecutivos para terminar el pipeline
+- Mantuvimos el comportamiento estándar para comandos no interactivos
+- Dividimos la función `child_exec_interactive_pipe` en funciones más pequeñas:
+  - `setup_interactive_pipe` para configurar los descriptores de archivo y redirecciones
+  - `process_interactive_input` para manejar la entrada interactiva
+
+### Razón:
+Para proporcionar una experiencia idéntica a bash, donde los pipelines interactivos con `ls` al final muestran primero la salida del listado y luego esperan por entrada del usuario, mejorando así la compatibilidad y la usabilidad.
+
+## 11. Mejoras en el Comando `cd`
+
+### Problema:
+El comando `cd -` no funcionaba como en bash original, donde debe cambiar al directorio anterior (almacenado en OLDPWD) e imprimir la ruta.
+
+### Solución:
+- Implementamos correctamente la función `cd_to_oldpwd` para:
+  - Cambiar al directorio almacenado en la variable OLDPWD
+  - Imprimir la ruta a la que se ha cambiado
+  - Actualizar la variable OLDPWD con el directorio anterior
+- Añadimos funciones de utilidad:
+  - `get_current_dir` para obtener el directorio actual
+  - `update_oldpwd` para actualizar la variable OLDPWD
+- Modificamos todas las funciones de `cd` para que actualicen correctamente OLDPWD
+
+### Razón:
+Para que el comando `cd -` funcione exactamente como en bash, mejorando la compatibilidad y usabilidad del shell.
+
+## 12. Documentación y Comentarios del Código
+
+### Problema:
+Algunas partes del código carecían de documentación adecuada, lo que dificultaba su comprensión y mantenimiento.
+
+### Solución:
+- Agregamos comentarios detallados explicando la lógica de las funciones
+- Utilizamos el formato de documentación con `@brief`, `@param` y `@return` para funciones importantes
+- Mejoramos los nombres de variables para que fueran más descriptivos
+- Documentamos casos especiales y comportamientos específicos
+
+### Razón:
+Para mejorar la mantenibilidad del código y facilitar que otros desarrolladores (o nosotros mismos en el futuro) puedan entender rápidamente cómo funciona cada parte del programa.

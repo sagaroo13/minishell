@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:33:09 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 02:33:59 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 17:56:30 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,12 @@ void	expand_exit_status_in_arg(char **arg, t_shell *shell)
 	char	*tmp;
 	char	*pos;
 
+	if (!arg || !*arg || !ft_strstr(*arg, "$?"))
+		return ;
+		
 	result = ft_strdup("");
 	tmp = *arg;
+	
 	while ((pos = ft_strstr(tmp, "$?")))
 	{
 		*pos = '\0';
@@ -70,8 +74,8 @@ void	expand_exit_status_in_arg(char **arg, t_shell *shell)
 		free(old_result);
 	}
 	
-	free(*arg);
-	*arg = result;
+	// NO liberar el original aquí - dejarlo para free_cmd_line
+	*arg = result;   // Asignar el nuevo string
 }
 
 void	expand_exit_status(char **args, t_shell *shell)

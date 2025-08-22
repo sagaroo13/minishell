@@ -6,18 +6,12 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 08:27:16 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 08:27:16 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 15:45:20 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-/**
- * @brief Ordena un array de cadenas en orden alfabético (usando bubble sort)
- * 
- * @param envp Array de cadenas a ordenar
- * @return char** Array ordenado
- */
 static char	**sort_env(char **envp)
 {
 	int		i;

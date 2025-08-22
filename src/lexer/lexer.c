@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:44:18 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/08/21 12:49:14 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:54:21 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ void	push_buffer(t_lexer *handler, bool quoted)
 	handler->cmd_str++;
 	if (handler->buf_len == 0)
 		return ;
+	if (handler->argc >= handler->n_tokens - 1)
+		return ; // Evitar buffer overflow
 	if (quoted)
 		handler->tokens[handler->argc].quoted = true;
 	else
@@ -86,5 +88,6 @@ void	lexer(t_lexer *handler, t_command *cmd, char *cmd_str, t_shell *shell)
 			handle_nq(handler, &handler->cmd_str, shell);
 	}
 	push_buffer(handler, false);
-	handler->tokens[handler->argc].token_str = NULL;
+	if (handler->argc < handler->n_tokens)
+		handler->tokens[handler->argc].token_str = NULL;
 }

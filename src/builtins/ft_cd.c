@@ -6,33 +6,21 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:50:58 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 02:38:57 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 15:44:22 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-/**
- * @brief Actualiza la variable OLDPWD en el entorno
- * 
- * @param shell Estructura del shell
- * @param old_dir Directorio anterior
- */
 static void	update_oldpwd(t_shell *shell, char *old_dir)
 {
 	if (old_dir)
 	{
-		// Añadir o actualizar la variable OLDPWD
 		add_or_update_env("OLDPWD", old_dir, shell);
 		free(old_dir);
 	}
 }
 
-/**
- * @brief Obtiene el directorio actual
- * 
- * @return char* Cadena con el directorio actual o NULL si hay error
- */
 static char	*get_current_dir(void)
 {
 	char	buf[4096];
@@ -41,13 +29,6 @@ static char	*get_current_dir(void)
 		return (ft_strdup(buf));
 	return (NULL);
 }
-/**
- * @brief Imprime un mensaje de error para el comando cd
- * 
- * @param msg Mensaje de error
- * @param arg Argumento que causó el error
- * @return int Siempre devuelve 1 (código de error)
- */
 static int	print_cd_(const char *msg, const char *arg)
 {
 	write(2, "minishell: ", 11);
@@ -62,12 +43,6 @@ static int	print_cd_(const char *msg, const char *arg)
 	return (1);
 }
 
-/**
- * @brief Cambia al directorio home
- * 
- * @param shell Estructura del shell
- * @return int 0 si tiene éxito, 1 si hay error
- */
 static int	cd_to_home(t_shell *shell)
 {
 	char	*home;
@@ -93,9 +68,6 @@ static int	cd_to_home(t_shell *shell)
 	return (0);
 }
 
-/**
- * Cambia al directorio anterior (OLDPWD) e imprime la ruta
- */
 static int	cd_to_oldpwd(t_shell *shell)
 {
 	char	*oldpwd;
@@ -109,7 +81,6 @@ static int	cd_to_oldpwd(t_shell *shell)
 		free(current_dir);
 		return (1);
 	}
-		
 	if (chdir(oldpwd) != 0)
 	{
 		ft_putstr_fd("minishell: cd: ", 2);
@@ -118,14 +89,9 @@ static int	cd_to_oldpwd(t_shell *shell)
 		free(current_dir);
 		return (1);
 	}
-	
-	// Imprimir el directorio al que se ha cambiado
 	ft_putstr_fd(oldpwd, 1);
 	ft_putstr_fd("\n", 1);
-	
-	// Actualizar OLDPWD con el directorio anterior
 	update_oldpwd(shell, current_dir);
-		
 	return (0);
 }
 
@@ -142,8 +108,6 @@ int	exec_cd(char **args, t_shell *shell)
 		return (cd_to_oldpwd(shell));
 	if (args[1][0] == '~' && args[1][1] == '\0')
 		return (cd_to_home(shell));
-	
-	// Guardar el directorio actual antes de cambiarlo
 	old_dir = get_current_dir();
 	if (chdir(args[1]) != 0)
 	{
@@ -151,9 +115,6 @@ int	exec_cd(char **args, t_shell *shell)
 		free(old_dir);
 		return (result);
 	}
-	
-	// Actualizar OLDPWD
 	update_oldpwd(shell, old_dir);
-	
 	return (0);
 }

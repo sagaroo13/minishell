@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:06:42 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 01:01:59 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 18:06:26 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,8 @@ static int	wait_for_child(pid_t pid)
 	return (status);
 }
 
-static bool	handle_child_status(t_command *cmd, int status, t_heredoc_ctx *ctx)
+static bool	handle_child_status(t_command *cmd, int status,
+		t_heredoc_ctx *ctx)
 {
 	if ((WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
 		|| (WIFEXITED(status) && WEXITSTATUS(status) == 130))
@@ -73,7 +74,8 @@ static bool	handle_child_status(t_command *cmd, int status, t_heredoc_ctx *ctx)
 	return (true);
 }
 
-bool	handle_parent_after_child(t_command *cmd, pid_t pid, t_heredoc_ctx *ctx)
+bool	handle_parent_after_child(t_command *cmd, pid_t pid,
+	t_heredoc_ctx *ctx)
 {
 	int	status;
 
