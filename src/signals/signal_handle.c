@@ -6,13 +6,13 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 18:53:28 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 01:02:09 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 19:50:44 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-t_shell	*g_shell;
+int	g_signal_received;
 
 void	sigint_handler(int sig)
 {
@@ -21,8 +21,8 @@ void	sigint_handler(int sig)
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-	if (g_shell)
-		g_shell->last_status.last_exit_code = 130;
+	g_signal_received = 130;
+	
 }
 
 void	sigint_handler_child(int sig)
@@ -36,6 +36,7 @@ void	sigint_handler_heredoc(int sig)
 {
 	(void)sig;
 	write(STDOUT_FILENO, "\n", 1);
+	g_signal_received = 130;
 	close(STDIN_FILENO);
 	exit(130);
 }

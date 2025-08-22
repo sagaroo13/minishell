@@ -264,6 +264,7 @@ int		exec_cd(char **args, t_shell *shell);
 int		exec_exit(char **args, t_shell *shell);
 int		env_unset(char **argv, t_shell *shell);
 int		env_export(char **argv, t_shell *shell);
+int		display_sorted_exports(t_shell *shell);
 int		update_env_var(char *name, char *new_var, t_shell *shell);
 void	add_env_var(char *new_var, t_shell *shell);
 void	add_or_update_env(char *name, char *value, t_shell *shell);
@@ -292,6 +293,6 @@ char	*try_executable_path(char **paths, char *line);
 char	*get_env(t_shell *shell, const char *name);
 
 // GLOBAL
-extern t_shell	*g_shell;
+extern int	g_signal_received;
 
 #endif

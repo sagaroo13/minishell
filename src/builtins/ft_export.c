@@ -6,13 +6,12 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 19:44:17 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 11:04:00 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 18:59:06 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-int	display_sorted_exports(t_shell *shell);
 
 char	*ft_strjoin3(const char *s1, const char *s2, const char *s3)
 {

@@ -6,19 +6,12 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:36:52 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 18:05:21 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 18:54:02 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-/**
- * @brief Procesa una línea de comando ingresada por el usuario
- * 
- * @param line La línea de comando a procesar
- * @param shell Estructura principal del shell
- * @return true si se debe continuar el bucle, false si se debe salir
- */
 static bool	process_command_line(char *line, t_shell *shell)
 {
 	if (!line)
@@ -32,12 +25,6 @@ static bool	process_command_line(char *line, t_shell *shell)
 	return (true);
 }
 
-/**
- * @brief Prepara el prompt y obtiene la línea de comando
- * 
- * @param shell Estructura principal del shell
- * @return La línea de comando ingresada o NULL en caso de error o EOF
- */
 static char	*get_command_line(t_shell *shell)
 {
 	char			*line;
@@ -49,13 +36,11 @@ static char	*get_command_line(t_shell *shell)
 	if (!shell->prompt)
 		return (NULL);
 	set_signals(MODE_SHELL);
-	
 	// Si la entrada no es un terminal (es un pipe), no mostrar prompt
 	if (tcgetattr(STDIN_FILENO, &term) == 0)
 		prompt_to_use = shell->prompt;
 	else
-		prompt_to_use = NULL;
-		
+		prompt_to_use = NULL;		
 	line = readline(prompt_to_use);
 	shell->line = line;
 	free(shell->prompt);
@@ -66,7 +51,7 @@ void	minishell(t_shell *shell)
 {
 	char	*line;
 
-	g_shell = shell;
+	g_signal_received = 0;
 	disable_echoctl();
 	set_signals(MODE_SHELL);
 	rl_catch_signals = 0;
@@ -74,11 +59,18 @@ void	minishell(t_shell *shell)
 	{
 		save_fds(&shell->stdfd);
 		line = get_command_line(shell);
+		
+		/* Verificar signal después de readline */
+		if (g_signal_received)
+		{
+			shell->last_status.last_exit_code = g_signal_received;
+			g_signal_received = 0;
+		}
+		
 		if (!line || !process_command_line(line, shell))
 			break;
 		restore_fds(&shell->stdfd);
 	}
 	restore_terminal();
 	rl_clear_history();
-	g_shell = NULL;
 }

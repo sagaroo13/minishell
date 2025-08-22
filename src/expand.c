@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:33:09 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 17:56:30 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 18:53:23 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,39 +43,29 @@ void	expand_exit_status_in_arg(char **arg, t_shell *shell)
 
 	if (!arg || !*arg || !ft_strstr(*arg, "$?"))
 		return ;
-		
 	result = ft_strdup("");
 	tmp = *arg;
-	
 	while ((pos = ft_strstr(tmp, "$?")))
 	{
 		*pos = '\0';
 		exit_code_str = ft_itoa(shell->last_status.last_exit_code);
-		
-		// Append part before $?
 		char *old_result = result;
 		result = ft_strjoin(result, tmp);
 		free(old_result);
-		
-		// Append exit code
 		old_result = result;
 		result = ft_strjoin(result, exit_code_str);
 		free(old_result);
 		free(exit_code_str);
-		
 		tmp = pos + 2;  // Move past $?
-	}
-	
-	// Append remaining part after last $?
+	}	
 	if (*tmp)
 	{
 		char *old_result = result;
 		result = ft_strjoin(result, tmp);
 		free(old_result);
 	}
-	
-	// NO liberar el original aquí - dejarlo para free_cmd_line
-	*arg = result;   // Asignar el nuevo string
+	free(*arg);
+	*arg = result;
 }
 
 void	expand_exit_status(char **args, t_shell *shell)

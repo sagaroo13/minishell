@@ -43,6 +43,7 @@ static bool	process_heredoc_line(char *line, char *delim,
 
 static void	handle_eof_heredoc(char *delim)
 {
+	get_next_line(-1);  // Limpiar buffer antes del mensaje
 	ft_putstr_fd("\nminishell: warning: here-document "
 		"delimited by end-of-file (wanted `", 2);
 	ft_putstr_fd(delim, 2);
@@ -66,22 +67,31 @@ void	read_from_stdin(int pipe_fd[2], char *delim)
 
 	close(pipe_fd[0]);
 	eof_reached = false;
-	is_interactive = (tcgetattr(STDIN_FILENO, &term) == 0);  // Detectar si es terminal o pipe
+	is_interactive = (tcgetattr(STDIN_FILENO, &term) == 0);
+	g_signal_received = 0;
 	
 	while (1)
 	{
-		if (is_interactive)  // Solo mostrar prompt si es interactivo
+		if (is_interactive)
 			write(STDOUT_FILENO, "heredoc> ", 9);
 			
 		line = get_next_line(STDIN_FILENO);
+		
+		/* Signal recibida */
+		if (g_signal_received)
+			break ;
+			
+		/* EOF detectado */
 		if (!line)
 		{
 			eof_reached = true;
 			break ;
 		}
+		
 		if (!process_heredoc_line(line, delim, pipe_fd))
 			break ;
 	}
+	
 	if (eof_reached)
 		handle_eof_heredoc(delim);
 	cleanup_and_exit(pipe_fd[1]);

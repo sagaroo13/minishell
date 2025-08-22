@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo "====================================="
+echo "TEST ESPECÍFICO: CTRL+D EN HEREDOCS"
+echo "====================================="
+echo ""
+echo "Vamos a probar si el Ctrl+D funciona correctamente en heredocs"
+echo ""
+echo "1. Test heredoc básico con cat << EOF"
+echo "   - Escribe algunas líneas"
+echo "   - Presiona Ctrl+D UNA SOLA VEZ"
+echo "   - Debería mostrar el warning y terminar"
+echo ""
+echo "2. Test heredoc con delimitador"
+echo "   - Escribe el delimitador para terminar normalmente"
+echo ""
+echo "Ejecutando minishell..."
+echo ""

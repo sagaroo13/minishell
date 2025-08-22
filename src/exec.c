@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 23:31:25 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 17:56:26 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 18:53:39 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,6 @@ void	exec_line(char *line, t_shell *shell)
 			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(cmd_line.err_msg, 2);
 			ft_putstr_fd("\n", 2);
-			// Establecer el código de error apropiado
 			if (ft_strstr(cmd_line.err_msg, "syntax error near unexpected token"))
 				set_exit_status_direct(shell, 1);
 			else

@@ -6,23 +6,17 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 08:27:16 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 15:45:20 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/22 18:57:49 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-static char	**sort_env(char **envp)
+static char	**create_env_copy(char **envp, int len)
 {
-	int		i;
-	int		j;
-	int		len;
-	char	*temp;
 	char	**sorted_env;
+	int		i;
 
-	len = 0;
-	while (envp[len])
-		len++;
 	sorted_env = (char **)malloc(sizeof(char *) * (len + 1));
 	if (!sorted_env)
 		return (NULL);
@@ -30,26 +24,46 @@ static char	**sort_env(char **envp)
 	while (++i < len)
 		sorted_env[i] = ft_strdup(envp[i]);
 	sorted_env[len] = NULL;
+	return (sorted_env);
+}
+
+static void	bubble_sort_env(char **sorted_env, int len)
+{
+	int		i;
+	int		j;
+	char	*temp;
+
 	i = -1;
 	while (++i < len - 1)
 	{
 		j = -1;
 		while (++j < len - i - 1)
+		{
 			if (ft_strcmp(sorted_env[j], sorted_env[j + 1]) > 0)
 			{
 				temp = sorted_env[j];
 				sorted_env[j] = sorted_env[j + 1];
 				sorted_env[j + 1] = temp;
 			}
+		}
 	}
+}
+
+static char	**sort_env(char **envp)
+{
+	int		len;
+	char	**sorted_env;
+
+	len = 0;
+	while (envp[len])
+		len++;
+	sorted_env = create_env_copy(envp, len);
+	if (!sorted_env)
+		return (NULL);
+	bubble_sort_env(sorted_env, len);
 	return (sorted_env);
 }
 
-/**
- * @brief Muestra el valor de una variable de entorno con formato declare -x
- * 
- * @param var La variable de entorno a mostrar
- */
 static void	print_export_var(char *var)
 {
 	char	*eq_pos;
@@ -74,13 +88,6 @@ static void	print_export_var(char *var)
 	}
 }
 
-/**
- * @brief Muestra todas las variables de entorno ordenadas alfabéticamente
- * en formato declare -x
- * 
- * @param shell La estructura shell con las variables de entorno
- * @return int Código de retorno (siempre 0)
- */
 int	display_sorted_exports(t_shell *shell)
 {
 	char	**sorted_env;
