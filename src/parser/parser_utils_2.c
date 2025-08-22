@@ -12,61 +12,66 @@
 
 #include "../../include/minishell.h"
 
-// int	count_argv(t_command *cmd, t_lexer handler)
-// {
-// 	int	count;
-// 	int	i;
+int	count_args(t_command *cmd, t_lexer handler)
+{
+	int	count;
+	t_token	*aux;
 
-// 	count = 0;
-// 	i = -1;
-// 	while (++i < handler.n_tokens - 1)
-// 	{
-// 		if ((ft_strchr_charset(handler.tokens[i].token_str, "<>")
-// 				&& !handler.tokens[i].quoted) || is_file(cmd,
-// 				handler.tokens[i].token_str))
-// 			continue ;
-// 		count++;
-// 	}
-// 	return (count);
-// }
+	count = 0;
+	aux = handler.token_head;
+	while (aux)
+	{
+		if (!(ft_strchr_charset(aux->token_str, "<>") && !aux->quoted)
+			&& !is_file(cmd, aux->token_str))
+			count++;
+		aux = aux->next;
+	}
+	return (count);
+}
 
-// bool	iss_meta(char *str)
-// {
-// 	if (!str || !*str)
-// 		return (true);
-// 	if (ft_strstr(str, ">") || ft_strstr(str, "<") || ft_strstr(str, ">>")
-// 		|| ft_strstr(str, "<<") || ft_strstr(str, "2>"))
-// 		return (true);
-// 	return (false);
-// }
+int	count_redirs(t_lexer handler, char *redir)
+{
+	int count;
+	t_token *aux;
 
-// bool	search_file(char **files, char *str, int len)
-// {
-// 	int	i;
+	aux = handler.token_head;
+	count = 0;
+	while (aux)
+	{
+		if (!ft_strcmp(aux->token_str, redir) && !aux->quoted)
+			count++;
+		aux = aux->next;
+	}
+	return (count);			
+}
 
-// 	if (!files || !*files)
-// 		return (false);
-// 	i = -1;
-// 	while (++i < len)
-// 	{
-// 		if (!ft_strcmp(files[i], str))
-// 			return (true);
-// 	}
-// 	return (false);
-// }
+bool	search_file(char **files, char *str, int len)
+{
+	int	i;
 
-// bool	is_file(t_command *cmd, char *str)
-// {
-// 	if (!str || !*str)
-// 		return (false);
-// 	if (search_file(cmd->stdin.redirs, str, cmd->stdin.n_redirs)
-// 		|| search_file(cmd->stdout.redirs, str, cmd->stdout.n_redirs)
-// 		|| search_file(cmd->stderr.redirs, str, cmd->stderr.n_redirs)
-// 		|| search_file(cmd->append.redirs, str, cmd->append.n_redirs)
-// 		|| search_file(cmd->heredoc.redirs, str, cmd->heredoc.n_redirs))
-// 		return (true);
-// 	return (false);
-// }
+	if (!files || !*files)
+		return (false);
+	i = -1;
+	while (++i < len)
+	{
+		if (!ft_strcmp(files[i], str))
+			return (true);
+	}
+	return (false);
+}
+
+bool	is_file(t_command *cmd, char *str)
+{
+	if (!str || !*str)
+		return (false);
+	if (search_file(cmd->stdin.redirs, str, cmd->stdin.n_redirs)
+		|| search_file(cmd->stdout.redirs, str, cmd->stdout.n_redirs)
+		|| search_file(cmd->stderr.redirs, str, cmd->stderr.n_redirs)
+		|| search_file(cmd->append.redirs, str, cmd->append.n_redirs)
+		|| search_file(cmd->heredoc.redirs, str, cmd->heredoc.n_redirs))
+		return (true);
+	return (false);
+}
 
 void 	check_pipe_closed(t_commad_line *cmd_line)
 {

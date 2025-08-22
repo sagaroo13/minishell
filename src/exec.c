@@ -107,9 +107,9 @@ void	exec_line(char *line, t_shell *shell)
 	{
 		if (cmd_line.err_msg)
 			perror(cmd_line.err_msg);
-		// free_cmd_line(&cmd_line);
+		free_cmd_line(&cmd_line);
 		return ;
 	}
 	// process_heredoc_and_exec(&cmd_line, shell);
-	// free_cmd_line(&cmd_line);
+	free_cmd_line(&cmd_line);
 }

@@ -12,40 +12,40 @@
 
 #include "../../include/minishell.h"
 
-// static void	get_redirecs(t_command *cmd, t_lexer handler, char *cmd_str)
-// {
-// 	cmd->stdin.n_redirs = ft_count_substr(cmd_str, "<");
-// 	cmd->stdout.n_redirs = ft_count_substr(cmd_str, ">");
-// 	cmd->stderr.n_redirs = ft_count_substr(cmd_str, "2>");
-// 	cmd->append.n_redirs = ft_count_substr(cmd_str, ">>");
-// 	cmd->heredoc.n_redirs = ft_count_substr(cmd_str, "<<");
-// 	cmd->stdin.redirs = get_redirec(handler, "<", cmd->stdin.n_redirs, 1);
-// 	cmd->stdout.redirs = get_redirec(handler, ">", cmd->stdout.n_redirs, 1);
-// 	cmd->stderr.redirs = get_redirec(handler, "2>", cmd->stderr.n_redirs, 2);
-// 	cmd->append.redirs = get_redirec(handler, ">>", cmd->append.n_redirs, 2);
-// 	cmd->heredoc.redirs = get_redirec(handler, "<<", cmd->heredoc.n_redirs, 2);
-// }
+static void	get_redirs(t_command *cmd, t_lexer handler)
+{
+	cmd->stdin.n_redirs = count_redirs(handler, "<");
+	cmd->stdout.n_redirs = count_redirs(handler, ">");
+	cmd->stderr.n_redirs = count_redirs(handler, "2>");
+	cmd->append.n_redirs = count_redirs(handler, ">>");
+	cmd->heredoc.n_redirs = count_redirs(handler, "<<");
+	cmd->stdin.redirs = get_redir(handler, "<", cmd->stdin.n_redirs);
+	cmd->stdout.redirs = get_redir(handler, ">", cmd->stdout.n_redirs);
+	cmd->stderr.redirs = get_redir(handler, "2>", cmd->stderr.n_redirs);
+	cmd->append.redirs = get_redir(handler, ">>", cmd->append.n_redirs);
+	cmd->heredoc.redirs = get_redir(handler, "<<", cmd->heredoc.n_redirs);
+}
 
-// static void	get_arguments(t_command *cmd, t_lexer handler)
-// {
-// 	int	n_args;
-// 	int	i;
-// 	int	j;
+static void	get_arguments(t_command *cmd, t_lexer handler)
+{
+	int	n_args;
+	int	i;
+	t_token	*aux;
 
-// 	n_args = count_argv(cmd, handler);
-// 	cmd->args = safe_malloc(sizeof(char *) * (n_args + 1), true);
-// 	i = -1;
-// 	j = -1;
-// 	while (++i < handler.n_tokens - 1)
-// 	{
-// 		if ((ft_strchr_charset(handler.tokens[i].token_str, "<>")
-// 				&& !handler.tokens[i].quoted) || is_file(cmd,
-// 				handler.tokens[i].token_str))
-// 			continue ;
-// 		cmd->args[++j] = ft_strdup(handler.tokens[i].token_str);
-// 	}
-// 	cmd->args[++j] = NULL;
-// }
+	n_args = count_args(cmd, handler);
+	printf("[DEBUG] get_arguments: n_args = %d\n", n_args);
+	cmd->args = safe_malloc(sizeof(char *) * (n_args + 1), true);
+	i = 0;
+	aux = handler.token_head;
+	while (aux)
+	{
+		if (!(ft_strchr_charset(aux->token_str, "<>") && !aux->quoted)
+			&& !is_file(cmd, aux->token_str))
+			cmd->args[i++] = ft_strdup(aux->token_str);
+		aux = aux->next;
+	}
+	cmd->args[i] = NULL;
+}
 
 static void	get_cmd_info(t_command_line *cmd_line, t_command *cmd,
 		char *cmd_str, t_shell *shell)
@@ -58,12 +58,12 @@ static void	get_cmd_info(t_command_line *cmd_line, t_command *cmd,
 	lexer(&handler, cmd, cmd_str, shell);
 	if (cmd_line->execute)
 		print_lexer(&handler);
-	// get_redirecs(cmd, handler, cmd_str);
-	// get_arguments(cmd, handler);
-	// if (is_builtin(cmd->args[0]))
-	// 	cmd->builtin = true;
-	// else
-	// 	cmd->builtin = false;
+	get_redirs(cmd, handler);
+	get_arguments(cmd, handler);
+	if (is_builtin(cmd->args[0]))
+		cmd->builtin = true;
+	else
+		cmd->builtin = false;
 	free_handler(&handler);
 }
 
@@ -90,6 +90,6 @@ void	parse_line(t_command_line *cmd_line, t_shell *shell, char *line)
 	cmd_line->line = ft_strdup(line);
 	cmd_line->execute = true;
 	get_cmds_info(cmd_line, shell, line);
-	// if (cmd_line->execute)
-	// 	print_info(cmd_line);
+	if (cmd_line->execute)
+		print_info(cmd_line);
 }
