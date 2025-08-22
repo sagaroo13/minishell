@@ -95,18 +95,10 @@ typedef struct s_last_exit_status
 
 typedef struct s_token
 {
-	char	*token_str;
-	bool	quoted;
+	char			*token_str;
+	bool			quoted;
+	struct s_token	*next;
 }	t_token;
-
-typedef struct s_token_state
-{
-	int		i;
-	int		count;
-	bool	in_sq;
-	bool	in_dq;
-	bool	in_token;
-}	t_token_state;
 
 // ----- TIPOS PRINCIPALES -----
 typedef struct s_redirections
@@ -159,11 +151,12 @@ typedef struct s_lexer_handler
 	int			n_tokens;
 	int			buf_len;
 	int			buffer_size;
-	int			argc;
+	bool		quoted;
 	char		*buffer;
 	char		*cmd_str;
 	t_command	*cmd;
-	t_token		*tokens;
+	t_token		*token_head;
+	t_token		*token_tail;
 }	t_lexer;
 
 // ----- HEREDOC -----
@@ -206,19 +199,25 @@ void	expand_exit_status(char **args, t_shell *shell);
 // PARSER
 void	parse_line(t_command_line *cmd_line, t_shell *shell, char *line);
 char	**get_redirec(t_lexer handler, char *redir, int len, int n);
-bool	is_meta(char *str);
+bool	iss_meta(char *str);
 bool	is_file(t_command *cmd, char *str);
 int		count_argv(t_command *cmd, t_lexer handler);
 char	**split_pipes(char *line, int n_cmds);
 int		count_cmds(char *line);
 void	free_cmd_line(t_command_line *cmd_line);
+void 	check_pipe_closed(t_commad_line *cmd_line);
 
 // LEXER
 void	lexer(t_lexer *handler, t_command *cmd, char *cmd_str, t_shell *shell);
 void	handle_var(t_lexer *handler, char **s, t_shell *shell);
+void	handle_meta(t_lexer *handler, char **s, t_shell *shell);
+void	handle_status(t_lexer *handler, char **s, t_shell *shell);
 void	push_buffer(t_lexer *handler, bool quoted);
 void	init_handler(t_lexer *handler, t_command *cmd, char *cmd_str);
 void	free_handler(t_lexer *handler);
+bool	is_meta(char *str);
+void	add_token(t_lexer *handler, const char *str, bool quoted);
+int		size_token_lst(const t_lexer *handler);
 
 // SIGNALS
 void	sigint_handler(int sig);
@@ -285,5 +284,7 @@ void	minishell(t_shell *shell);
 char	*get_path(char *line, t_shell *shell);
 char	*try_executable_path(char **paths, char *line);
 char	*get_env(t_shell *shell, const char *name);
+void	print_info(t_command_line *cmd_line);
+void	print_lexer(const t_lexer *handler);
 
 #endif

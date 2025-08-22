@@ -3,7 +3,7 @@ RED = \033[0;31m
 RESET = \033[0m
 
 CC = cc
-FLAGS = -Werror -Wall -Wextra #-fsanitize=address -g3
+FLAGS = -Werror -Wall -Wextra -fsanitize=address -g3
 LDFLAGS = -lreadline -lhistory
 NAME = minishell
 RM = rm -rf
@@ -37,6 +37,7 @@ SRC =	$(SRC_DIR)main.c				\
 		$(SRC_DIR)$(HEREDOC_DIR)heredoc_utils_2.c		\
 		$(SRC_DIR)$(LEXER_DIR)lexer.c		\
 		$(SRC_DIR)$(LEXER_DIR)lexer_utils.c		\
+		$(SRC_DIR)$(LEXER_DIR)handle_meta.c		\
 		$(SRC_DIR)$(PARSER_DIR)parser.c				\
 		$(SRC_DIR)$(PARSER_DIR)parser_utils.c		\
 		$(SRC_DIR)$(PARSER_DIR)parser_utils_2.c		\

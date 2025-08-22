@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:09:35 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 16:55:57 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/22 19:01:52 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,19 +55,19 @@ char	**copy_envp(char **envp)
 	return (new_env);
 }
 
-// void	print_all(char **args)
-// {
-// 	int	i;
+void	print_all(char **args)
+{
+	int	i;
 
-// 	i = 0;
-// 	while (args[i])
-// 	{
-// 		printf("Arg %d: %s\n", i, args[i]);
-// 		i++;
-// 	}
-// }
+	i = 0;
+	while (args[i])
+	{
+		printf("Arg %d: %s\n", i, args[i]);
+		i++;
+	}
+}
 
-/* void	print_info(t_command_line *cmd_line)
+void	print_info(t_command_line *cmd_line)
 {
 	int	i;
 
@@ -107,4 +107,31 @@ char	**copy_envp(char **envp)
 			printf("Not a builtin command: %s\n", cmd_line->cmds[i].args[0]);
 		printf("--------------------------------------------------\n");
 	}
-} */
+}
+
+void	print_lexer(const t_lexer *handler)
+{
+	printf(GREEN "=== LEXER STRUCT INFO ===\n" RESET);
+
+	printf(BLUE "n_tokens: " MAGENTA "%d\n" RESET, handler->n_tokens);
+	printf(BLUE "buf_len: " MAGENTA "%d\n" RESET, handler->buf_len);
+	printf(BLUE "buffer_size: " MAGENTA "%d\n" RESET, handler->buffer_size);
+
+	printf(BLUE "buffer: " MAGENTA "\"%s\"\n" RESET, handler->buffer ? handler->buffer : "(null)");
+	printf(BLUE "cmd_str: " MAGENTA "\"%s\"\n" RESET, handler->cmd_str ? handler->cmd_str : "(null)");
+
+	printf(GREEN "\n--- TOKENS ---\n" RESET);
+	int i = 0;
+	t_token *curr = handler->token_head;
+	while (curr)
+	{
+		printf(YELLOW "Token %d: " MAGENTA "%s " RESET, i, curr->token_str ? curr->token_str : "(null)");
+		if (curr->quoted)
+			printf("[quoted]\n" RESET);
+		else
+			printf(RED "[unquoted]\n" RESET);
+		curr = curr->next;
+		i++;
+	}
+	printf(GREEN "=========================\n" RESET);
+}

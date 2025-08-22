@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 14:19:08 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 16:34:01 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/22 19:11:02 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	exec_exit(char **args, t_shell *shell)
 {
 	int	code;
 
-	free_cmd_line(shell->cmd_line);
+	// free_cmd_line(shell->cmd_line);
 	cleanup_shell(shell);
 	free(shell->line);
 	write (STDOUT_FILENO, "exit\n", 5);
