@@ -20,11 +20,11 @@ int	exec_pwd(void)
 	{
 		write (STDOUT_FILENO, cwd, ft_strlen(cwd));
 		write (STDOUT_FILENO, "\n", 1);
-		return (1);
+		return (0);
 	}
 	else
 	{
 		perror ("getcwd() error");
-		return (0);
+		return (1);
 	}
 }

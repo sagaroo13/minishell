@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 16:27:22 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 13:50:48 by jsagaro-         ###   ########.fr       */
+/*   Created: 2025/08/22 02:46:11 by shirakim          #+#    #+#             */
+/*   Updated: 2025/08/22 02:49:48 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,31 @@ void	free_cmd_line(t_command_line *cmd_line)
 	i = -1;
 	while (++i < cmd_line->n_cmds)
 	{
-		ft_free_matrix(cmd_line->cmds[i].args);
-		ft_free_matrix(cmd_line->cmds[i].stdin.redirs);
-		ft_free_matrix(cmd_line->cmds[i].stdout.redirs);
-		ft_free_matrix(cmd_line->cmds[i].stderr.redirs);
-		ft_free_matrix(cmd_line->cmds[i].append.redirs);
-		ft_free_matrix(cmd_line->cmds[i].heredoc.redirs);
-		free(cmd_line->cmds[i].cmd_str);
+		if (cmd_line->cmds[i].args)
+			ft_free_matrix(cmd_line->cmds[i].args);
+		if (cmd_line->cmds[i].stdin.redirs)
+			ft_free_matrix(cmd_line->cmds[i].stdin.redirs);
+		if (cmd_line->cmds[i].stdout.redirs)
+			ft_free_matrix(cmd_line->cmds[i].stdout.redirs);
+		if (cmd_line->cmds[i].stderr.redirs)
+			ft_free_matrix(cmd_line->cmds[i].stderr.redirs);
+		if (cmd_line->cmds[i].append.redirs)
+			ft_free_matrix(cmd_line->cmds[i].append.redirs);
+		if (cmd_line->cmds[i].heredoc.redirs)
+			ft_free_matrix(cmd_line->cmds[i].heredoc.redirs);
+		if (cmd_line->cmds[i].cmd_str)
+			free(cmd_line->cmds[i].cmd_str);
 	}
-	free(cmd_line->line);
-	free(cmd_line->cmds);
+	if (cmd_line->line)
+		free(cmd_line->line);
+	if (cmd_line->err_msg)
+		free(cmd_line->err_msg);
+	if (cmd_line->cmds)
+		free(cmd_line->cmds);
 	cmd_line->n_cmds = 0;
 	cmd_line->line = NULL;
 	cmd_line->cmds = NULL;
+	cmd_line->err_msg = NULL;
 }
 
 char	*find_redir(t_lexer handler, int index, int n)
@@ -43,12 +55,13 @@ char	*find_redir(t_lexer handler, int index, int n)
 	file = NULL;
 	if ((int)ft_strlen(handler.tokens[index].token_str) > n)
 		file = ft_strdup(handler.tokens[index].token_str + n);
-	else if (handler.tokens[index + 1].quoted
-		|| !is_meta(handler.tokens[index + 1].token_str))
+	else if (index + 1 < handler.n_tokens && (handler.tokens[index + 1].quoted
+		|| !is_meta(handler.tokens[index + 1].token_str)))
 		file = ft_strdup(handler.tokens[index + 1].token_str);
 	else
 	{
-		handler.cmd->cmd_line->err_msg = "minishell: error: Need a file";
+		handler.cmd->cmd_line->err_msg = ft_strdup("syntax error" 
+				"near unexpected token `newline'");
 		handler.cmd->cmd_line->execute = false;
 	}
 	return (file);

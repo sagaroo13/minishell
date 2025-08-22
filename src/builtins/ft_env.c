@@ -23,5 +23,5 @@ int	exec_env(t_shell *shell)
 		write(1, "\n", 1);
 		i++;
 	}
-	return (1);
+	return (0);
 }

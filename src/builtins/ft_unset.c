@@ -62,12 +62,7 @@ static int	unset_one_var(char *arg, t_shell *shell)
 		ft_putendl_fd(arg, 2);
 		return (1);
 	}
-	if (remove_env_var(arg, shell->env))
-	{
-		ft_putstr_fd("minishell: unset: variable not found: ", 2);
-		ft_putendl_fd(arg, 2);
-		return (1);
-	}
+	remove_env_var(arg, shell->env);
 	return (0);
 }
 
@@ -88,8 +83,6 @@ int	env_unset(char **argv, t_shell *shell)
 			status = 1;
 		i++;
 	}
-	shell->last_status.last_exit_code = status;
-	shell->last_status.status = status;
-	shell->last_status.exit_called = false;
+	set_exit_status_direct(shell, status);
 	return (status);
 }

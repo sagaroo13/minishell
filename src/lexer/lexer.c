@@ -36,7 +36,7 @@ static void	handle_sq(t_lexer *handler, char **s)
 	}
 	if (**s != '\'')
 	{
-		handler->cmd->cmd_line->err_msg = "error: missing closing single quote";
+		handler->cmd->cmd_line->err_msg = ft_strdup("error: missing closing single quote");
 		handler->cmd->cmd_line->execute = false;
 	}
 	push_buffer(handler, true);
@@ -57,7 +57,7 @@ static void	handle_dq(t_lexer *handler, char **s, t_shell *shell)
 	}
 	if (**s != '\"')
 	{
-		handler->cmd->cmd_line->err_msg = "error: missing closing double quote";
+		handler->cmd->cmd_line->err_msg = ft_strdup("error: missing closing double quote");
 		handler->cmd->cmd_line->execute = false;
 	}
 	push_buffer(handler, true);

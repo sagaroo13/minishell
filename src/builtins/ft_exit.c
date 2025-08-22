@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_exit.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 14:19:08 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 16:34:01 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/22 02:44:30 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,28 +30,35 @@ int	is_numeric(char *str)
 	return (1);
 }
 
-int	exec_exit(char **args, t_shell *shell)
+static int	process_exit_args(char **args, t_shell *shell)
 {
-	int	code;
-
-	free_cmd_line(shell->cmd_line);
-	cleanup_shell(shell);
-	free(shell->line);
-	write (STDOUT_FILENO, "exit\n", 5);
+	(void)shell; // Indicar que el parámetro shell no se utiliza
+	
 	if (!args[1])
-		exit (0);
+		return (-1);
 	if (!is_numeric(args[1]))
-	{
-		ft_putendl_fd("minishell: exit: numeric argument required", 2);
-		exit (255);
-	}
+		return (-2);
 	if (args[2])
 	{
 		ft_putendl_fd("minishell: exit: too many arguments", 2);
 		return (1);
 	}
-	code = atoi(args[1]);
+	return (ft_atoi(args[1]));
+}
+
+int	exec_exit(char **args, t_shell *shell)
+{
+	int	code;
+
+	write(STDOUT_FILENO, "exit\n", 5);
+	code = process_exit_args(args, shell);
+	if (code == 1)
+		return (1);
 	restore_terminal();
 	rl_clear_history();
+	if (code == -1)
+		code = shell->last_status.last_exit_code;
+	else if (code == -2)
+		code = 255;
 	exit(code);
 }

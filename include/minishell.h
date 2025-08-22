@@ -151,7 +151,7 @@ typedef struct s_command_line
 	int			n_cmds;
 	bool		execute;
 	t_command	*cmds;
-}	t_commad_line;
+}	t_command_line;
 
 // ----- LEXER -----
 typedef struct s_lexer_handler
@@ -201,6 +201,7 @@ char	*try_executable_path(char **paths, char *command);
 char	*get_path(char *line, t_shell *shell);
 void	exec(char *cmd_name, char **cmd_args, t_shell *shell);
 void	update_last_exit_status(t_shell *shell, int new_status);
+void	expand_exit_status_in_arg(char **arg, t_shell *shell);
 void	expand_exit_status(char **args, t_shell *shell);
 
 // PARSER
@@ -234,11 +235,15 @@ void	exec_pipe(t_command *cmd, t_shell *shell);
 int		normalize_wait_status(int status);
 void	child_exec_command(t_command *cmd, t_shell *shell);
 void	parent_wait_and_finalize(t_shell *shell, pid_t pid);
+void	child_exec_interactive_pipe(t_command *cmd, t_shell *shell, int pipe_fd[2]);
 void	child_exec_pipe(t_command *cmd, t_shell *shell, int pipe_fd[2]);
 void	parent_setup_pipe_and_wait(t_shell *shell, int pipe_fd[2], pid_t pid);
 
 // REDIRS
-void	redirs(t_command *cmd);
+int	redirs(t_command *cmd);
+int	redir_in(t_command *cmd);
+int	redir_out(t_command *cmd);
+int	redir_err(t_command *cmd);
 void	search_last_redir(t_redirections red, char *cmd_str, int *iter);
 void	open_all_files(t_redirections red, t_open_flags flags);
 
@@ -285,5 +290,8 @@ void	minishell(t_shell *shell);
 char	*get_path(char *line, t_shell *shell);
 char	*try_executable_path(char **paths, char *line);
 char	*get_env(t_shell *shell, const char *name);
+
+// GLOBAL
+extern t_shell	*g_shell;
 
 #endif

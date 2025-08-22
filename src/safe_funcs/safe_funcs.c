@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   safe_funcs.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:22:19 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 13:25:56 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/22 01:04:25 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ void	safe_chdir(const char *path)
 
 void	safe_close(int fd)
 {
+	if (fd < 0)
+		return;
 	if (close(fd) == -1)
 	{
 		ft_putstr_fd("minishell: ", 2);
@@ -49,7 +51,8 @@ int	safe_open(const char *path, t_open_flags flags)
 	if (fd == -1)
 	{
 		ft_putstr_fd("minishell: ", 2);
-		perror("open");
+		ft_putstr_fd((char*)path, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
 	}
 	return (fd);
 }

@@ -3,7 +3,7 @@ RED = \033[0;31m
 RESET = \033[0m
 
 CC = cc
-FLAGS = -Werror -Wall -Wextra
+FLAGS = -Werror -Wall -Wextra -fsanitize=address -g
 LDFLAGS = -lreadline -lhistory
 NAME = minishell
 RM = rm -rf
@@ -31,6 +31,7 @@ SRC =	$(SRC_DIR)main.c				\
 		$(SRC_DIR)$(BUILTINS_DIR)ft_pwd.c			\
 		$(SRC_DIR)$(BUILTINS_DIR)ft_export.c			\
 		$(SRC_DIR)$(BUILTINS_DIR)ft_export_utils.c	\
+		$(SRC_DIR)$(BUILTINS_DIR)ft_export_display.c	\
 		$(SRC_DIR)$(BUILTINS_DIR)ft_unset.c			\
 		$(SRC_DIR)$(HEREDOC_DIR)heredoc.c				\
 		$(SRC_DIR)$(HEREDOC_DIR)heredoc_utils.c		\

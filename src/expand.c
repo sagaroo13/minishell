@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:33:09 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 16:54:28 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/22 02:33:59 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,26 +34,55 @@ void	update_last_exit_status(t_shell *shell, int new_status)
 	shell->last_status.exit_called = true;
 }
 
+void	expand_exit_status_in_arg(char **arg, t_shell *shell)
+{
+	char	*exit_code_str;
+	char	*result;
+	char	*tmp;
+	char	*pos;
+
+	result = ft_strdup("");
+	tmp = *arg;
+	while ((pos = ft_strstr(tmp, "$?")))
+	{
+		*pos = '\0';
+		exit_code_str = ft_itoa(shell->last_status.last_exit_code);
+		
+		// Append part before $?
+		char *old_result = result;
+		result = ft_strjoin(result, tmp);
+		free(old_result);
+		
+		// Append exit code
+		old_result = result;
+		result = ft_strjoin(result, exit_code_str);
+		free(old_result);
+		free(exit_code_str);
+		
+		tmp = pos + 2;  // Move past $?
+	}
+	
+	// Append remaining part after last $?
+	if (*tmp)
+	{
+		char *old_result = result;
+		result = ft_strjoin(result, tmp);
+		free(old_result);
+	}
+	
+	free(*arg);
+	*arg = result;
+}
+
 void	expand_exit_status(char **args, t_shell *shell)
 {
-	int		i;
-	char	*rest;
-	char	*exit_code_str;
-	char	*new_arg;
+	int	i;
 
 	i = 0;
 	while (args[i])
 	{
-		if (ft_strncmp(args[i], "$?", 2) == 0)
-		{
-			rest = args[i] + 2;
-			exit_code_str = ft_itoa(shell->last_status.last_exit_code);
-			new_arg = ft_strjoin(exit_code_str, rest);
-			free(args[i]);
-			free(exit_code_str);
-			args[i] = new_arg;
-			break ;
-		}
+		if (ft_strstr(args[i], "$?"))
+			expand_exit_status_in_arg(&args[i], shell);
 		i++;
 	}
 }
