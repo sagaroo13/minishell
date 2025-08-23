@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 13:15:53 by jsagaro-          #+#    #+#             */
-/*   Updated: 2025/08/23 12:04:28 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 17:33:52 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void	search_last_redir(t_redirections red, char *cmd_str, int *iter)
 {
 	int		i;
 	char	*p;
+	int		pos;
 
 	i = -1;
 	*iter = 0;
@@ -27,7 +28,11 @@ void	search_last_redir(t_redirections red, char *cmd_str, int *iter)
 			continue ;
 		p = ft_strstr(cmd_str, red.redirs[i]);
 		if (p)
-			*iter = p - cmd_str;
+		{
+			pos = p - cmd_str;
+			if (pos > *iter)  // Solo actualiza si la posición es mayor
+				*iter = pos;
+		}
 	}
 }
 
