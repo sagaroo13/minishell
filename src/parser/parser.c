@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:14:19 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 20:36:32 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/23 15:58:17 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,11 @@ static void	get_cmd_info(t_command_line *cmd_line, t_command *cmd,
 	cmd->cmd_line = cmd_line;
 	cmd->shell = shell;
 	lexer(&handler, cmd, cmd_str, shell);
-	// if (cmd_line->execute)
-	// 	print_lexer(&handler);
+	if (!cmd_line->execute)
+	{
+		free_handler(&handler);
+		return ;
+	}
 	get_redirs(cmd, handler);
 	get_arguments(cmd, handler);
 	if (is_builtin(cmd->args[0]))
