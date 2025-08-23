@@ -74,7 +74,7 @@ static void	print_export_var(char *var)
 	{
 		name_len = eq_pos - var;
 		write(1, "declare -x ", 11);
-		write(1, var, name_len + 1); // Incluye el signo =
+		write(1, var, name_len + 1);
 		write(1, "\"", 1);
 		write(1, eq_pos + 1, ft_strlen(eq_pos + 1));
 		write(1, "\"", 1);
@@ -96,7 +96,6 @@ int	display_sorted_exports(t_shell *shell)
 	sorted_env = sort_env(shell->env);
 	if (!sorted_env)
 		return (1);
-	
 	i = 0;
 	while (sorted_env[i])
 	{

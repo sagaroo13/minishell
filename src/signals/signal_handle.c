@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 18:53:28 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 19:50:44 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 11:46:50 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ void	sigint_handler(int sig)
 	rl_replace_line("", 0);
 	rl_redisplay();
 	g_signal_received = 130;
-	
 }
 
 void	sigint_handler_child(int sig)

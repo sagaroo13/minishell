@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:50:58 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 15:44:22 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 10:32:28 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,19 +28,6 @@ static char	*get_current_dir(void)
 	if (getcwd(buf, sizeof(buf)) != NULL)
 		return (ft_strdup(buf));
 	return (NULL);
-}
-static int	print_cd_(const char *msg, const char *arg)
-{
-	write(2, "minishell: ", 11);
-	if (msg)
-		write(2, msg, ft_strlen(msg));
-	if (arg)
-	{
-		write(2, ": ", 2);
-		write(2, arg, ft_strlen(arg));
-	}
-	write(2, "\n", 1);
-	return (1);
 }
 
 static int	cd_to_home(t_shell *shell)
@@ -111,7 +98,7 @@ int	exec_cd(char **args, t_shell *shell)
 	old_dir = get_current_dir();
 	if (chdir(args[1]) != 0)
 	{
-		result = print_cd_("cd: No such file or directory", args[1]);
+		result = print_builtin_error("cd: No such file or directory", args[1]);
 		free(old_dir);
 		return (result);
 	}

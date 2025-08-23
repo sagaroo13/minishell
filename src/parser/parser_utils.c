@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 02:46:11 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 02:49:48 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 10:33:04 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,4 +88,45 @@ char	**get_redirec(t_lexer handler, char *redir, int len, int n)
 	}
 	files[j] = NULL;
 	return (files);
+}
+
+int	validate_redirection_syntax(char *cmd_str)
+{
+	char	*ptr;
+	int		consecutive_less;
+	int		consecutive_greater;
+
+	ptr = cmd_str;
+	while (*ptr)
+	{
+		consecutive_less = 0;
+		consecutive_greater = 0;
+		
+		// Contar < consecutivos
+		while (*ptr == '<')
+		{
+			consecutive_less++;
+			ptr++;
+		}
+		
+		// Contar > consecutivos  
+		while (*ptr == '>')
+		{
+			consecutive_greater++;
+			ptr++;
+		}
+		
+		// Validar patrones inválidos según bash:
+		// >>> o más > consecutivos
+		if (consecutive_greater >= 3)
+			return (0);
+		
+		// <<<< o más < consecutivos (<<< es here-string válido en bash, pero minishell no lo soporta)
+		if (consecutive_less >= 3)
+			return (0);
+			
+		if (*ptr)
+			ptr++;
+	}
+	return (1);
 }

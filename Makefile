@@ -14,15 +14,19 @@ LEXER_DIR = lexer/
 HEREDOC_DIR = heredoc/
 PIPES_DIR = pipes/
 REDIRS_DIR = redirs/
+MAIN_DIRS = main/
 SAFE_FUNCS_DIR = safe_funcs/
 SIGNALS_DIR = signals/
 
-SRC =	$(SRC_DIR)main.c				\
-    	$(SRC_DIR)utils.c 				\
-    	$(SRC_DIR)exec.c			\
-		$(SRC_DIR)shell_loop.c			\
-		$(SRC_DIR)utils_2.c				\
-		$(SRC_DIR)expand.c				\
+SRC =	$(SRC_DIR)$(MAIN_DIRS)main.c				\
+    	$(SRC_DIR)$(MAIN_DIRS)utils.c 				\
+    	$(SRC_DIR)$(MAIN_DIRS)exec.c			\
+		$(SRC_DIR)$(MAIN_DIRS)exec_utils.c			\
+		$(SRC_DIR)$(MAIN_DIRS)expand_utils.c		\
+		$(SRC_DIR)$(MAIN_DIRS)exec_pipeline.c		\
+		$(SRC_DIR)$(MAIN_DIRS)shell_loop.c			\
+		$(SRC_DIR)$(MAIN_DIRS)utils_2.c				\
+		$(SRC_DIR)$(MAIN_DIRS)expand.c				\
 		$(SRC_DIR)$(BUILTINS_DIR)exec_built_in.c		\
     	$(SRC_DIR)$(BUILTINS_DIR)ft_env.c			\
     	$(SRC_DIR)$(BUILTINS_DIR)ft_exit.c			\
@@ -36,6 +40,7 @@ SRC =	$(SRC_DIR)main.c				\
 		$(SRC_DIR)$(HEREDOC_DIR)heredoc.c				\
 		$(SRC_DIR)$(HEREDOC_DIR)heredoc_utils.c		\
 		$(SRC_DIR)$(HEREDOC_DIR)heredoc_utils_2.c		\
+		$(SRC_DIR)$(HEREDOC_DIR)heredoc_utils_3.c		\
 		$(SRC_DIR)$(LEXER_DIR)lexer.c		\
 		$(SRC_DIR)$(LEXER_DIR)lexer_utils.c		\
 		$(SRC_DIR)$(PARSER_DIR)parser.c				\

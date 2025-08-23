@@ -38,6 +38,9 @@
 # include <sys/wait.h>
 # include <fcntl.h>
 # include <errno.h>
+# include <sys/select.h>
+# include <sys/time.h>
+# include <limits.h>
 
 /******************************************************************************
  *  																		  *
@@ -125,6 +128,7 @@ typedef struct s_shell
 	t_stdfd			stdfd;
 	t_last_status	last_status;
 	t_command_line	*cmd_line;
+	int				cat_count;   // Contador de comandos cat en la tubería
 }	t_shell;
 
 // ----- COMMAND -----
@@ -203,6 +207,14 @@ void	exec(char *cmd_name, char **cmd_args, t_shell *shell);
 void	update_last_exit_status(t_shell *shell, int new_status);
 void	expand_exit_status_in_arg(char **arg, t_shell *shell);
 void	expand_exit_status(char **args, t_shell *shell);
+bool	is_interactive_command(const char *cmd_name);
+
+// EXEC PIPELINE
+int		is_cat_pipeline_pattern(t_command_line *cmd_line);
+void	execute_cat_pipeline(t_command_line *cmd_line, t_shell *shell);
+void	execute_normal_pipeline(t_command_line *cmd_line, t_shell *shell);
+void	count_cat_commands(t_command_line *cmd_line, t_shell *shell);
+void	process_heredoc_and_exec(t_command_line *cmd_line, t_shell *shell);
 
 // PARSER
 void	parse_line(t_command_line *cmd_line, t_shell *shell, char *line);
@@ -213,6 +225,7 @@ int		count_argv(t_command *cmd, t_lexer handler);
 char	**split_pipes(char *line, int n_cmds);
 int		count_cmds(char *line);
 void	free_cmd_line(t_command_line *cmd_line);
+int		validate_redirection_syntax(char *cmd_str);
 
 // LEXER
 void	lexer(t_lexer *handler, t_command *cmd, char *cmd_str, t_shell *shell);
@@ -254,7 +267,9 @@ bool	handle_parent_after_child(t_command *cmd, pid_t pid,
 			t_heredoc_ctx *ctx);
 void	attach_last_heredoc_to_stdin(int last_fd);
 void	read_from_stdin(int pipe_fd[2], char *delim);
-void	attach_last_heredoc_to_stdin(int last_fd);
+bool	process_heredoc_line(char *line, char *delim, int pipe_fd[2]);
+void	handle_eof_heredoc(char *delim);
+void	cleanup_and_exit(int pipe_fd);
 
 // BUILT INS
 int		exec_echo(char **args, t_shell *shell);
@@ -271,6 +286,7 @@ void	add_or_update_env(char *name, char *value, t_shell *shell);
 bool	is_valid_identifier(const char *s);
 int		is_builtin(char *command);
 int		exec_builtin(char **args, t_shell *shell);	
+int		print_builtin_error(const char *msg, const char *arg);	
 
 // SAFE FUNC
 void	*safe_malloc(size_t size, bool calloc_flag);
@@ -291,6 +307,10 @@ void	minishell(t_shell *shell);
 char	*get_path(char *line, t_shell *shell);
 char	*try_executable_path(char **paths, char *line);
 char	*get_env(t_shell *shell, const char *name);
+char	*replace_exit_status(const char *str, int exit_code);
+void	append_fragment_before_exit(char **result,
+	char **tmp, char *pos);
+
 
 // GLOBAL
 extern int	g_signal_received;

@@ -6,11 +6,11 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 18:33:09 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 18:53:23 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 12:38:41 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 void	set_exit_status_direct(t_shell *shell, int code)
 {
@@ -36,34 +36,41 @@ void	update_last_exit_status(t_shell *shell, int new_status)
 
 void	expand_exit_status_in_arg(char **arg, t_shell *shell)
 {
-	char	*exit_code_str;
 	char	*result;
 	char	*tmp;
 	char	*pos;
+	char	*exit_code_str;
+	char	*old_result;
 
-	if (!arg || !*arg || !ft_strstr(*arg, "$?"))
-		return ;
+	if (!arg || !*arg)
+		return;
+
 	result = ft_strdup("");
 	tmp = *arg;
+	
 	while ((pos = ft_strstr(tmp, "$?")))
 	{
 		*pos = '\0';
-		exit_code_str = ft_itoa(shell->last_status.last_exit_code);
-		char *old_result = result;
+		old_result = result;
 		result = ft_strjoin(result, tmp);
 		free(old_result);
+		
+		exit_code_str = ft_itoa(shell->last_status.last_exit_code);
 		old_result = result;
 		result = ft_strjoin(result, exit_code_str);
 		free(old_result);
 		free(exit_code_str);
-		tmp = pos + 2;  // Move past $?
-	}	
+		
+		tmp = pos + 2;  // Skip past "$?"
+	}
+
 	if (*tmp)
 	{
-		char *old_result = result;
+		old_result = result;
 		result = ft_strjoin(result, tmp);
 		free(old_result);
 	}
+
 	free(*arg);
 	*arg = result;
 }

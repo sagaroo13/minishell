@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:35:53 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 02:38:18 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 11:55:57 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,9 @@ int	exec_echo(char **args, t_shell *shell)
 	int	i;
 	int	newline;
 
+	(void)shell;
 	i = 1;
 	newline = 1;
-	expand_exit_status(args, shell);
 	while (args[i] && is_n_flag(args[i]))
 	{
 		newline = 0;

@@ -6,52 +6,11 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:14:19 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 09:49:32 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 10:32:41 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-
-static int	validate_redirection_syntax(char *cmd_str)
-{
-	char	*ptr;
-	int		consecutive_less;
-	int		consecutive_greater;
-
-	ptr = cmd_str;
-	while (*ptr)
-	{
-		consecutive_less = 0;
-		consecutive_greater = 0;
-		
-		// Contar < consecutivos
-		while (*ptr == '<')
-		{
-			consecutive_less++;
-			ptr++;
-		}
-		
-		// Contar > consecutivos  
-		while (*ptr == '>')
-		{
-			consecutive_greater++;
-			ptr++;
-		}
-		
-		// Validar patrones inválidos según bash:
-		// >>> o más > consecutivos
-		if (consecutive_greater >= 3)
-			return (0);
-		
-		// <<<< o más < consecutivos (<<< es here-string válido en bash, pero minishell no lo soporta)
-		if (consecutive_less >= 3)
-			return (0);
-			
-		if (*ptr)
-			ptr++;
-	}
-	return (1);
-}
 
 static void	get_redirecs(t_command *cmd, t_lexer handler, char *cmd_str)
 {

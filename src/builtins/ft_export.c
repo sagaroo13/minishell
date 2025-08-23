@@ -12,7 +12,6 @@
 
 #include "../../include/minishell.h"
 
-
 char	*ft_strjoin3(const char *s1, const char *s2, const char *s3)
 {
 	char	*tmp;

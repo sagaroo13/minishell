@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:29:04 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 18:06:52 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 12:43:00 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,14 @@
 
 int	normalize_wait_status(int status)
 {
-	if (WIFSIGNALED(status))
-		return (128 + WTERMSIG(status));
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	return (status);
+	// Si el proceso terminó por una señal (bit 7 activado)
+	if (status & 0x7F)
+	{
+		// La señal está en los bits 0-6
+		return (128 + (status & 0x7F));
+	}
+	// Si terminó normalmente, el código de salida está en los bits 8-15
+	return ((status & 0xFF00) >> 8);
 }
 
 void	child_exec_command(t_command *cmd, t_shell *shell)
@@ -27,9 +30,9 @@ void	child_exec_command(t_command *cmd, t_shell *shell)
 	if (redirs(cmd) != 0)
 		exit(1); // Error en redirecciones
 	exec(cmd->args[0], cmd->args, shell);
-	if (errno == EACCES || errno == EISDIR || errno == ENOEXEC)
+	/* if (errno == EACCES || errno == EISDIR || errno == ENOEXEC)
 		exit(126);
-	else
+	else */
 		exit(127);
 }
 
@@ -50,12 +53,13 @@ void	child_exec_pipe(t_command *cmd, t_shell *shell, int pipe_fd[2])
 	safe_dup2(pipe_fd[1], STDOUT_FILENO);
 	safe_close(pipe_fd[1]);
 	if (redirs(cmd) != 0)
-		exit(1); // Error en redirecciones
+		exit(1);
 	exec(cmd->args[0], cmd->args, shell);
 	exit(127);
 }
 
-void	parent_setup_pipe_and_wait(t_shell *shell, int pipe_fd[2], pid_t pid)
+void	parent_setup_pipe_and_wait(t_shell *shell,
+	int pipe_fd[2], pid_t pid)
 {
 	int	status;
 

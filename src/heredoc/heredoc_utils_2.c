@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:04:39 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 18:05:22 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 11:01:36 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,77 +21,42 @@ void	attach_last_heredoc_to_stdin(int last_fd)
 	}
 }
 
-static bool	process_heredoc_line(char *line, char *delim,
-		int pipe_fd[2])
+static bool	heredoc_loop(int pipe_fd[2], char *delim,
+	bool *eof_reached)
 {
-	char	*nl;
+	char	*line;
 
-	if (!line)
-		return (false);
-	nl = ft_strchr(line, '\n');
-	if (nl)
-		*nl = '\0';
-	if (!ft_strcmp(delim, line))
+	while (1)
 	{
+		line = readline("heredoc> ");
+		if (g_signal_received)
+			break ;
+		if (!line)
+		{
+			*eof_reached = true;
+			break ;
+		}
+		if (!ft_strcmp(delim, line))
+		{
+			free(line);
+			break ;
+		}
+		ft_putendl_fd(line, pipe_fd[1]);
 		free(line);
-		return (false);
 	}
-	ft_putendl_fd(line, pipe_fd[1]);
-	free(line);
-	return (true);
-}
-
-static void	handle_eof_heredoc(char *delim)
-{
-	get_next_line(-1);  // Limpiar buffer antes del mensaje
-	ft_putstr_fd("\nminishell: warning: here-document "
-		"delimited by end-of-file (wanted `", 2);
-	ft_putstr_fd(delim, 2);
-	ft_putstr_fd("')\n", 2);
-	exit(1);
-}
-
-static void	cleanup_and_exit(int pipe_fd)
-{
-	close(pipe_fd);
-	get_next_line(-1);
-	exit(EXIT_SUCCESS);
+	return (*eof_reached);
 }
 
 void	read_from_stdin(int pipe_fd[2], char *delim)
 {
-	char			*line;
-	bool			eof_reached;
-	bool			is_interactive;
-	struct termios	term;
+	bool	eof_reached;
 
 	close(pipe_fd[0]);
 	eof_reached = false;
-	is_interactive = (tcgetattr(STDIN_FILENO, &term) == 0);
 	g_signal_received = 0;
-	
-	while (1)
-	{
-		if (is_interactive)
-			write(STDOUT_FILENO, "heredoc> ", 9);
-			
-		line = get_next_line(STDIN_FILENO);
-		
-		/* Signal recibida */
-		if (g_signal_received)
-			break ;
-			
-		/* EOF detectado */
-		if (!line)
-		{
-			eof_reached = true;
-			break ;
-		}
-		
-		if (!process_heredoc_line(line, delim, pipe_fd))
-			break ;
-	}
-	
+	disable_echoctl();
+	heredoc_loop(pipe_fd, delim, &eof_reached);
+	restore_terminal();
 	if (eof_reached)
 		handle_eof_heredoc(delim);
 	cleanup_and_exit(pipe_fd[1]);

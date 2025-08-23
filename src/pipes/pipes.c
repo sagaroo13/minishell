@@ -13,14 +13,6 @@
 #include "../../include/minishell.h"
 
 
-static bool	is_interactive_command(const char *cmd_name)
-{
-	if (!cmd_name)
-		return (false);
-	return (ft_strcmp((char*)cmd_name, "cat") == 0 || 
-			ft_strcmp((char*)cmd_name, "/bin/cat") == 0);
-}
-
 void	exec_last(t_command *cmd, t_shell *shell)
 {
 	pid_t	pid;
@@ -49,14 +41,7 @@ void	exec_last(t_command *cmd, t_shell *shell)
 		child_exec_command(cmd, shell);
 	parent_wait_and_finalize(shell, pid);
 }
-/**
- * @brief Configura los descriptores de archivo y redirecciones para un comando interactivo
- * 
- * @param cmd Estructura del comando
- * @param shell Estructura principal del shell
- * @param pipe_fd Array con los descriptores del pipe
- * @return int 1 si el comando tiene redirecciones y debe ejecutarse normalmente, 0 si no
- */
+
 static int	setup_interactive_pipe(t_command *cmd, t_shell *shell, int pipe_fd[2])
 {
 	set_signals(MODE_CHILD);
@@ -84,28 +69,36 @@ static int	setup_interactive_pipe(t_command *cmd, t_shell *shell, int pipe_fd[2]
 /**
  * @brief Procesa la entrada de un comando interactivo como 'cat'
  * 
- * @param void No recibe parámetros
+ * @param needed_newlines Número de saltos de línea consecutivos necesarios para salir
  */
-static void	process_interactive_input(void)
+static void	process_interactive_input(int needed_newlines)
 {
 	char	buffer[1024];
 	ssize_t	bytes_read;
-	int		last_was_newline = 0;
+	int		consecutive_newlines = 0;
 	
 	while (1)
 	{
 		bytes_read = read(STDIN_FILENO, buffer, sizeof(buffer));
 		if (bytes_read <= 0) 
-			exit(0); 
+			exit(0);
+		
+		// Si es un salto de línea, incrementamos el contador
 		if (bytes_read == 1 && buffer[0] == '\n')
 		{
-			if (last_was_newline) 
+			consecutive_newlines++;
+			
+			// Escribir el salto de línea
+			write(STDOUT_FILENO, buffer, bytes_read);
+			
+			// Si alcanzamos el número necesario de saltos de línea consecutivos, salimos
+			if (consecutive_newlines >= needed_newlines) 
 				exit(0);
-			last_was_newline = 1;
 		} 
 		else 
 		{
-			last_was_newline = 0;
+			// Si no es un salto de línea, reiniciamos el contador y enviamos el contenido
+			consecutive_newlines = 0;
 			write(STDOUT_FILENO, buffer, bytes_read);
 		}
 	}
@@ -120,12 +113,18 @@ static void	process_interactive_input(void)
  */
 void	child_exec_interactive_pipe(t_command *cmd, t_shell *shell, int pipe_fd[2])
 {
+	int needed_newlines = 1; // Por defecto, un salto de línea
+	
+	// Si hay un contador de cat en el shell, usarlo para determinar cuántos newlines necesitamos
+	if (shell->cat_count > 0)
+		needed_newlines = shell->cat_count;
+	
 	// Configurar los descriptores de archivo y redirecciones
 	if (setup_interactive_pipe(cmd, shell, pipe_fd))
 		return;
 	
-	// Procesar la entrada interactivamente
-	process_interactive_input();
+	// Procesar la entrada interactivamente con el número de newlines necesarios
+	process_interactive_input(needed_newlines);
 }
 void	exec_pipe(t_command *cmd, t_shell *shell)
 {

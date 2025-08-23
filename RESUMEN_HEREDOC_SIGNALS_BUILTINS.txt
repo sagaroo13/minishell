@@ -1,0 +1,33 @@
+Resumen de funcionamiento: Heredoc, Señales y Builtins
+=====================================================
+
+1. Heredoc
+----------
+- El heredoc permite capturar múltiples líneas de entrada hasta que se introduce un delimitador definido por el usuario.
+- Cada heredoc se gestiona en un proceso hijo para aislar la señal SIGINT y evitar que afecte al shell principal.
+- El contenido del heredoc se redirige a un pipe temporal, que luego se conecta a la entrada estándar del comando que lo requiere.
+- Si se recibe una señal SIGINT (Ctrl+C) durante el heredoc, solo se interrumpe el heredoc, no el shell principal.
+- El heredoc soporta múltiples instancias en una misma línea de comandos y maneja correctamente la expansión de variables si corresponde.
+
+2. Señales
+----------
+- Solo se utiliza una variable global (`g_signal_received`) para indicar la recepción de señales (por ejemplo, SIGINT).
+- Esta variable global nunca se usa para acceder ni modificar estructuras principales del shell, solo como flag de recepción.
+- El handler de señales se encarga de actualizar esta variable y, en el caso de heredoc, de terminar el proceso hijo de heredoc correctamente.
+- El shell principal ignora SIGQUIT y maneja SIGINT para limpiar la línea y mostrar un nuevo prompt sin salir del shell.
+- En procesos hijos (comandos externos), las señales se restauran a su comportamiento por defecto.
+
+3. Builtins
+-----------
+- Los builtins (`cd`, `echo`, `pwd`, `export`, `unset`, `env`, `exit`) se ejecutan directamente en el proceso principal del shell si no están en una tubería.
+- Si un builtin está en una tubería, se ejecuta en un proceso hijo para mantener el comportamiento esperado de las redirecciones y pipes.
+- El manejo de variables de entorno (export, unset) se realiza sobre una copia interna del entorno, nunca sobre el entorno global del sistema.
+- El comando `exit` solo termina el shell si se ejecuta en el proceso principal y no dentro de una tubería.
+- El comportamiento de los builtins replica el de bash en cuanto a errores, códigos de salida y manejo de argumentos.
+
+Notas para la presentación en 42:
+---------------------------------
+- Explica que el diseño evita el uso de variables globales para datos del shell, solo una para señales.
+- Señala que el heredoc es robusto ante señales y no bloquea el shell principal.
+- Menciona que los builtins se comportan igual que en bash, tanto dentro como fuera de pipes.
+- Puedes mostrar ejemplos de uso de heredoc, señales (Ctrl+C) y builtins para ilustrar el funcionamiento.

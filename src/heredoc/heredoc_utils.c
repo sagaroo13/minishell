@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:06:42 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 18:06:26 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 09:31:31 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 static void	_sigint_heredoc(int sig)
 {
 	(void)sig;
-	write(STDOUT_FILENO, "\n", 1);
 	g_signal_received = 130;
 	close(STDIN_FILENO);
 	exit(130);
