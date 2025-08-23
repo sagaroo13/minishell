@@ -100,16 +100,10 @@ typedef struct s_token
 {
 	char	*token_str;
 	bool	quoted;
+	struct s_token	*next;
 }	t_token;
 
-typedef struct s_token_state
-{
-	int		i;
-	int		count;
-	bool	in_sq;
-	bool	in_dq;
-	bool	in_token;
-}	t_token_state;
+
 
 // ----- TIPOS PRINCIPALES -----
 typedef struct s_redirections
@@ -164,10 +158,12 @@ typedef struct s_lexer_handler
 	int			buf_len;
 	int			buffer_size;
 	int			argc;
+	bool        quoted;
 	char		*buffer;
 	char		*cmd_str;
 	t_command	*cmd;
-	t_token		*tokens;
+	t_token		*token_head;
+	t_token		*token_tail;
 }	t_lexer;
 
 // ----- HEREDOC -----
@@ -218,14 +214,16 @@ void	process_heredoc_and_exec(t_command_line *cmd_line, t_shell *shell);
 
 // PARSER
 void	parse_line(t_command_line *cmd_line, t_shell *shell, char *line);
-char	**get_redirec(t_lexer handler, char *redir, int len, int n);
+char	**get_redir(t_lexer handler, char *redir, int len);
 bool	is_meta(char *str);
 bool	is_file(t_command *cmd, char *str);
-int		count_argv(t_command *cmd, t_lexer handler);
+int		count_args(t_command *cmd, t_lexer handler);
+bool	is_meta_redir(char *s);
 char	**split_pipes(char *line, int n_cmds);
 int		count_cmds(char *line);
 void	free_cmd_line(t_command_line *cmd_line);
-int		validate_redirection_syntax(char *cmd_str);
+void 	check_pipe_closed(t_command_line *cmd_line);
+int		count_redirs(t_lexer handler, char *redir);
 
 // LEXER
 void	lexer(t_lexer *handler, t_command *cmd, char *cmd_str, t_shell *shell);
@@ -233,6 +231,11 @@ void	handle_var(t_lexer *handler, char **s, t_shell *shell);
 void	push_buffer(t_lexer *handler, bool quoted);
 void	init_handler(t_lexer *handler, t_command *cmd, char *cmd_str);
 void	free_handler(t_lexer *handler);
+void add_token(t_lexer *handler, const char *str, bool quoted);
+void	handle_meta(t_lexer *handler, char **s, t_shell *shell);
+void	handle_status(t_lexer *handler, char **s, t_shell *shell);
+void	handle_var(t_lexer *handler, char **s, t_shell *shell);
+int		size_token_lst(const t_lexer *handler);
 
 // SIGNALS
 void	sigint_handler(int sig);
@@ -311,6 +314,12 @@ char	*replace_exit_status(const char *str, int exit_code);
 void	append_fragment_before_exit(char **result,
 	char **tmp, char *pos);
 
+
+// TERMINAL CONFIGURATION
+int		is_interactive_terminal(void);
+int		configure_input_mode(int echo_ctl);
+void	disable_ctrl_chars(void);
+void	restore_ctrl_chars(void);
 
 // GLOBAL
 extern int	g_signal_received;

@@ -6,38 +6,43 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:04:17 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 13:50:58 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/22 20:14:24 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-int	count_argv(t_command *cmd, t_lexer handler)
+int	count_args(t_command *cmd, t_lexer handler)
 {
 	int	count;
-	int	i;
+	t_token	*aux;
 
 	count = 0;
-	i = -1;
-	while (++i < handler.n_tokens - 1)
+	aux = handler.token_head;
+	while (aux)
 	{
-		if ((ft_strchr_charset(handler.tokens[i].token_str, "<>")
-				&& !handler.tokens[i].quoted) || is_file(cmd,
-				handler.tokens[i].token_str))
-			continue ;
-		count++;
+		if ((!is_meta_redir(aux->token_str) || aux->quoted)
+			&& !is_file(cmd, aux->token_str))
+			count++;
+		aux = aux->next;
 	}
 	return (count);
 }
 
-bool	is_meta(char *str)
+int	count_redirs(t_lexer handler, char *redir)
 {
-	if (!str || !*str)
-		return (true);
-	if (ft_strstr(str, ">") || ft_strstr(str, "<") || ft_strstr(str, ">>")
-		|| ft_strstr(str, "<<") || ft_strstr(str, "2>"))
-		return (true);
-	return (false);
+	int count;
+	t_token *aux;
+
+	aux = handler.token_head;
+	count = 0;
+	while (aux)
+	{
+		if (!ft_strcmp(aux->token_str, redir) && !aux->quoted)
+			count++;
+		aux = aux->next;
+	}
+	return (count);			
 }
 
 bool	search_file(char **files, char *str, int len)
@@ -66,4 +71,11 @@ bool	is_file(t_command *cmd, char *str)
 		|| search_file(cmd->heredoc.redirs, str, cmd->heredoc.n_redirs))
 		return (true);
 	return (false);
+}
+
+bool is_meta_redir(char *s)
+{
+	return (!ft_strcmp(s, "<") || !ft_strcmp(s, ">")
+		|| !ft_strcmp(s, "2>") || !ft_strcmp(s, ">>")
+		|| !ft_strcmp(s, "<<"));
 }

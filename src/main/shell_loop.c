@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:36:52 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/23 11:18:24 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 13:07:41 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,13 @@ static char	*get_command_line(t_shell *shell)
 {
 	char			*line;
 	char			*prompt_to_use;
-	struct termios	term;
 
 	safe_getcwd(shell->cwd, sizeof(shell->cwd));
 	shell->prompt = ft_strjoin(shell->cwd, "$> ");
 	if (!shell->prompt)
 		return (NULL);
 	set_signals(MODE_SHELL);
-	if (tcgetattr(STDIN_FILENO, &term) == 0)
+	if (is_interactive_terminal())
 		prompt_to_use = shell->prompt;
 	else
 		prompt_to_use = NULL;

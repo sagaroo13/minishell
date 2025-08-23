@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:06:42 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/23 09:31:31 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 13:37:15 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,10 @@ static int	wait_for_child(pid_t pid)
 static bool	handle_child_status(t_command *cmd, int status,
 		t_heredoc_ctx *ctx)
 {
-	if ((WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-		|| (WIFEXITED(status) && WEXITSTATUS(status) == 130))
+	int	normalized_status;
+
+	normalized_status = normalize_wait_status(status);
+	if (normalized_status == 130 || normalized_status == 128 + SIGINT)
 	{
 		write(STDOUT_FILENO, "\n", 1);
 		if (*(ctx->plast_fd) != -1)

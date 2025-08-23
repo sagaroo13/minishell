@@ -43,6 +43,7 @@ SRC =	$(SRC_DIR)$(MAIN_DIRS)main.c				\
 		$(SRC_DIR)$(HEREDOC_DIR)heredoc_utils_3.c		\
 		$(SRC_DIR)$(LEXER_DIR)lexer.c		\
 		$(SRC_DIR)$(LEXER_DIR)lexer_utils.c		\
+		$(SRC_DIR)$(LEXER_DIR)handle_meta.c		\
 		$(SRC_DIR)$(PARSER_DIR)parser.c				\
 		$(SRC_DIR)$(PARSER_DIR)parser_utils.c		\
 		$(SRC_DIR)$(PARSER_DIR)parser_utils_2.c		\
@@ -55,6 +56,7 @@ SRC =	$(SRC_DIR)$(MAIN_DIRS)main.c				\
 		$(SRC_DIR)$(SAFE_FUNCS_DIR)safe_funcs2.c 		\
 		$(SRC_DIR)$(SIGNALS_DIR)signal_handle.c		\
     	$(SRC_DIR)$(SIGNALS_DIR)termios_off.c			\
+		$(SRC_DIR)$(SIGNALS_DIR)terminal_config.c		\
 
 OBJ = $(SRC:.c=.o)
 

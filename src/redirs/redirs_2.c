@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 11:30:00 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/23 11:59:46 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 16:14:24 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,13 @@ int	redir_out(t_command *cmd)
 	int	i;
 	int	j;
 
+	if (cmd->stdout.n_redirs == 0 && cmd->append.n_redirs == 0)
+		return (0);
 	open_all_files(cmd->stdout, WRITE);
 	open_all_files(cmd->append, APPEND);
 	search_last_redir(cmd->stdout, cmd->cmd_str, &i);
 	search_last_redir(cmd->append, cmd->cmd_str, &j);
-	if (cmd->stdout.n_redirs == 0 && cmd->append.n_redirs == 0)
-		return (0);
-	else if (i > j)
+	if (i > j)
 		return (handle_stdout_redir(cmd));
 	else
 		return (handle_append_redir(cmd));

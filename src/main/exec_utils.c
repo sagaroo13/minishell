@@ -54,8 +54,7 @@ void	exec(char *cmd_name, char **cmd_args, t_shell *shell)
 	char	*path;
 
 	if (!cmd_args || !*cmd_args)
-		return;
-
+		return ;
 	if (is_builtin(cmd_name))
 	{
 		builtin_status = exec_builtin(cmd_args, shell);

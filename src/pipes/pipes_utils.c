@@ -6,7 +6,7 @@
 /*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:29:04 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/23 12:43:00 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 13:16:47 by shirakim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,8 @@
 
 int	normalize_wait_status(int status)
 {
-	// Si el proceso terminó por una señal (bit 7 activado)
 	if (status & 0x7F)
-	{
-		// La señal está en los bits 0-6
 		return (128 + (status & 0x7F));
-	}
-	// Si terminó normalmente, el código de salida está en los bits 8-15
 	return ((status & 0xFF00) >> 8);
 }
 
@@ -28,12 +23,9 @@ void	child_exec_command(t_command *cmd, t_shell *shell)
 {
 	set_signals(MODE_CHILD);
 	if (redirs(cmd) != 0)
-		exit(1); // Error en redirecciones
+		exit(1);
 	exec(cmd->args[0], cmd->args, shell);
-	/* if (errno == EACCES || errno == EISDIR || errno == ENOEXEC)
-		exit(126);
-	else */
-		exit(127);
+	exit(127);
 }
 
 void	parent_wait_and_finalize(t_shell *shell, pid_t pid)

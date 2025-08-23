@@ -16,12 +16,11 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_shell			shell;
 	int				exit_code;
-	struct termios	term;
 
 	(void)argc;
 	(void)argv;
 	setup_shell(&shell, envp);
-	if (tcgetattr(STDIN_FILENO, &term) == 0)
+	if (is_interactive_terminal())
 		printf(BANNER);
 	minishell(&shell);
 	exit_code = shell.last_status.last_exit_code;
