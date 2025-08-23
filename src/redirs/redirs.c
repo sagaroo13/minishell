@@ -33,13 +33,13 @@ void	redir_out(t_command *cmd)
 	int	i;
 	int	j;
 
+	if (cmd->stdout.n_redirs == 0 && cmd->append.n_redirs == 0)
+		return ;
 	open_all_files(cmd->stdout, WRITE);
 	open_all_files(cmd->append, APPEND);
 	search_last_redir(cmd->stdout, cmd->cmd_str, &i);
 	search_last_redir(cmd->append, cmd->cmd_str, &j);
-	if (cmd->stdout.n_redirs == 0 && cmd->append.n_redirs == 0)
-		return ;
-	else if (i > j)
+	if (i > j)
 	{
 		fd = safe_open(cmd->stdout.redirs[cmd->stdout.n_redirs - 1], WRITE);
 		safe_dup2(fd, STDOUT_FILENO);

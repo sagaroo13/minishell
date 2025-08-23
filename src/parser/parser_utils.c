@@ -36,6 +36,21 @@ void	free_cmd_line(t_command_line *cmd_line)
 	cmd_line->cmds = NULL;
 }
 
+void 	check_pipe_closed(t_commad_line *cmd_line)
+{
+	int	i;
+
+	i = -1;
+	while (++i < cmd_line->n_cmds)
+	{
+		if (ft_empty_str(cmd_line->cmds[i].cmd_str) && i != 0)
+		{
+			cmd_line->err_msg = "syntax error: pipeline not closed";
+			cmd_line->execute = false;
+		}
+	}
+}
+
 char	*find_redir(t_lexer handler, t_token *aux)
 {
 	char	*file;
@@ -57,7 +72,7 @@ char	**get_redir(t_lexer handler, char *redir, int len)
 	int		i;
 	t_token	*aux;
 
-	if (!handler.token_head)
+	if (!handler.token_head || !len)
 		return (NULL);
 	files = safe_malloc(sizeof(char *) * (len + 1), true);
 	i = 0;

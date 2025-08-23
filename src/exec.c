@@ -72,35 +72,37 @@ void	exec(char *cmd_name, char **cmd_args, t_shell *shell)
 	free(path);
 }
 
-// static void	process_heredoc_and_exec(t_command_line *cmd_line,
-// 		t_shell *shell)
-// {
-// 	int	i;
+static void	process_heredoc_and_exec(t_command_line *cmd_line,
+		t_shell *shell)
+{
+	int	i;
 
-// 	i = 0;
-// 	while (i < cmd_line->n_cmds)
-// 	{
-// 		if (cmd_line->cmds[i].heredoc.redirs)
-// 		{
-// 			set_signals(MODE_HEREDOC);
-// 			heredoc(&cmd_line->cmds[i]);
-// 			if (!cmd_line->execute)
-// 				return ;
-// 		}
-// 		if (!redirs(&cmd_line->cmds[i]))
-// 			return ;
-// 		if (i != cmd_line->n_cmds - 1)
-// 			exec_pipe(&cmd_line->cmds[i], shell);
-// 		else
-// 			exec_last(&cmd_line->cmds[i], shell);
-// 		i++;
-// 	}
-// }
+	i = 0;
+	while (i < cmd_line->n_cmds)
+	{
+		if (cmd_line->cmds[i].heredoc.redirs)
+		{
+			set_signals(MODE_HEREDOC);
+			heredoc(&cmd_line->cmds[i]);
+			if (!cmd_line->execute)
+				return ;
+		}
+		if (!redirs(&cmd_line->cmds[i]))
+			return ;
+		if (i != cmd_line->n_cmds - 1)
+			exec_pipe(&cmd_line->cmds[i], shell);
+		else
+			exec_last(&cmd_line->cmds[i], shell);
+		i++;
+	}
+}
 
 void	exec_line(char *line, t_shell *shell)
 {
 	t_command_line	cmd_line;
 
+	if (ft_empty_str(line))
+		return ;
 	parse_line(&cmd_line, shell, line);
 	shell->cmd_line = &cmd_line;
 	if (!cmd_line.execute)
@@ -110,6 +112,6 @@ void	exec_line(char *line, t_shell *shell)
 		free_cmd_line(&cmd_line);
 		return ;
 	}
-	// process_heredoc_and_exec(&cmd_line, shell);
+	process_heredoc_and_exec(&cmd_line, shell);
 	free_cmd_line(&cmd_line);
 }

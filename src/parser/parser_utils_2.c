@@ -21,7 +21,7 @@ int	count_args(t_command *cmd, t_lexer handler)
 	aux = handler.token_head;
 	while (aux)
 	{
-		if (!(ft_strchr_charset(aux->token_str, "<>") && !aux->quoted)
+		if ((!is_meta_redir(aux->token_str) || aux->quoted)
 			&& !is_file(cmd, aux->token_str))
 			count++;
 		aux = aux->next;
@@ -73,17 +73,9 @@ bool	is_file(t_command *cmd, char *str)
 	return (false);
 }
 
-void 	check_pipe_closed(t_commad_line *cmd_line)
+bool is_meta_redir(char *s)
 {
-	int	i;
-
-	i = -1;
-	while (++i < cmd_line->n_cmds)
-	{
-		if (ft_empty_str(cmd_line->cmds[i].cmd_str) && i != 0)
-		{
-			cmd_line->err_msg = "syntax error: pipeline not closed";
-			cmd_line->execute = false;
-		}
-	}
+	return (!ft_strcmp(s, "<") || !ft_strcmp(s, ">")
+		|| !ft_strcmp(s, "2>") || !ft_strcmp(s, ">>")
+		|| !ft_strcmp(s, "<<"));
 }

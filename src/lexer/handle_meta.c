@@ -46,6 +46,31 @@ void	handle_status(t_lexer *handler, char **s, t_shell *shell)
 	free(p);
 }
 
+void	tokenize_var(t_lexer *handler, char *val)
+{
+	bool pushed;
+
+	pushed = false;
+	while (*val)
+	{
+		if (ft_isspace(*val))
+		{
+			if (!pushed)
+			{
+				push_buffer(handler, handler->quoted);
+				pushed = true;
+			}
+		}
+		else
+		{
+			if (handler->buf_len < handler->buffer_size)
+				handler->buffer[handler->buf_len++] = *val;
+			pushed = false;
+		}
+		val++;
+	}
+}
+
 void	handle_var(t_lexer *handler, char **s, t_shell *shell)
 {
 	int		i;
@@ -59,13 +84,7 @@ void	handle_var(t_lexer *handler, char **s, t_shell *shell)
 	var[i] = '\0';
 	val = get_env(shell, var);
 	if (val)
-	{
-		while (*val)
-		{
-			if (handler->buf_len < handler->buffer_size)
-				handler->buffer[handler->buf_len++] = *val++;
-		}
-	}
+		tokenize_var(handler, val);
 }
 
 void	handle_meta(t_lexer *handler, char **s, t_shell *shell)

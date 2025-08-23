@@ -33,13 +33,12 @@ static void	get_arguments(t_command *cmd, t_lexer handler)
 	t_token	*aux;
 
 	n_args = count_args(cmd, handler);
-	printf("[DEBUG] get_arguments: n_args = %d\n", n_args);
 	cmd->args = safe_malloc(sizeof(char *) * (n_args + 1), true);
 	i = 0;
 	aux = handler.token_head;
 	while (aux)
 	{
-		if (!(ft_strchr_charset(aux->token_str, "<>") && !aux->quoted)
+		if ((!is_meta_redir(aux->token_str) || aux->quoted)
 			&& !is_file(cmd, aux->token_str))
 			cmd->args[i++] = ft_strdup(aux->token_str);
 		aux = aux->next;
@@ -56,8 +55,8 @@ static void	get_cmd_info(t_command_line *cmd_line, t_command *cmd,
 	cmd->cmd_line = cmd_line;
 	cmd->shell = shell;
 	lexer(&handler, cmd, cmd_str, shell);
-	if (cmd_line->execute)
-		print_lexer(&handler);
+	// if (cmd_line->execute)
+	// 	print_lexer(&handler);
 	get_redirs(cmd, handler);
 	get_arguments(cmd, handler);
 	if (is_builtin(cmd->args[0]))
@@ -86,10 +85,9 @@ static void	get_cmds_info(t_command_line *cmd_line, t_shell *shell, char *line)
 
 void	parse_line(t_command_line *cmd_line, t_shell *shell, char *line)
 {
-	(void)shell;
 	cmd_line->line = ft_strdup(line);
 	cmd_line->execute = true;
 	get_cmds_info(cmd_line, shell, line);
-	if (cmd_line->execute)
-		print_info(cmd_line);
+	// if (cmd_line->execute)
+	// 	print_info(cmd_line);
 }

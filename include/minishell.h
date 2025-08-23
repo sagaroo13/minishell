@@ -199,7 +199,7 @@ void	expand_exit_status(char **args, t_shell *shell);
 // PARSER
 void	parse_line(t_command_line *cmd_line, t_shell *shell, char *line);
 char	**get_redir(t_lexer handler, char *redir, int len);
-bool	iss_meta(char *str);
+bool	is_meta_redir(char *s);
 bool	is_file(t_command *cmd, char *str);
 int		count_args(t_command *cmd, t_lexer handler);
 int		count_redirs(t_lexer handler, char *redir);
