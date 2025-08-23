@@ -19,7 +19,8 @@ void	handle_redir(t_lexer *handler, char **s, int len)
 	i = -1;
 	if (is_meta(&(*s)[len]) && ft_strncmp(&(*s)[len], "$", 1))
 	{
-		handler->cmd->cmd_line->err_msg = "error: unexpected redirection expression";
+		handler->cmd->cmd_line->err_msg = "error: unexpected"
+			"redirection expression";
 		handler->cmd->cmd_line->execute = false;
 	}
 	while (++i < len)
@@ -31,7 +32,7 @@ void	handle_status(t_lexer *handler, char **s, t_shell *shell)
 {
 	char	*status;
 	char	*p;
-	
+
 	status = ft_itoa(shell->last_status.last_exit_code);
 	p = status;
 	if (status)
@@ -48,7 +49,7 @@ void	handle_status(t_lexer *handler, char **s, t_shell *shell)
 
 void	tokenize_var(t_lexer *handler, char *val)
 {
-	bool pushed;
+	bool	pushed;
 
 	pushed = false;
 	while (*val)
@@ -101,7 +102,7 @@ void	handle_meta(t_lexer *handler, char **s, t_shell *shell)
 		handle_redir(handler, s, 2);
 	else if (**s == '<')
 		handle_redir(handler, s, 1);
-	else if(**s == '>')
+	else if (**s == '>')
 		handle_redir(handler, s, 1);
 	else
 		handler->buffer[handler->buf_len++] = *(*s)++;

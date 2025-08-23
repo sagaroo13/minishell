@@ -17,6 +17,16 @@ void	exec_last(t_command *cmd, t_shell *shell)
 	pid_t	pid;
 	int		ret;
 
+	// Si no hay argumentos (solo redirecciones como heredoc), aplicar redirecciones y salir con éxito
+	if (!cmd->args || !cmd->args[0])
+	{
+		if (redirs(cmd) != 0)
+			set_exit_status_direct(shell, 1);
+		else
+			set_exit_status_direct(shell, 0);  // Éxito en bash cuando solo hay redirecciones
+		return;
+	}
+
 	if (cmd->builtin)
 	{
 		if (redirs(cmd) != 0)
