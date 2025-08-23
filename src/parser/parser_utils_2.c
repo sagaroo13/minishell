@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:04:17 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 20:14:24 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/23 20:45:03 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	count_args(t_command *cmd, t_lexer handler)
 {
-	int	count;
+	int		count;
 	t_token	*aux;
 
 	count = 0;
@@ -23,7 +23,9 @@ int	count_args(t_command *cmd, t_lexer handler)
 	{
 		if ((!is_meta_redir(aux->token_str) || aux->quoted)
 			&& !is_file(cmd, aux->token_str))
+		{
 			count++;
+		}
 		aux = aux->next;
 	}
 	return (count);
@@ -31,8 +33,8 @@ int	count_args(t_command *cmd, t_lexer handler)
 
 int	count_redirs(t_lexer handler, char *redir)
 {
-	int count;
-	t_token *aux;
+	int		count;
+	t_token	*aux;
 
 	aux = handler.token_head;
 	count = 0;
@@ -42,7 +44,7 @@ int	count_redirs(t_lexer handler, char *redir)
 			count++;
 		aux = aux->next;
 	}
-	return (count);			
+	return (count);
 }
 
 bool	search_file(char **files, char *str, int len)
@@ -73,7 +75,7 @@ bool	is_file(t_command *cmd, char *str)
 	return (false);
 }
 
-bool is_meta_redir(char *s)
+bool	is_meta_redir(char *s)
 {
 	return (!ft_strcmp(s, "<") || !ft_strcmp(s, ">")
 		|| !ft_strcmp(s, "2>") || !ft_strcmp(s, ">>")

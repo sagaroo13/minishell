@@ -16,14 +16,11 @@ PIPES_DIR = pipes/
 REDIRS_DIR = redirs/
 SAFE_FUNCS_DIR = safe_funcs/
 SIGNALS_DIR = signals/
+EXPAND_DIR = expand/
+EXEC_DIR = exec/
+MAIN_DIR = main/
 
-SRC =	$(SRC_DIR)main.c				\
-    	$(SRC_DIR)utils.c 				\
-    	$(SRC_DIR)exec.c			\
-		$(SRC_DIR)shell_loop.c			\
-		$(SRC_DIR)utils_2.c				\
-		$(SRC_DIR)expand.c				\
-		$(SRC_DIR)$(BUILTINS_DIR)exec_built_in.c		\
+SRC =	$(SRC_DIR)$(BUILTINS_DIR)exec_built_in.c		\
     	$(SRC_DIR)$(BUILTINS_DIR)ft_env.c			\
     	$(SRC_DIR)$(BUILTINS_DIR)ft_exit.c			\
 		$(SRC_DIR)$(BUILTINS_DIR)ft_cd.c				\
@@ -31,10 +28,12 @@ SRC =	$(SRC_DIR)main.c				\
 		$(SRC_DIR)$(BUILTINS_DIR)ft_pwd.c			\
 		$(SRC_DIR)$(BUILTINS_DIR)ft_export.c			\
 		$(SRC_DIR)$(BUILTINS_DIR)ft_export_utils.c	\
+		$(SRC_DIR)$(BUILTINS_DIR)ft_export_display.c	\
 		$(SRC_DIR)$(BUILTINS_DIR)ft_unset.c			\
 		$(SRC_DIR)$(HEREDOC_DIR)heredoc.c				\
 		$(SRC_DIR)$(HEREDOC_DIR)heredoc_utils.c		\
 		$(SRC_DIR)$(HEREDOC_DIR)heredoc_utils_2.c		\
+		$(SRC_DIR)$(HEREDOC_DIR)heredoc_utils_3.c		\
 		$(SRC_DIR)$(LEXER_DIR)lexer.c		\
 		$(SRC_DIR)$(LEXER_DIR)lexer_utils.c		\
 		$(SRC_DIR)$(LEXER_DIR)handle_meta.c		\
@@ -43,13 +42,24 @@ SRC =	$(SRC_DIR)main.c				\
 		$(SRC_DIR)$(PARSER_DIR)parser_utils_2.c		\
 		$(SRC_DIR)$(PARSER_DIR)parser_split.c		\
 		$(SRC_DIR)$(PIPES_DIR)pipes.c				\
-		$(SRC_DIR)$(PIPES_DIR)pipes_utils.c				\
+		$(SRC_DIR)$(PIPES_DIR)pipes_utils.c			\
+		$(SRC_DIR)$(PIPES_DIR)pipes_utils_2.c 		\
 		$(SRC_DIR)$(REDIRS_DIR)redirs.c				\
 		$(SRC_DIR)$(REDIRS_DIR)redirs_utils.c				\
 		$(SRC_DIR)$(SAFE_FUNCS_DIR)safe_funcs.c			\
 		$(SRC_DIR)$(SAFE_FUNCS_DIR)safe_funcs2.c 		\
 		$(SRC_DIR)$(SIGNALS_DIR)signal_handle.c		\
     	$(SRC_DIR)$(SIGNALS_DIR)termios_off.c			\
+		$(SRC_DIR)$(SIGNALS_DIR)terminal_config.c			\
+		$(SRC_DIR)$(EXPAND_DIR)expand.c 			\
+		$(SRC_DIR)$(EXPAND_DIR)expand_utils.c 			\
+		$(SRC_DIR)$(EXEC_DIR)exec.c 			\
+		$(SRC_DIR)$(EXEC_DIR)exec_pipeline.c 			\
+		$(SRC_DIR)$(EXEC_DIR)exec_utils.c 			\
+		$(SRC_DIR)$(MAIN_DIR)main.c 			\
+		$(SRC_DIR)$(MAIN_DIR)shell_loop.c 			\
+		$(SRC_DIR)$(MAIN_DIR)utils.c 			\
+		$(SRC_DIR)$(MAIN_DIR)utils_2.c 			\
 
 OBJ = $(SRC:.c=.o)
 

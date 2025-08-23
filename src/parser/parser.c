@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:14:19 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/23 15:58:17 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/23 20:43:56 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,22 @@ static void	get_redirs(t_command *cmd, t_lexer handler)
 	cmd->stderr.n_redirs = count_redirs(handler, "2>");
 	cmd->append.n_redirs = count_redirs(handler, ">>");
 	cmd->heredoc.n_redirs = count_redirs(handler, "<<");
-	cmd->stdin.redirs = get_redir(handler, "<", cmd->stdin.n_redirs);
-	cmd->stdout.redirs = get_redir(handler, ">", cmd->stdout.n_redirs);
-	cmd->stderr.redirs = get_redir(handler, "2>", cmd->stderr.n_redirs);
-	cmd->append.redirs = get_redir(handler, ">>", cmd->append.n_redirs);
-	cmd->heredoc.redirs = get_redir(handler, "<<", cmd->heredoc.n_redirs);
+	cmd->stdin.redirs = get_redir(handler, "<", &cmd->stdin.last_index,
+			cmd->stdin.n_redirs);
+	cmd->stdout.redirs = get_redir(handler, ">", &cmd->stdout.last_index,
+			cmd->stdout.n_redirs);
+	cmd->stderr.redirs = get_redir(handler, "2>", &cmd->stderr.last_index,
+			cmd->stderr.n_redirs);
+	cmd->append.redirs = get_redir(handler, ">>", &cmd->append.last_index,
+			cmd->append.n_redirs);
+	cmd->heredoc.redirs = get_redir(handler, "<<", &cmd->heredoc.last_index,
+			cmd->heredoc.n_redirs);
 }
 
 static void	get_arguments(t_command *cmd, t_lexer handler)
 {
-	int	n_args;
-	int	i;
+	int		n_args;
+	int		i;
 	t_token	*aux;
 
 	n_args = count_args(cmd, handler);
@@ -91,6 +96,4 @@ void	parse_line(t_command_line *cmd_line, t_shell *shell, char *line)
 	cmd_line->line = ft_strdup(line);
 	cmd_line->execute = true;
 	get_cmds_info(cmd_line, shell, line);
-	// if (cmd_line->execute)
-	// 	print_info(cmd_line);
 }

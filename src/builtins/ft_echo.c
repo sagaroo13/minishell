@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_echo.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:35:53 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 18:04:55 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 19:56:46 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,11 @@ int	is_n_flag(char *s)
 {
 	int	i;
 
-	i = 1;
 	if (!s || s[0] != '-')
 		return (0);
+	if (s[1] == '\0' || s[1] != 'n')
+		return (0);
+	i = 2;
 	while (s[i])
 	{
 		if (s[i] != 'n')
@@ -50,9 +52,9 @@ int	exec_echo(char **args, t_shell *shell)
 	int	i;
 	int	newline;
 
+	(void)shell;
 	i = 1;
 	newline = 1;
-	expand_exit_status(args, shell);
 	while (args[i] && is_n_flag(args[i]))
 	{
 		newline = 0;

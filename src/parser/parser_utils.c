@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 16:27:22 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 19:10:09 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/23 20:44:06 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	free_cmd_line(t_command_line *cmd_line)
 	cmd_line->cmds = NULL;
 }
 
-void 	check_pipe_closed(t_commad_line *cmd_line)
+void	check_pipe_closed(t_commad_line *cmd_line)
 {
 	int	i;
 
@@ -51,13 +51,16 @@ void 	check_pipe_closed(t_commad_line *cmd_line)
 	}
 }
 
-char	*find_redir(t_lexer handler, t_token *aux)
+char	*find_redir(t_lexer handler, int *index, t_token *aux)
 {
 	char	*file;
 
 	file = NULL;
 	if (aux->next)
+	{
 		file = ft_strdup(aux->next->token_str);
+		*index = aux->next->index;
+	}
 	else
 	{
 		handler.cmd->cmd_line->err_msg = "minishell: error: Need a file";
@@ -66,7 +69,7 @@ char	*find_redir(t_lexer handler, t_token *aux)
 	return (file);
 }
 
-char	**get_redir(t_lexer handler, char *redir, int len)
+char	**get_redir(t_lexer handler, char *redir, int *index, int len)
 {
 	char	**files;
 	int		i;
@@ -80,7 +83,7 @@ char	**get_redir(t_lexer handler, char *redir, int len)
 	while (aux)
 	{
 		if (!ft_strcmp(aux->token_str, redir) && !aux->quoted)
-			files[i++] = find_redir(handler, aux);
+			files[i++] = find_redir(handler, index, aux);
 		aux = aux->next;
 	}
 	files[i] = NULL;

@@ -12,19 +12,38 @@
 
 #include "../../include/minishell.h"
 
-// helpers are implemented in pipes_utils.c
+bool	do_builtin(t_command *cmd, t_shell *shell)
+{
+	int	ret;
+
+	if (cmd->builtin)
+	{
+		if (redirs(cmd) != 0)
+		{
+			set_exit_status_direct(shell, 1);
+			return (false);
+		}
+		ret = exec_builtin(cmd->args, shell);
+		set_exit_status_direct(shell, ret);
+		return (false);
+	}
+	return (true);
+}
 
 void	exec_last(t_command *cmd, t_shell *shell)
 {
 	pid_t	pid;
-	int		ret;
 
-	if (!ft_strncmp(cmd->args[0], "exit", 5))
+	if (!cmd->args || !cmd->args[0])
 	{
-		ret = exec_exit(cmd->args, shell);
-		update_last_exit_status(shell, ret);
+		if (redirs(cmd) != 0)
+			set_exit_status_direct(shell, 1);
+		else
+			set_exit_status_direct(shell, 0);
 		return ;
 	}
+	if (!do_builtin(cmd, shell))
+		return ;
 	pid = fork();
 	if (pid == -1)
 	{
@@ -48,7 +67,12 @@ void	exec_pipe(t_command *cmd, t_shell *shell)
 	if (pid == -1)
 		exit(EXIT_FAILURE);
 	if (pid == 0)
-		child_exec_pipe(cmd, shell, pipe_fd);
+	{
+		if (is_interactive_command(cmd->args[0]))
+			child_exec_interactive_pipe(cmd, shell, pipe_fd);
+		else
+			child_exec_pipe(cmd, shell, pipe_fd);
+	}
 	else
 		parent_setup_pipe_and_wait(shell, pipe_fd, pid);
 }

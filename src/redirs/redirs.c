@@ -20,55 +20,66 @@ bool	redir_in(t_command *cmd)
 	{
 		fd = safe_open(cmd->stdin.redirs[cmd->stdin.n_redirs - 1], READ);
 		if (fd == -1)
-			return (false);
+			return (true);
 		safe_dup2(fd, STDIN_FILENO);
 		safe_close(fd);
 	}
-	return (true);
+	return (false);
 }
 
-void	redir_out(t_command *cmd)
+bool	redir_out(t_command *cmd)
 {
 	int	fd;
 	int	i;
 	int	j;
 
 	if (cmd->stdout.n_redirs == 0 && cmd->append.n_redirs == 0)
-		return ;
+		return (false);
 	open_all_files(cmd->stdout, WRITE);
 	open_all_files(cmd->append, APPEND);
-	search_last_redir(cmd->stdout, cmd->cmd_str, &i);
-	search_last_redir(cmd->append, cmd->cmd_str, &j);
+	fd = -1;
+	i = cmd->stdout.last_index;
+	j = cmd->append.last_index;
 	if (i > j)
-	{
 		fd = safe_open(cmd->stdout.redirs[cmd->stdout.n_redirs - 1], WRITE);
+	else
+		fd = safe_open(cmd->append.redirs[cmd->append.n_redirs - 1], APPEND);
+	if (fd >= 0)
+	{
 		safe_dup2(fd, STDOUT_FILENO);
 		safe_close(fd);
 	}
 	else
-	{
-		fd = safe_open(cmd->append.redirs[cmd->append.n_redirs - 1], APPEND);
-		safe_dup2(fd, STDOUT_FILENO);
-		safe_close(fd);
-	}
+		return (true);
+	return (false);
 }
 
-void	redir_err(t_command *cmd)
+bool	redir_err(t_command *cmd)
 {
 	int	fd;
 
+	if (cmd->stderr.n_redirs == 0)
+		return (false);
 	open_all_files(cmd->stderr, WRITE);
-	if (cmd->stderr.redirs)
+	if (cmd->stderr.redirs && cmd->stderr.n_redirs > 0
+		&& cmd->stderr.redirs[cmd->stderr.n_redirs - 1])
 	{
 		fd = safe_open(cmd->stderr.redirs[cmd->stderr.n_redirs - 1], WRITE);
+		if (fd == -1)
+			return (true);
 		safe_dup2(fd, STDERR_FILENO);
 		safe_close(fd);
 	}
+	return (false);
 }
 
 bool	redirs(t_command *cmd)
 {
-	redir_out(cmd);
-	redir_err(cmd);
-	return (redir_in(cmd));
+	if (redir_in(cmd))
+		return (true);
+	if (redir_out(cmd))
+		return (true);
+	if (redir_err(cmd))
+		return (true);
+	return (false);
 }

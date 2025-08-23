@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:29:04 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 12:09:10 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/23 20:16:55 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,18 @@
 
 int	normalize_wait_status(int status)
 {
-	if (WIFSIGNALED(status))
-		return (128 + WTERMSIG(status));
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	return (status);
+	if (status & 0x7F)
+		return (128 + (status & 0x7F));
+	return ((status & 0xFF00) >> 8);
 }
 
 void	child_exec_command(t_command *cmd, t_shell *shell)
 {
 	set_signals(MODE_CHILD);
-	// redirs(cmd);
+	if (redirs(cmd) != 0)
+		exit(1);
 	exec(cmd->args[0], cmd->args, shell);
-	if (errno == EACCES || errno == EISDIR || errno == ENOEXEC)
-		exit(126);
-	else
-		exit(127);
+	exit(127);
 }
 
 void	parent_wait_and_finalize(t_shell *shell, pid_t pid)
@@ -38,7 +34,7 @@ void	parent_wait_and_finalize(t_shell *shell, pid_t pid)
 
 	set_signals(MODE_PIPE);
 	waitpid(pid, &status, 0);
-	update_last_exit_status(shell, normalize_wait_status(status));
+	set_exit_status_direct(shell, normalize_wait_status(status));
 	set_signals(MODE_SHELL);
 }
 
@@ -48,15 +44,14 @@ void	child_exec_pipe(t_command *cmd, t_shell *shell, int pipe_fd[2])
 	safe_close(pipe_fd[0]);
 	safe_dup2(pipe_fd[1], STDOUT_FILENO);
 	safe_close(pipe_fd[1]);
-	// redirs(cmd);
+	if (redirs(cmd) != 0)
+		exit(1);
 	exec(cmd->args[0], cmd->args, shell);
-	if (errno == EACCES || errno == EISDIR || errno == ENOEXEC)
-		exit(126);
-	else
-		exit(127);
+	exit(127);
 }
 
-void	parent_setup_pipe_and_wait(t_shell *shell, int pipe_fd[2], pid_t pid)
+void	parent_setup_pipe_and_wait(t_shell *shell,
+	int pipe_fd[2], pid_t pid)
 {
 	int	status;
 
@@ -65,6 +60,6 @@ void	parent_setup_pipe_and_wait(t_shell *shell, int pipe_fd[2], pid_t pid)
 	safe_dup2(pipe_fd[0], STDIN_FILENO);
 	safe_close(pipe_fd[0]);
 	waitpid(pid, &status, 0);
-	update_last_exit_status(shell, normalize_wait_status(status));
+	set_exit_status_direct(shell, normalize_wait_status(status));
 	set_signals(MODE_SHELL);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 01:06:42 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 18:35:17 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 19:42:12 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	_sigint_heredoc(int sig)
 {
 	(void)sig;
-	write(STDOUT_FILENO, "\n", 1);
+	g_signal_received = 130;
 	close(STDIN_FILENO);
 	exit(130);
 }
@@ -50,10 +50,13 @@ static int	wait_for_child(pid_t pid)
 	return (status);
 }
 
-static bool	handle_child_status(t_command *cmd, int status, t_heredoc_ctx *ctx)
+static bool	handle_child_status(t_command *cmd, int status,
+		t_heredoc_ctx *ctx)
 {
-	if ((WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-		|| (WIFEXITED(status) && WEXITSTATUS(status) == 130))
+	int	normalized_status;
+
+	normalized_status = normalize_wait_status(status);
+	if (normalized_status == 130 || normalized_status == 128 + SIGINT)
 	{
 		write(STDOUT_FILENO, "\n", 1);
 		if (*(ctx->plast_fd) != -1)
@@ -73,7 +76,8 @@ static bool	handle_child_status(t_command *cmd, int status, t_heredoc_ctx *ctx)
 	return (true);
 }
 
-bool	handle_parent_after_child(t_command *cmd, pid_t pid, t_heredoc_ctx *ctx)
+bool	handle_parent_after_child(t_command *cmd, pid_t pid,
+	t_heredoc_ctx *ctx)
 {
 	int	status;
 

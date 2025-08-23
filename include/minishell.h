@@ -38,6 +38,9 @@
 # include <sys/wait.h>
 # include <fcntl.h>
 # include <errno.h>
+# include <sys/select.h>
+# include <sys/time.h>
+# include <limits.h>
 
 /******************************************************************************
  *  																		  *
@@ -75,6 +78,7 @@
  *																			  *
  ******************************************************************************/
 
+extern int						g_signal_received;
 typedef struct s_command_line	t_command_line;
 typedef struct s_command		t_command;
 
@@ -95,6 +99,7 @@ typedef struct s_last_exit_status
 
 typedef struct s_token
 {
+	int				index;
 	char			*token_str;
 	bool			quoted;
 	struct s_token	*next;
@@ -103,6 +108,7 @@ typedef struct s_token
 // ----- TIPOS PRINCIPALES -----
 typedef struct s_redirections
 {
+	int		last_index;
 	int		n_redirs;
 	char	**redirs;
 }	t_redirections;
@@ -110,6 +116,7 @@ typedef struct s_redirections
 // ----- SHELL -----
 typedef struct s_shell
 {
+	int				cat_count;
 	char			cwd[BUFFER_SIZE];
 	char			*line;
 	char			*prompt;
@@ -194,11 +201,20 @@ char	*try_executable_path(char **paths, char *command);
 char	*get_path(char *line, t_shell *shell);
 void	exec(char *cmd_name, char **cmd_args, t_shell *shell);
 void	update_last_exit_status(t_shell *shell, int new_status);
+void	expand_exit_status_in_arg(char **arg, t_shell *shell);
 void	expand_exit_status(char **args, t_shell *shell);
+bool	is_interactive_command(const char *cmd_name);
+
+// EXEC PIPELINE
+int		is_cat_pipeline_pattern(t_command_line *cmd_line);
+void	execute_cat_pipeline(t_command_line *cmd_line, t_shell *shell);
+void	execute_normal_pipeline(t_command_line *cmd_line, t_shell *shell);
+void	count_cat_commands(t_command_line *cmd_line, t_shell *shell);
+void	process_heredoc_and_exec(t_command_line *cmd_line, t_shell *shell);
 
 // PARSER
 void	parse_line(t_command_line *cmd_line, t_shell *shell, char *line);
-char	**get_redir(t_lexer handler, char *redir, int len);
+char	**get_redir(t_lexer handler, char *redir, int *index, int len);
 bool	is_meta_redir(char *s);
 bool	is_file(t_command *cmd, char *str);
 int		count_args(t_command *cmd, t_lexer handler);
@@ -206,7 +222,7 @@ int		count_redirs(t_lexer handler, char *redir);
 char	**split_pipes(char *line, int n_cmds);
 int		count_cmds(char *line);
 void	free_cmd_line(t_command_line *cmd_line);
-void 	check_pipe_closed(t_commad_line *cmd_line);
+void	check_pipe_closed(t_commad_line *cmd_line);
 
 // LEXER
 void	lexer(t_lexer *handler, t_command *cmd, char *cmd_str, t_shell *shell);
@@ -234,12 +250,13 @@ void	exec_pipe(t_command *cmd, t_shell *shell);
 int		normalize_wait_status(int status);
 void	child_exec_command(t_command *cmd, t_shell *shell);
 void	parent_wait_and_finalize(t_shell *shell, pid_t pid);
+void	child_exec_interactive_pipe(t_command *cmd,
+			t_shell *shell, int pipe_fd[2]);
 void	child_exec_pipe(t_command *cmd, t_shell *shell, int pipe_fd[2]);
 void	parent_setup_pipe_and_wait(t_shell *shell, int pipe_fd[2], pid_t pid);
 
 // REDIRS
 bool	redirs(t_command *cmd);
-void	search_last_redir(t_redirections red, char *cmd_str, int *iter);
 void	open_all_files(t_redirections red, t_open_flags flags);
 
 // HEREDOC
@@ -249,7 +266,9 @@ bool	handle_parent_after_child(t_command *cmd, pid_t pid,
 			t_heredoc_ctx *ctx);
 void	attach_last_heredoc_to_stdin(int last_fd);
 void	read_from_stdin(int pipe_fd[2], char *delim);
-void	attach_last_heredoc_to_stdin(int last_fd);
+bool	process_heredoc_line(char *line, char *delim, int pipe_fd[2]);
+void	handle_eof_heredoc(char *delim);
+void	cleanup_and_exit(int pipe_fd);
 
 // BUILT INS
 int		exec_echo(char **args, t_shell *shell);
@@ -259,14 +278,16 @@ int		exec_cd(char **args, t_shell *shell);
 int		exec_exit(char **args, t_shell *shell);
 int		env_unset(char **argv, t_shell *shell);
 int		env_export(char **argv, t_shell *shell);
+int		display_sorted_exports(t_shell *shell);
 int		update_env_var(char *name, char *new_var, t_shell *shell);
 void	add_env_var(char *new_var, t_shell *shell);
 void	add_or_update_env(char *name, char *value, t_shell *shell);
 bool	is_valid_identifier(const char *s);
 int		is_builtin(char *command);
 int		exec_builtin(char **args, t_shell *shell);	
+int		print_builtin_error(const char *msg, const char *arg);
 
-// SAFE FUNC
+// SAFE FUNCS
 void	*safe_malloc(size_t size, bool calloc_flag);
 void	safe_getcwd(char *buf, size_t size);
 int		safe_open(const char *path, t_open_flags flags);
@@ -275,7 +296,7 @@ void	safe_close(int fd);
 void	safe_dup2(int oldfd, int newfd);
 int		safe_dup(int fd);
 
-// MAIN & UTILS
+// MAIN
 char	**copy_envp(char **envp);
 void	cleanup_shell(t_shell *shell);
 void	setup_shell(t_shell *shell, char **envp);
@@ -285,7 +306,14 @@ void	minishell(t_shell *shell);
 char	*get_path(char *line, t_shell *shell);
 char	*try_executable_path(char **paths, char *line);
 char	*get_env(t_shell *shell, const char *name);
-void	print_info(t_command_line *cmd_line);
-void	print_lexer(const t_lexer *handler);
+char	*replace_exit_status(const char *str, int exit_code);
+void	append_fragment_before_exit(char **result,
+			char **tmp, char *pos);
+
+// TERMINAL CONFIG
+int		is_interactive_terminal(void);
+int		configure_input_mode(int echo_ctl);
+void	disable_ctrl_chars(void);
+void	restore_ctrl_chars(void);
 
 #endif

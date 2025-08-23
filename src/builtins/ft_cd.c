@@ -6,63 +6,87 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:50:58 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 19:53:55 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/23 19:35:45 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-int	print_cd_(const char *msg, const char *arg)
+static void	update_oldpwd(t_shell *shell, char *old_dir)
 {
-	write(2, "minishell: ", 11);
-	if (msg)
-		write(2, msg, ft_strlen(msg));
-	if (arg)
+	if (old_dir)
 	{
-		write(2, ": ", 2);
-		write(2, arg, ft_strlen(arg));
+		add_or_update_env("OLDPWD", old_dir, shell);
+		free(old_dir);
 	}
-	write(2, "\n", 1);
-	return (1);
+}
+
+static char	*get_current_dir(void)
+{
+	char	buf[4096];
+
+	if (getcwd(buf, sizeof(buf)) != NULL)
+		return (ft_strdup(buf));
+	return (NULL);
 }
 
 static int	cd_to_home(t_shell *shell)
 {
-	const char	*home;
-	const char	*msg;
+	char	*home;
+	char	*old_dir;
 
-	(void)shell;
+	old_dir = get_current_dir();
 	home = get_env(shell, "HOME");
-	if (!home || chdir(home) != 0)
+	if (!home || !*home)
 	{
-		msg = "minishell: cd: HOME not accessible\n";
-		return (write(2, msg, ft_strlen(msg)), 1);
+		ft_putstr_fd("minishell: cd: HOME not set\n", 2);
+		free(old_dir);
+		return (1);
 	}
+	if (chdir(home) != 0)
+	{
+		ft_putstr_fd("minishell: cd: ", 2);
+		ft_putstr_fd(home, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		free(old_dir);
+		return (1);
+	}
+	update_oldpwd(shell, old_dir);
 	return (0);
 }
 
 static int	cd_to_oldpwd(t_shell *shell)
 {
-	const char	*oldpwd;
-	const char	*msg;
+	char	*oldpwd;
+	char	*current_dir;
 
-	(void)shell;
-	oldpwd = getenv("OLDPWD");
-	if (!oldpwd)
+	current_dir = get_current_dir();
+	oldpwd = get_env(shell, "OLDPWD");
+	if (!oldpwd || !*oldpwd)
 	{
-		msg = "minishell: OLDPWD not set\n";
-		return (write(2, msg, ft_strlen(msg)), 1);
+		ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2);
+		free(current_dir);
+		return (1);
 	}
 	if (chdir(oldpwd) != 0)
 	{
-		msg = "minishell: cannot change directory\n";
-		return (write(2, msg, ft_strlen(msg)), 1);
+		ft_putstr_fd("minishell: cd: ", 2);
+		ft_putstr_fd(oldpwd, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		free(current_dir);
+		return (1);
 	}
+	ft_putstr_fd(oldpwd, 1);
+	ft_putstr_fd("\n", 1);
+	update_oldpwd(shell, current_dir);
 	return (0);
 }
 
 int	exec_cd(char **args, t_shell *shell)
 {
+	char	*old_dir;
+	int		result;
+
 	if (!args)
 		return (0);
 	if (args[1] == NULL)
@@ -71,7 +95,13 @@ int	exec_cd(char **args, t_shell *shell)
 		return (cd_to_oldpwd(shell));
 	if (args[1][0] == '~' && args[1][1] == '\0')
 		return (cd_to_home(shell));
+	old_dir = get_current_dir();
 	if (chdir(args[1]) != 0)
-		return (print_cd_("cd: No such file or directory", args[1]));
+	{
+		result = print_builtin_error("cd: No such file or directory", args[1]);
+		free(old_dir);
+		return (result);
+	}
+	update_oldpwd(shell, old_dir);
 	return (0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shirakim <shirakim@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 19:44:17 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 18:39:35 by shirakim         ###   ########.fr       */
+/*   Updated: 2025/08/23 19:39:12 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,15 +83,13 @@ int	env_export(char **argv, t_shell *shell)
 	if (!argv || !argv[0] || !shell)
 		return (1);
 	if (!argv[1])
-		return (exec_env(shell));
+		return (display_sorted_exports(shell));
 	while (argv[i])
 	{
 		if (process_export_arg(argv[i], shell))
 			status = 1;
 		i++;
 	}
-	shell->last_status.status = status;
-	shell->last_status.last_exit_code = status;
-	shell->last_status.exit_called = false;
+	set_exit_status_direct(shell, status);
 	return (status);
 }

@@ -6,21 +6,30 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 14:19:08 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 19:11:02 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/23 19:38:50 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+
+static void	print_exit_numeric_error(char *arg)
+{
+	ft_putstr_fd("minishell: exit: ", 2);
+	ft_putstr_fd(arg, 2);
+	ft_putstr_fd(": numeric argument required\n", 2);
+}
 
 int	is_numeric(char *str)
 {
 	int	i;
 
 	i = 0;
-	if (!str)
+	if (!str || !*str)
 		return (0);
 	if (str[0] == '+' || str[0] == '-')
 		i++;
+	if (!str[i])
+		return (0);
 	while (str[i])
 	{
 		if (!ft_isdigit(str[i]))
@@ -30,27 +39,77 @@ int	is_numeric(char *str)
 	return (1);
 }
 
+static long	safe_atol(char *str, int *overflow)
+{
+	long	r;
+	int		i;
+	int		sign;
+
+	r = 0;
+	i = 0;
+	sign = 1;
+	*overflow = 0;
+	if (str[0] == '-')
+	{
+		sign = -1;
+		i++;
+	}
+	else if (str[0] == '+')
+		i++;
+	while (str[i])
+	{
+		if (r > (LONG_MAX - (str[i] - '0')) / 10)
+			return (*overflow = 1, 0);
+		r = r * 10 + (str[i++] - '0');
+	}
+	return (r * sign);
+}
+
+static int	process_exit_args(char **args, t_shell *shell)
+{
+	long	code;
+	int		ovf;
+
+	if (!args[1])
+		return (shell->last_status.last_exit_code);
+	if (args[2])
+	{
+		ft_putendl_fd("minishell: exit: too many arguments", 2);
+		return (-1);
+	}
+	if (!is_numeric(args[1]))
+	{
+		ft_putstr_fd("minishell: exit: ", 2);
+		ft_putstr_fd(args[1], 2);
+		ft_putstr_fd(": numeric argument required\n", 2);
+		return (-2);
+	}
+	code = safe_atol(args[1], &ovf);
+	if (ovf)
+	{
+		print_exit_numeric_error(args[1]);
+		return (-2);
+	}
+	return ((int)((code % 256 + 256) % 256));
+}
+
 int	exec_exit(char **args, t_shell *shell)
 {
 	int	code;
 
-	// free_cmd_line(shell->cmd_line);
+	printf("exit\n");
+	code = process_exit_args(args, shell);
+	if (code == -1)
+		return (1);
+	if (code == -2)
+	{
+		restore_terminal();
+		rl_clear_history();
+		exit(2);
+	}
+	free_cmd_line(shell->cmd_line);
 	cleanup_shell(shell);
 	free(shell->line);
-	write (STDOUT_FILENO, "exit\n", 5);
-	if (!args[1])
-		exit (0);
-	if (!is_numeric(args[1]))
-	{
-		ft_putendl_fd("minishell: exit: numeric argument required", 2);
-		exit (255);
-	}
-	if (args[2])
-	{
-		ft_putendl_fd("minishell: exit: too many arguments", 2);
-		return (1);
-	}
-	code = atoi(args[1]);
 	restore_terminal();
 	rl_clear_history();
 	exit(code);

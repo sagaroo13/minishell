@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec.c                                             :+:      :+:    :+:   */
+/*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/05 23:31:25 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/22 19:10:44 by jsagaro-         ###   ########.fr       */
+/*   Created: 2025/08/23 19:15:27 by jsagaro-          #+#    #+#             */
+/*   Updated: 2025/08/23 19:15:50 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 char	*try_executable_path(char **paths, char *line)
 {
@@ -53,11 +53,12 @@ void	exec(char *cmd_name, char **cmd_args, t_shell *shell)
 	int		builtin_status;
 	char	*path;
 
-	expand_exit_status(cmd_args, shell);
+	if (!cmd_args || !*cmd_args)
+		return ;
 	if (is_builtin(cmd_name))
 	{
 		builtin_status = exec_builtin(cmd_args, shell);
-		update_last_exit_status(shell, builtin_status);
+		set_exit_status_direct(shell, builtin_status);
 		return ;
 	}
 	path = get_path(cmd_name, shell);
@@ -66,52 +67,16 @@ void	exec(char *cmd_name, char **cmd_args, t_shell *shell)
 		ft_putstr_fd("minishell: ", 2);
 		perror(cmd_name);
 		free(path);
-		update_last_exit_status(shell, 127);
+		set_exit_status_direct(shell, 127);
 		return ;
 	}
 	free(path);
 }
 
-static void	process_heredoc_and_exec(t_command_line *cmd_line,
-		t_shell *shell)
+bool	is_interactive_command(const char *cmd_name)
 {
-	int	i;
-
-	i = 0;
-	while (i < cmd_line->n_cmds)
-	{
-		if (cmd_line->cmds[i].heredoc.redirs)
-		{
-			set_signals(MODE_HEREDOC);
-			heredoc(&cmd_line->cmds[i]);
-			if (!cmd_line->execute)
-				return ;
-		}
-		if (!redirs(&cmd_line->cmds[i]))
-			return ;
-		if (i != cmd_line->n_cmds - 1)
-			exec_pipe(&cmd_line->cmds[i], shell);
-		else
-			exec_last(&cmd_line->cmds[i], shell);
-		i++;
-	}
-}
-
-void	exec_line(char *line, t_shell *shell)
-{
-	t_command_line	cmd_line;
-
-	if (ft_empty_str(line))
-		return ;
-	parse_line(&cmd_line, shell, line);
-	shell->cmd_line = &cmd_line;
-	if (!cmd_line.execute)
-	{
-		if (cmd_line.err_msg)
-			perror(cmd_line.err_msg);
-		free_cmd_line(&cmd_line);
-		return ;
-	}
-	process_heredoc_and_exec(&cmd_line, shell);
-	free_cmd_line(&cmd_line);
+	if (!cmd_name)
+		return (false);
+	return (ft_strcmp((char *)cmd_name, "cat") == 0
+		|| ft_strcmp((char *)cmd_name, "/bin/cat") == 0);
 }

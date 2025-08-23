@@ -6,7 +6,7 @@
 /*   By: jsagaro- <jsagaro-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 23:30:27 by shirakim          #+#    #+#             */
-/*   Updated: 2025/08/21 16:08:49 by jsagaro-         ###   ########.fr       */
+/*   Updated: 2025/08/23 19:35:25 by jsagaro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,4 +46,18 @@ int	exec_builtin(char **args, t_shell *shell)
 	else if (ft_strncmp(args[0], "unset", 6) == 0)
 		return (env_unset(args, shell));
 	return (0);
+}
+
+int	print_builtin_error(const char *msg, const char *arg)
+{
+	write(2, "minishell: ", 11);
+	if (msg)
+		write(2, msg, ft_strlen(msg));
+	if (arg)
+	{
+		write(2, ": ", 2);
+		write(2, arg, ft_strlen(arg));
+	}
+	write(2, "\n", 1);
+	return (1);
 }
